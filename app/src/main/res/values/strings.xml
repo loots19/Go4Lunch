@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Go4Lunch</string>
+
+    <!-- FIRST SCREEN-->
+    <string name="tittle_name_first_screen">Go4Lunch</string>
+    <string name="tittle_sentence_name_first_screen">Find a nice restaurant and invite your co-workers for lunch!</string>
+</resources>

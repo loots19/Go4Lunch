@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_top_margin">20dip</dimen>
+    <dimen name="default_tittle_size_first_screen">70sp</dimen>
+    <dimen name="default_tittle_sentence_first_screen">12sp</dimen>
+</resources>
