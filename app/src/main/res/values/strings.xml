@@ -1,7 +1,11 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Go4Lunch</string>
 
     <!-- FIRST SCREEN-->
     <string name="tittle_name_first_screen">Go4Lunch</string>
     <string name="tittle_sentence_name_first_screen">Find a nice restaurant and invite your co-workers for lunch!</string>
+    <string name="title_activity_maps">Map</string>
+    <!-- FACEBOOK PURPOSE -->
+    <string name="facebook_application_id" translatable="false">499929307580871</string>
+    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb499929307580871</string>
 </resources>

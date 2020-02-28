@@ -4,6 +4,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
         
     }
     dependencies {
@@ -19,6 +20,22 @@ allprojects {
     repositories {
         google()
         jcenter()
+        configurations.all {
+            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                def requested = details.requested
+                if (requested.group == 'com.google.android.gms') {
+                    details.useVersion '17.0.0'
+                }
+                if (requested.group == 'com.google.firebase') {
+                    details.useVersion '17.0.0'
+                }
+            }
+        }
+        //end
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
         
     }
 }
