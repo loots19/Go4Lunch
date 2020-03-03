@@ -8,4 +8,8 @@
     <!-- FACEBOOK PURPOSE -->
     <string name="facebook_application_id" translatable="false">499929307580871</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb499929307580871</string>
+    <!-- BOTTOM NAVIGATION VIEW -->
+    <string name="bottom_navigation_menu_mapView">MapView</string>
+    <string name="bottom_navigation_menu_listView">ListView</string>
+    <string name="bottom_navigation_menu_Workmates">Workmates</string>
 </resources>
