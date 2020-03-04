@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
         xmlns:app="http://schemas.android.com/apk/res-auto">
         <item
-            android:id="@+id/action_android"
+            android:id="@+id/action_map"
             android:enabled="true"
             android:icon="@drawable/ic_map_black_24dp"
             android:title="@string/bottom_navigation_menu_mapView"
             app:showAsAction="ifRoom" />
         <item
-            android:id="@+id/action_logo"
+            android:id="@+id/action_list"
             android:enabled="true"
             android:icon="@drawable/ic_view_list_black_24dp"
             android:title="@string/bottom_navigation_menu_listView"
             app:showAsAction="ifRoom" />
         <item
-            android:id="@+id/action_landscape"
+            android:id="@+id/action_workmates"
             android:enabled="true"
             android:icon="@drawable/ic_people_black_24dp"
             android:title="@string/bottom_navigation_menu_Workmates"

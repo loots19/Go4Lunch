@@ -12,4 +12,7 @@
     <string name="bottom_navigation_menu_mapView">MapView</string>
     <string name="bottom_navigation_menu_listView">ListView</string>
     <string name="bottom_navigation_menu_Workmates">Workmates</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
