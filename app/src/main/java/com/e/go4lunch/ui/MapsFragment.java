@@ -1,4 +1,4 @@
-package com.e.go4lunch;
+package com.e.go4lunch.ui;
 
 
 import android.Manifest;
@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.e.go4lunch.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;

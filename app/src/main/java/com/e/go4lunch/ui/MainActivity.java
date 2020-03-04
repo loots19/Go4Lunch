@@ -1,4 +1,4 @@
-package com.e.go4lunch;
+package com.e.go4lunch.ui;
 
 import android.app.SearchManager;
 import android.content.Context;
@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import com.e.go4lunch.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import butterknife.BindView;

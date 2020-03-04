@@ -36,7 +36,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:label="@string/title_activity_maps">
             <meta-data
                 android:name="android.app.searchable"
@@ -47,7 +47,7 @@
 
         </activity>
         <activity
-            android:name=".AuthActivity"
+            android:name=".auth.AuthActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
