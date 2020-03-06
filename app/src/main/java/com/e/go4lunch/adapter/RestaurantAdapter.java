@@ -12,17 +12,19 @@ import com.e.go4lunch.R;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
-    public RestaurantAdapter(Context context) {
-        mContext = context;
-    }
-
     Context mContext;
+    private OnNoteListener mOnNoteListener;
+
+    public RestaurantAdapter(Context context,OnNoteListener onNoteListener) {
+        mContext = context;
+        mOnNoteListener = onNoteListener;
+    }
 
     @NonNull
     @Override
     public RestaurantHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item_restaurant,parent,false);
-        return new RestaurantHolder(view);
+        return new RestaurantHolder(view,mOnNoteListener);
     }
 
     @Override
@@ -33,5 +35,8 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     @Override
     public int getItemCount() {
         return 10;
+    }
+    public interface OnNoteListener{
+        void onNoteClick (int position);
     }
 }

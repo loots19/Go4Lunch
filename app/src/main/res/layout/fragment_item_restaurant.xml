@@ -25,7 +25,7 @@
         android:id="@+id/iv_photo_restaurant_item"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:background="@drawable/restaurant"
+        android:background="@drawable/images"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

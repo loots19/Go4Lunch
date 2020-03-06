@@ -1,7 +1,6 @@
 package com.e.go4lunch.ui;
 
-import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,15 +12,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.e.go4lunch.DetailsActivity;
 import com.e.go4lunch.R;
 import com.e.go4lunch.adapter.RestaurantAdapter;
-import com.e.go4lunch.adapter.WorkmatesAdapter;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class RestaurantsFragment extends Fragment {
+public class RestaurantsFragment extends Fragment implements RestaurantAdapter.OnNoteListener {
     @BindView(R.id.recycler_view_restaurant)
     RecyclerView mRecyclerViewRestaurant;
 
@@ -36,9 +35,16 @@ public class RestaurantsFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerViewRestaurant.getContext(), DividerItemDecoration.VERTICAL);
         mRecyclerViewRestaurant.addItemDecoration(dividerItemDecoration);
 
-        RestaurantAdapter adapter = new RestaurantAdapter(this.getActivity());
+        RestaurantAdapter adapter = new RestaurantAdapter(this.getActivity(),this);
         mRecyclerViewRestaurant.setAdapter(adapter);
         return view;
     }
 
+    @Override
+    public void onNoteClick(int position) {
+        Intent intent = new Intent(getContext(),DetailsActivity.class);
+        startActivity((intent));
+
+
+    }
 }
