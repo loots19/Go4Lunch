@@ -1,6 +1,5 @@
 package com.e.go4lunch.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,10 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.e.go4lunch.R;
-import com.e.go4lunch.WorkmatesAdapter;
+import com.e.go4lunch.adapter.WorkmatesAdapter;
 import com.e.go4lunch.models.Workmates;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

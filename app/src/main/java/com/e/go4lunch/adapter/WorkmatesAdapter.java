@@ -1,4 +1,4 @@
-package com.e.go4lunch;
+package com.e.go4lunch.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.e.go4lunch.R;
 import com.e.go4lunch.models.Workmates;
 
 import java.util.List;

@@ -4,13 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.RestaurantsFragment"
-    android:background="@android:color/holo_blue_dark">
+    tools:context=".ui.RestaurantsFragment">
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        android:id="@+id/recycler_view_restaurant"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-      //  tools:listitem="@layout/item_workmates_fragment"/>
+        android:layout_height="match_parent"
+        tools:listitem="@layout/fragment_item_restaurant" />
 </FrameLayout>
