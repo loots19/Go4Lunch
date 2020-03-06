@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,9 +32,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.internal.Utils;
 
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
@@ -43,12 +50,14 @@ public class MapsFragment extends Fragment implements
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
+    private static final int REQUEST_USER_LOCATION_CODE = 99;
+    @BindView(R.id.fab)
+    FloatingActionButton mFab;
     private GoogleMap mMap;
     private GoogleApiClient mGoolgeApiClient;
     private LocationRequest mLocationRequest;
     private Location lastLocation;
     private Marker currentUserLocationMarker;
-    private static final int REQUEST_USER_LOCATION_CODE = 99;
 
 
     public MapsFragment() {
@@ -56,11 +65,14 @@ public class MapsFragment extends Fragment implements
     }
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_maps, container, false);
+        ButterKnife.bind(this,v);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkUserLocationPermission();
         }
@@ -78,6 +90,7 @@ public class MapsFragment extends Fragment implements
     }
 
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -88,7 +101,6 @@ public class MapsFragment extends Fragment implements
                         if (mGoolgeApiClient == null) {
                             builGoogleApiClent();
                         }
-                        mMap.setMyLocationEnabled(true);
 
                     }
                 } else {
@@ -131,6 +143,11 @@ public class MapsFragment extends Fragment implements
 
     }
 
+    public void getMyPostion() {
+
+
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         lastLocation = location;
@@ -138,6 +155,7 @@ public class MapsFragment extends Fragment implements
             currentUserLocationMarker.remove();
         }
         // Place current location marker
+
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
@@ -152,6 +170,7 @@ public class MapsFragment extends Fragment implements
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoolgeApiClient, this);
         }
 
+
     }
 
     @Override
@@ -160,9 +179,17 @@ public class MapsFragment extends Fragment implements
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             builGoogleApiClent();
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            mMap.setMyLocationEnabled(false);
+
+            mFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //getMyPostion();
+                }
+            });
+
         }
+
     }
 
     public boolean checkUserLocationPermission() {
@@ -180,5 +207,9 @@ public class MapsFragment extends Fragment implements
         }
     }
 
-}
+    }
+
+
+
+
 

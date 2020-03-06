@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigationView.setOnNavigationItemSelectedListener(navListener);
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         setSupportActionBar(mToolbar);
-        //mToolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
+        mToolbar.setNavigationIcon(R.drawable.ic_menu_black_24dp);
         //I added this if statement to keep the selected fragment when rotating the device
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
@@ -53,10 +53,10 @@ public class MainActivity extends AppCompatActivity {
                         selectedFragment = new MapsFragment();
                         break;
                     case R.id.action_list:
-                        selectedFragment = new ListFragment();
+                        selectedFragment = new RestaurantsFragment();
                         break;
                     case R.id.action_workmates:
-                        selectedFragment = new RestaurantsFragment();
+                        selectedFragment = new ListFragment();
                         break;
                 }
 
