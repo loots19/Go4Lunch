@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -17,8 +18,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -31,17 +32,20 @@
 
         <!--TITTLE-->
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/tittle_name_first_screen"
+            android:gravity="center"
             android:textColor="@android:color/white"
             android:textSize="@dimen/default_tittle_size_first_screen"
+            app:autoSizeTextType="uniform"
             android:textStyle="bold" />
 
         <!--TITTLE_SENTENCE-->
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/tittle_sentence_name_first_screen"
             android:textColor="@android:color/white"
             android:textSize="@dimen/default_tittle_sentence_first_screen"
@@ -53,8 +57,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="90dp"
-            android:background="@drawable/rounded_button"
             android:text="Sign in with Facebook"
+            app:roundedCorner="true"
+            app:roundedCornerRadius="10dp"
             app:iconSize="30dp" />
 
         <com.shaishavgandhi.loginbuttons.GooglePlusButton
@@ -63,7 +68,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Sign in with Google"
+            app:roundedCorner="true"
+            app:roundedCornerRadius="10dp"
             app:iconSize="30dp" />
+        <com.shaishavgandhi.loginbuttons.TwitterButton
+            android:id="@+id/btnTw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:roundedCorner="true"
+            app:roundedCornerRadius="10dp"
+            android:text="SIGN IN WITH TWItter"/>
+
 
 
     </LinearLayout>

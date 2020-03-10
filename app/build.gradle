@@ -43,6 +43,7 @@ dependencies {
 
     // ADD LIBRARY
     implementation 'com.shaishavgandhi:login-buttons:0.1.1'
+    implementation'me.grantland:autofittextview:0.2.1'
 
     // FIRESBASE
     apply plugin: 'com.android.application'

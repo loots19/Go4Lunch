@@ -26,6 +26,8 @@ public class AuthActivity extends AppCompatActivity  {
     Button buttonloginGg;
     @BindView(R.id.btnFb)
     Button buttonFb;
+    @BindView(R.id.btnTw)
+    Button buttonTw;
 
     // --------------------
     // UTILS
@@ -72,6 +74,14 @@ public class AuthActivity extends AppCompatActivity  {
         }
 
     }
+    @OnClick(R.id.btnTw)
+    public void loginTw(){
+        if (this.isCurrentUserLogged()) {
+            this.startMapsActivity();
+        }else{
+            this.startSignInActivityFb();
+        }
+    }
 
     private void startMapsActivity() {
         Intent intent = new Intent(this, MainActivity.class);
@@ -101,6 +111,17 @@ public class AuthActivity extends AppCompatActivity  {
                         .setAvailableProviders(
                                 Arrays.asList(
                                         new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())) //FACEBOOK
+                        .build(),
+                RC_SIGN_IN);
+    }
+    private void startSignInActivityTw() {
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setTheme(R.style.AppTheme)
+                        .setAvailableProviders(
+                                Arrays.asList(
+                                        new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build())) //FACEBOOK
                         .build(),
                 RC_SIGN_IN);
     }

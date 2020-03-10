@@ -36,6 +36,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     public int getItemCount() {
         return 10;
     }
+
     public interface OnNoteListener{
         void onNoteClick (int position);
     }
