@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="90dp"
-            android:text="Sign in with Facebook"
+            android:text="@string/button_facebook_sign"
             app:roundedCorner="true"
             app:roundedCornerRadius="10dp"
             app:iconSize="30dp" />
@@ -67,7 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Sign in with Google"
+            android:text="@string/button_google_sign"
             app:roundedCorner="true"
             app:roundedCornerRadius="10dp"
             app:iconSize="30dp" />
@@ -78,7 +78,7 @@
             android:layout_marginTop="20dp"
             app:roundedCorner="true"
             app:roundedCornerRadius="10dp"
-            android:text="SIGN IN WITH TWItter"/>
+            android:text="@string/button_twitter_sign"/>
 
 
 

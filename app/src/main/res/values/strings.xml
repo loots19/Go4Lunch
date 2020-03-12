@@ -5,6 +5,9 @@
     <string name="tittle_name_first_screen">Go4Lunch</string>
     <string name="tittle_sentence_name_first_screen">Find a nice restaurant and invite your co-workers for lunch!</string>
     <string name="title_activity_maps">Map</string>
+    <string name="button_facebook_sign">Sign in with Facebook</string>
+    <string name="button_google_sign">Sign in with Google</string>
+    <string name="button_twitter_sign">Sign in with Twitter</string>
     <!-- FACEBOOK PURPOSE -->
     <string name="facebook_application_id" translatable="false">499929307580871</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb499929307580871</string>
@@ -19,4 +22,12 @@
     <!-- Used in NavigationDrawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="item_yourLunch">YOUR LUNCH</string>
+    <string name="item_setting">SETTINGS</string>
+    <string name="item_logout">LOGOUT</string>
+    
+    <!--DETAIL ACTIVITY-->
+    <string name="button_call">CALL</string>
+    <string name="button_like">LIKE</string>
+    <string name="butoon_webSite">WEBSITE</string>
 </resources>
