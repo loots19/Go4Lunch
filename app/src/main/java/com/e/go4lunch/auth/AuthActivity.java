@@ -3,7 +3,9 @@ package com.e.go4lunch.auth;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ClipData;
 import android.content.Intent;
+import android.media.browse.MediaBrowser;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -79,7 +81,7 @@ public class AuthActivity extends AppCompatActivity  {
         if (this.isCurrentUserLogged()) {
             this.startMapsActivity();
         }else{
-            this.startSignInActivityFb();
+            this.startSignInActivityTw();
         }
     }
 
@@ -98,7 +100,7 @@ public class AuthActivity extends AppCompatActivity  {
                         .setTheme(R.style.AppTheme)
                         .setAvailableProviders(
                                 Arrays.asList(
-                                        new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build())) //GOOGLE
+                                        new AuthUI.IdpConfig.GoogleBuilder().build()))//GOOGLE
                         .build(),
                 RC_SIGN_IN);
     }
@@ -110,7 +112,7 @@ public class AuthActivity extends AppCompatActivity  {
                         .setTheme(R.style.AppTheme)
                         .setAvailableProviders(
                                 Arrays.asList(
-                                        new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())) //FACEBOOK
+                                        new AuthUI.IdpConfig.FacebookBuilder().build())) //FACEBOOK
                         .build(),
                 RC_SIGN_IN);
     }
@@ -121,7 +123,7 @@ public class AuthActivity extends AppCompatActivity  {
                         .setTheme(R.style.AppTheme)
                         .setAvailableProviders(
                                 Arrays.asList(
-                                        new AuthUI.IdpConfig.Builder(AuthUI.TWITTER_PROVIDER).build())) //FACEBOOK
+                                        new AuthUI.IdpConfig.TwitterBuilder().build())) //FACEBOOK
                         .build(),
                 RC_SIGN_IN);
     }
