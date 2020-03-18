@@ -25,6 +25,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     RecyclerView mRecyclerViewRestaurant;
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

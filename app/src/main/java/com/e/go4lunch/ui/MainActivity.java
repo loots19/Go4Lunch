@@ -4,8 +4,12 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.location.Address;
+import android.location.Geocoder;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,9 +28,14 @@ import androidx.fragment.app.Fragment;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.auth.AuthActivity;
+import com.e.go4lunch.models.Restaurant;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -180,5 +189,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
+
 
 }

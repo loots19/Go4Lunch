@@ -2,6 +2,7 @@ package com.e.go4lunch.ui;
 
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -19,11 +20,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.e.go4lunch.Common;
+import com.e.go4lunch.DetailsActivity;
 import com.e.go4lunch.R;
+import com.e.go4lunch.auth.AuthActivity;
+import com.e.go4lunch.models.MyPlace;
+import com.e.go4lunch.models.Restaurant;
+import com.e.go4lunch.models.Results;
+import com.e.go4lunch.remote.IGoogleAPIService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Result;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -36,12 +47,21 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.internal.Utils;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import static com.facebook.login.widget.ProfilePictureView.TAG;
 import static com.google.android.gms.location.LocationServices.FusedLocationApi;
 
 public class MapsFragment extends Fragment implements
@@ -57,8 +77,12 @@ public class MapsFragment extends Fragment implements
     private GoogleApiClient mGoolgeApiClient;
     private LocationRequest mLocationRequest;
     private Location lastLocation;
+    private double latitude,longitude;
     private Marker currentUserLocationMarker;
+    private Restaurant mRestaurant;
 
+     private IGoogleAPIService mService;
+    private MyPlace currentPlace;
 
     public MapsFragment() {
         // Required empty public constructor
@@ -69,10 +93,14 @@ public class MapsFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_maps, container, false);
         ButterKnife.bind(this,v);
+
+        // init Service
+        mService = Common.getGoogleAPIService();
+
+        //Request Runtime permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkUserLocationPermission();
         }
@@ -87,9 +115,9 @@ public class MapsFragment extends Fragment implements
         }
         mapFragment.getMapAsync(this);
         return v;
+
+
     }
-
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -99,17 +127,19 @@ public class MapsFragment extends Fragment implements
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         if (mGoolgeApiClient == null) {
-                            builGoogleApiClent();
+                            buildGoogleApiClien();
+                            mMap.setMyLocationEnabled(true);
                         }
 
                     }
                 } else {
                     Toast.makeText(getActivity(), "Permission denied...", Toast.LENGTH_LONG).show();
                 }
+                break;
         }
     }
 
-    protected synchronized void builGoogleApiClent() {
+    protected synchronized void buildGoogleApiClien() {
         mGoolgeApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -128,23 +158,19 @@ public class MapsFragment extends Fragment implements
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            FusedLocationApi.requestLocationUpdates(mGoolgeApiClient, mLocationRequest, this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoolgeApiClient, mLocationRequest, this);
         }
 
     }
 
     @Override
     public void onConnectionSuspended(int i) {
+        mGoolgeApiClient.connect();
 
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    public void getMyPostion() {
-
 
     }
 
@@ -155,21 +181,79 @@ public class MapsFragment extends Fragment implements
             currentUserLocationMarker.remove();
         }
         // Place current location marker
-
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        LatLng latLng = new LatLng(latitude, longitude);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.title("vous êtes ici");
+        markerOptions.title("You are here");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         currentUserLocationMarker = mMap.addMarker(markerOptions);
         // move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomBy(14));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
         if (mGoolgeApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoolgeApiClient, this);
         }
+    }
+    private void nearbyPlace(String restaurant){
+        mMap.clear();
+        String url = getUrl (latitude,longitude,restaurant);
+        Log.e("url",url);
+        mService.getNearbyByRestaurant(url)
+                .enqueue(new Callback<MyPlace>() {
+                    @Override
+                    public void onResponse(Call<MyPlace> call, Response<MyPlace> response) {
 
+                        currentPlace = response.body();
+
+                        if(response.isSuccessful())
+                        {
+                            Gson gson = new Gson();
+                            Log.e("response",gson.toJson(response.body()));
+                            for (int i=0;i<response.body().getResults().length;i++)
+                            {
+                                MarkerOptions markerOptions = new MarkerOptions();
+                                Results googlePlace = response.body().getResults()[i];
+                                double lat = Double.parseDouble((googlePlace.getGeometry().getLocation().getLat()));
+                                double lng = Double.parseDouble((googlePlace.getGeometry().getLocation().getLng()));
+                                String placeName = googlePlace.getName();
+                                String vicinity = googlePlace.getVicinity();
+                                LatLng latLng = new LatLng(lat,lng);
+                                markerOptions.position(latLng);
+                                markerOptions.title(placeName);
+                                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+
+                                // assign index for marker
+                                markerOptions.snippet(String.valueOf(i));
+
+                                mMap.addMarker(markerOptions);
+                                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                                mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+
+
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MyPlace> call, Throwable t) {
+
+                    }
+                });
+    }
+
+    private String getUrl(double latitude, double longitude, String restaurant) {
+        StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlaceUrl.append("location="+latitude+","+longitude);
+        googlePlaceUrl.append("&radius="+5000);
+        googlePlaceUrl.append("&types=").append(restaurant);
+        googlePlaceUrl.append("&sensor=true");
+        googlePlaceUrl.append("&key="+getResources().getString(R.string.browser_key));
+        Log.d("getUrl",googlePlaceUrl.toString());
+        return googlePlaceUrl.toString();
 
     }
 
@@ -178,17 +262,27 @@ public class MapsFragment extends Fragment implements
         mMap = googleMap;
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            builGoogleApiClent();
+            buildGoogleApiClien();
             mMap.setMyLocationEnabled(false);
 
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //getMyPostion();
+                    nearbyPlace("restaurant");
                 }
             });
 
         }
+        // make event click on marker
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Common.currentResult = currentPlace.getResults()[Integer.parseInt(marker.getSnippet())];
+                Intent intent = new Intent(getContext(), DetailsActivity.class);
+                startActivity((intent));
+                return true;
+            }
+        });
 
     }
 
@@ -205,9 +299,14 @@ public class MapsFragment extends Fragment implements
         } else {
             return true;
         }
-    }
 
     }
+
+
+
+
+
+}
 
 
 

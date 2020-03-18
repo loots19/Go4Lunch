@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imageProfile_header"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:layout_marginStart="10dp"
@@ -32,7 +32,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tv_name_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
@@ -40,19 +40,18 @@
         android:text="NAme"
         android:layout_marginStart="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/imageProfile_header"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <TextView
+        android:id="@+id/tv_mail_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:textColor="@android:color/white"
-        android:textStyle="bold"
         android:text="EMAIL"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintStart_toEndOf="@+id/imageProfile_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_name_header" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

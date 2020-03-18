@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.e.go4lunch.Common;
 import com.e.go4lunch.R;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
@@ -29,6 +30,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantHolder holder, int position) {
+
 
     }
 
