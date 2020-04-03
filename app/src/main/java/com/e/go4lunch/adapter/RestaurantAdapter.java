@@ -8,17 +8,32 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.e.go4lunch.Common;
+import com.bumptech.glide.Glide;
 import com.e.go4lunch.R;
+import com.e.go4lunch.models.myPlace.MyPlace;
+import com.e.go4lunch.models.myPlace.Result;
+import com.e.go4lunch.models.placedetail.Photo;
+import com.e.go4lunch.models.placedetail.PlaceDetail;
+import com.e.go4lunch.util.Constants;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
-    Context mContext;
+    private Context mContext;
     private OnNoteListener mOnNoteListener;
+    private List<Result>mResults;
 
-    public RestaurantAdapter(Context context,OnNoteListener onNoteListener) {
-        mContext = context;
-        mOnNoteListener = onNoteListener;
+
+
+
+    public RestaurantAdapter(Context context, OnNoteListener onNoteListener) {
+        this.mContext = context;
+        this.mOnNoteListener = onNoteListener;
+
+        mResults = new ArrayList<>();
+
     }
 
     @NonNull
@@ -30,16 +45,37 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantHolder holder, int position) {
+        //String url = "https://maps.googleapis.com/maps/api/place/photo" +
+              //  "?maxwidth=400" +
+             //   "&photoreference=CnRtAAAATLZNl354RwP_9UKbQ_5Psy40texXePv4oAlgP4qNEkdIrkyse7rPXYGd9D_Uj1rVsQdWT4oRz4QrYAJNpFX7rzqqMlZw2h2E2y5IKMUZ7ouD_SlcHxYq1yL4KbKUv3qtWgTK0A6QbGh87GB3sscrHRIQiG2RrmU_jF4tENr9wGS_YxoUSSDrYjWmrNfeEHSGSc3FyhNLlBU" +
+            //    "&key=AIzaSyCbD-Ektsu_fCIS7YIU0G5BWic30ZXpDiA";
 
+       // Glide.with(mContext)
+        //        .load(url)
+        //        .into(holder.mImageRestaurant);
+       Glide.with(mContext)
+              .load( "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+Constants.API_KEY)
+              .into(holder.mImageRestaurant);
+       holder.mTvName.setText(mResults.get(position).getName());
+       holder.mTvAdress.setText(mResults.get(position).getVicinity());
 
     }
 
     @Override
     public int getItemCount() {
-        return 10;
+        if (mResults != null){
+            return mResults.size();
+    }
+    return 0;
     }
 
     public interface OnNoteListener{
         void onNoteClick (int position);
     }
+    public void setRestaurants (List<Result> results){
+        mResults = results;
+        notifyDataSetChanged();
+    }
+
+
 }

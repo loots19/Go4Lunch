@@ -7,8 +7,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
+import com.e.go4lunch.models.myPlace.Result;
+import com.e.go4lunch.models.placedetail.PlaceDetail;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,8 +30,12 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     TextView mTvNumbers;
     @BindView(R.id.iv_stars_restaurant_item)
     ImageView mIvStars;
+    @BindView(R.id.iv_photo_restaurant_item)
+    ImageView mImageRestaurant;
 
     RestaurantAdapter.OnNoteListener OnNoteListener;
+
+
 
 
     public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
@@ -44,4 +51,5 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         OnNoteListener.onNoteClick(getAdapterPosition());
 
     }
+
 }

@@ -1,10 +1,12 @@
 package com.e.go4lunch.models;
 
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class Restaurant {
+public class Restaurant implements Parcelable {
     private String name ;
     private String distance;
     private String photurl;
@@ -26,6 +28,30 @@ public class Restaurant {
         this.websiteUri = websiteUri;
         this.latlng = latlng;
     }
+
+    protected Restaurant(Parcel in) {
+        name = in.readString();
+        distance = in.readString();
+        photurl = in.readString();
+        adress = in.readString();
+        phone_no = in.readString();
+        time = in.readString();
+        id = in.readString();
+        websiteUri = in.readParcelable(Uri.class.getClassLoader());
+        latlng = in.readParcelable(LatLng.class.getClassLoader());
+    }
+
+    public static final Creator<Restaurant> CREATOR = new Creator<Restaurant>() {
+        @Override
+        public Restaurant createFromParcel(Parcel in) {
+            return new Restaurant(in);
+        }
+
+        @Override
+        public Restaurant[] newArray(int size) {
+            return new Restaurant[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -97,5 +123,23 @@ public class Restaurant {
 
     public void setLatlng(LatLng latlng) {
         this.latlng = latlng;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(distance);
+        dest.writeString(photurl);
+        dest.writeString(adress);
+        dest.writeString(phone_no);
+        dest.writeString(time);
+        dest.writeString(id);
+        dest.writeParcelable(websiteUri, flags);
+        dest.writeParcelable(latlng, flags);
     }
 }

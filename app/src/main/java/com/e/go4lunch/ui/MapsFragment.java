@@ -15,26 +15,24 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.e.go4lunch.Common;
 import com.e.go4lunch.DetailsActivity;
 import com.e.go4lunch.R;
-import com.e.go4lunch.auth.AuthActivity;
-import com.e.go4lunch.models.MyPlace;
-import com.e.go4lunch.models.Restaurant;
-import com.e.go4lunch.models.Results;
-import com.e.go4lunch.remote.IGoogleAPIService;
+import com.e.go4lunch.models.myPlace.MyPlace;
+import com.e.go4lunch.Retrofit.ApiRequest;
+import com.e.go4lunch.models.myPlace.Result;
+import com.e.go4lunch.util.Constants;
+import com.e.go4lunch.viewmodels.RestaurantViewModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Result;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -43,26 +41,22 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.internal.Utils;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.facebook.login.widget.ProfilePictureView.TAG;
-import static com.google.android.gms.location.LocationServices.FusedLocationApi;
+import static android.media.CamcorderProfile.get;
 
 public class MapsFragment extends Fragment implements
         OnMapReadyCallback,
@@ -77,17 +71,14 @@ public class MapsFragment extends Fragment implements
     private GoogleApiClient mGoolgeApiClient;
     private LocationRequest mLocationRequest;
     private Location lastLocation;
-    private double latitude,longitude;
+    private double latitude, longitude;
     private Marker currentUserLocationMarker;
-    private Restaurant mRestaurant;
+    private RestaurantViewModel mRestaurantViewModel;
 
-     private IGoogleAPIService mService;
-    private MyPlace currentPlace;
 
     public MapsFragment() {
         // Required empty public constructor
     }
-
 
 
     @Override
@@ -95,10 +86,10 @@ public class MapsFragment extends Fragment implements
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_maps, container, false);
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
 
-        // init Service
-        mService = Common.getGoogleAPIService();
+        mRestaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
+
 
         //Request Runtime permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -119,6 +110,7 @@ public class MapsFragment extends Fragment implements
 
     }
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -127,7 +119,7 @@ public class MapsFragment extends Fragment implements
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         if (mGoolgeApiClient == null) {
-                            buildGoogleApiClien();
+                            buildGoogleApiClient();
                             mMap.setMyLocationEnabled(true);
                         }
 
@@ -139,7 +131,7 @@ public class MapsFragment extends Fragment implements
         }
     }
 
-    protected synchronized void buildGoogleApiClien() {
+    protected synchronized void buildGoogleApiClient() {
         mGoolgeApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -193,82 +185,30 @@ public class MapsFragment extends Fragment implements
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
+
         if (mGoolgeApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoolgeApiClient, this);
         }
     }
-    private void nearbyPlace(String restaurant){
-        mMap.clear();
-        String url = getUrl (latitude,longitude,restaurant);
-        Log.e("url",url);
-        mService.getNearbyByRestaurant(url)
-                .enqueue(new Callback<MyPlace>() {
-                    @Override
-                    public void onResponse(Call<MyPlace> call, Response<MyPlace> response) {
 
-                        currentPlace = response.body();
-
-                        if(response.isSuccessful())
-                        {
-                            Gson gson = new Gson();
-                            Log.e("response",gson.toJson(response.body()));
-                            for (int i=0;i<response.body().getResults().length;i++)
-                            {
-                                MarkerOptions markerOptions = new MarkerOptions();
-                                Results googlePlace = response.body().getResults()[i];
-                                double lat = Double.parseDouble((googlePlace.getGeometry().getLocation().getLat()));
-                                double lng = Double.parseDouble((googlePlace.getGeometry().getLocation().getLng()));
-                                String placeName = googlePlace.getName();
-                                String vicinity = googlePlace.getVicinity();
-                                LatLng latLng = new LatLng(lat,lng);
-                                markerOptions.position(latLng);
-                                markerOptions.title(placeName);
-                                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-
-                                // assign index for marker
-                                markerOptions.snippet(String.valueOf(i));
-
-                                mMap.addMarker(markerOptions);
-                                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                                mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-
-
-                            }
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MyPlace> call, Throwable t) {
-
-                    }
-                });
-    }
-
-    private String getUrl(double latitude, double longitude, String restaurant) {
-        StringBuilder googlePlaceUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googlePlaceUrl.append("location="+latitude+","+longitude);
-        googlePlaceUrl.append("&radius="+5000);
-        googlePlaceUrl.append("&types=").append(restaurant);
-        googlePlaceUrl.append("&sensor=true");
-        googlePlaceUrl.append("&key="+getResources().getString(R.string.browser_key));
-        Log.d("getUrl",googlePlaceUrl.toString());
-        return googlePlaceUrl.toString();
-
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
+        testRetrofitRequest();
+        subscribeObservers();
+
         mMap = googleMap;
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            buildGoogleApiClien();
+            buildGoogleApiClient();
             mMap.setMyLocationEnabled(false);
 
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    nearbyPlace("restaurant");
+
+
                 }
             });
 
@@ -277,11 +217,13 @@ public class MapsFragment extends Fragment implements
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Common.currentResult = currentPlace.getResults()[Integer.parseInt(marker.getSnippet())];
-                Intent intent = new Intent(getContext(), DetailsActivity.class);
-                startActivity((intent));
+
+                startDetailActivity();
+
+
                 return true;
             }
+
         });
 
     }
@@ -302,11 +244,58 @@ public class MapsFragment extends Fragment implements
 
     }
 
+    private void subscribeObservers() {
+        mRestaurantViewModel.getResults().observe(this, new Observer<List<Result>>() {
+            @Override
+            public void onChanged(List<Result> results) {
+                mMap.clear();
+                // This loop will go through all the results and add marker on each location.
+                for (int i = 0; i < results.size(); i++) {
+                    Double lat = results.get(i).getGeometry().getLocation().getLat();
+                    Double lng = results.get(i).getGeometry().getLocation().getLng();
+                    String placeName = results.get(i).getName();
+                    String vicinity = results.get(i).getVicinity();
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    LatLng latLng = new LatLng(lat, lng);
+                    // Position of Marker on Map
+                    markerOptions.position(latLng);
+                    // Adding Title to the Marker
+                    markerOptions.title(placeName + " : " + vicinity);
+                    // Adding Marker to the Camera.
+                    Marker m = mMap.addMarker(markerOptions);
+                    // Adding colour to the marker
+                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                    // move map camera
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+
+                    markerOptions.snippet(String.valueOf(i));
+
+                }
+            }
 
 
+        });
+    }
+
+    private void testRetrofitRequest() {
+        mRestaurantViewModel.searchRestaurantApi("restaurant", "49.044238,2.304685", 10000);
+
+    }
+
+    private void startDetailActivity() {
+        Intent intent = new Intent(getContext(), DetailsActivity.class);
+        startActivity(intent);
+    }
 
 
 }
+
+
+
+
+
+
 
 
 

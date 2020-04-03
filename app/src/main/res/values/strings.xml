@@ -25,7 +25,7 @@
     <string name="item_yourLunch">YOUR LUNCH</string>
     <string name="item_setting">SETTINGS</string>
     <string name="item_logout">LOGOUT</string>
-    
+
     <!--DETAIL ACTIVITY-->
     <string name="button_call">CALL</string>
     <string name="button_like">LIKE</string>
