@@ -10,7 +10,7 @@ import com.e.go4lunch.repositories.WorkmatesRepository;
 
 import java.util.List;
 
-public class ListWorkmateFragmentViewModel extends ViewModel {
+public class ListWorkmateViewModel extends ViewModel {
 
     private MutableLiveData<List<Workmates>> mWorkmates;
     private WorkmatesRepository mWorkmatesRepository;

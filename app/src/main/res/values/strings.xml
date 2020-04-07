@@ -9,8 +9,8 @@
     <string name="button_google_sign">Sign in with Google</string>
     <string name="button_twitter_sign">Sign in with Twitter</string>
     <!-- FACEBOOK PURPOSE -->
-    <string name="facebook_application_id" translatable="false">499929307580871</string>
-    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb499929307580871</string>
+    <string name="facebook_application_id" translatable="false">515858332701600</string>
+    <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb515858332701600</string>
     <!-- BOTTOM NAVIGATION VIEW -->
     <string name="bottom_navigation_menu_mapView">MapView</string>
     <string name="bottom_navigation_menu_listView">ListView</string>

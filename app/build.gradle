@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
@@ -42,6 +43,7 @@ dependencies {
     implementation 'com.google.android.libraries.places:places:2.2.0'
 
     //TEST
+    implementation 'com.google.firebase:firebase-auth:19.3.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -56,10 +58,7 @@ dependencies {
 
     // FirebaseUI
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
-
-    // FIRESTORE
-    //implementation 'com.google.firebase:firebase-firestore:21.4.1'
-
+    implementation 'com.google.firebase:firebase-firestore:21.4.2'
 
     // FACEBOOK LOGIN SUPPORT
     implementation 'com.facebook.android:facebook-android-sdk:5.15.3'

@@ -38,7 +38,7 @@ public class DetailsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mRestaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
-        
+
 
 
 

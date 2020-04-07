@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.e.go4lunch.R;
 import com.e.go4lunch.adapter.WorkmatesAdapter;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.viewmodels.ListWorkmateFragmentViewModel;
+import com.e.go4lunch.viewmodels.ListWorkmateViewModel;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ import butterknife.ButterKnife;
 
 public class ListFragment extends Fragment {
 
-    private ListWorkmateFragmentViewModel mListWorkmateFragmentViewModel;
+    private ListWorkmateViewModel mListWorkmateFragmentViewModel;
     private WorkmatesAdapter mWorkmatesAdapter;
 
     @BindView(R.id.recycler_view)
@@ -37,7 +37,7 @@ public class ListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this,view);
-        mListWorkmateFragmentViewModel = ViewModelProviders.of(this).get(ListWorkmateFragmentViewModel.class);
+        mListWorkmateFragmentViewModel = ViewModelProviders.of(this).get(ListWorkmateViewModel.class);
 
         mListWorkmateFragmentViewModel.init();
         mListWorkmateFragmentViewModel.getWorkmates().observe(this, new Observer<List<Workmates>>() {

@@ -40,7 +40,7 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesHolder> {
 
         Workmates workmates = mWorkmates.get(position);
         Glide.with(holder.mImageView.getContext())
-                .load(workmates.getUrl())
+                .load(workmates.getUrlPicture())
                 .apply(RequestOptions.circleCropTransform())
                 .into(holder.mImageView);
 

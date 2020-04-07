@@ -3,12 +3,16 @@ package com.e.go4lunch.ui;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.location.Address;
 import android.location.Geocoder;
 import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,11 +33,15 @@ import androidx.fragment.app.Fragment;
 import com.e.go4lunch.R;
 import com.e.go4lunch.auth.AuthActivity;
 import com.e.go4lunch.models.Restaurant;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private static final int SIGN_OUT_TASK = 10;
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -65,6 +75,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureNavigationView();
         configureBottomNavigationView();
         configureToolbar();
+
+
+
 
         //I added this if statement to keep the selected fragment when rotating the device
         if (savedInstanceState == null) {
@@ -113,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
+
     }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -141,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.logout_drawer:
                 logout();
+                FirebaseAuth.getInstance().signOut();
                 break;
             default:
                 break;
@@ -181,14 +196,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void configureBottomNavigationView() {
         mBottomNavigationView.setOnNavigationItemSelectedListener(navListener);
     }
-    // logout from drawerMenu
-    private void logout(){
-        FirebaseAuth.getInstance().signOut();
 
-        Intent intent = new Intent(getApplicationContext(), AuthActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+    // logout from drawerMenu create a request
+    private void logout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnSuccessListener(this, this.updateUIAfterRequestCompleted(SIGN_OUT_TASK));
     }
+    private OnSuccessListener<Void> updateUIAfterRequestCompleted(final int origin) {
+        return aVoid -> {
+            if (origin == SIGN_OUT_TASK) {
+                Intent intent = new Intent(this, AuthActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        };
+    }
+
 
 
 }

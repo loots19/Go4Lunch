@@ -28,11 +28,14 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
 
 
+
     public RestaurantAdapter(Context context, OnNoteListener onNoteListener) {
         this.mContext = context;
         this.mOnNoteListener = onNoteListener;
 
         mResults = new ArrayList<>();
+
+
 
     }
 
@@ -47,17 +50,19 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     public void onBindViewHolder(@NonNull RestaurantHolder holder, int position) {
         //String url = "https://maps.googleapis.com/maps/api/place/photo" +
               //  "?maxwidth=400" +
-             //   "&photoreference=CnRtAAAATLZNl354RwP_9UKbQ_5Psy40texXePv4oAlgP4qNEkdIrkyse7rPXYGd9D_Uj1rVsQdWT4oRz4QrYAJNpFX7rzqqMlZw2h2E2y5IKMUZ7ouD_SlcHxYq1yL4KbKUv3qtWgTK0A6QbGh87GB3sscrHRIQiG2RrmU_jF4tENr9wGS_YxoUSSDrYjWmrNfeEHSGSc3FyhNLlBU" +
+             //   "&photoreference= +
             //    "&key=AIzaSyCbD-Ektsu_fCIS7YIU0G5BWic30ZXpDiA";
 
        // Glide.with(mContext)
         //        .load(url)
         //        .into(holder.mImageRestaurant);
+
        Glide.with(mContext)
               .load( "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+Constants.API_KEY)
               .into(holder.mImageRestaurant);
        holder.mTvName.setText(mResults.get(position).getName());
        holder.mTvAdress.setText(mResults.get(position).getVicinity());
+
 
     }
 

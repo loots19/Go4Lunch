@@ -90,7 +90,6 @@ public class MapsFragment extends Fragment implements
 
         mRestaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
 
-
         //Request Runtime permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkUserLocationPermission();
@@ -194,7 +193,6 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         testRetrofitRequest();
         subscribeObservers();
 
@@ -219,7 +217,6 @@ public class MapsFragment extends Fragment implements
             public boolean onMarkerClick(Marker marker) {
 
                 startDetailActivity();
-
 
                 return true;
             }
@@ -248,29 +245,30 @@ public class MapsFragment extends Fragment implements
         mRestaurantViewModel.getResults().observe(this, new Observer<List<Result>>() {
             @Override
             public void onChanged(List<Result> results) {
-                mMap.clear();
-                // This loop will go through all the results and add marker on each location.
-                for (int i = 0; i < results.size(); i++) {
-                    Double lat = results.get(i).getGeometry().getLocation().getLat();
-                    Double lng = results.get(i).getGeometry().getLocation().getLng();
-                    String placeName = results.get(i).getName();
-                    String vicinity = results.get(i).getVicinity();
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    LatLng latLng = new LatLng(lat, lng);
-                    // Position of Marker on Map
-                    markerOptions.position(latLng);
-                    // Adding Title to the Marker
-                    markerOptions.title(placeName + " : " + vicinity);
-                    // Adding Marker to the Camera.
-                    Marker m = mMap.addMarker(markerOptions);
-                    // Adding colour to the marker
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                    // move map camera
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+                if (mMap != null) {
+                    // This loop will go through all the results and add marker on each location.
+                    for (int i = 0; i < results.size(); i++) {
 
-                    markerOptions.snippet(String.valueOf(i));
+                        Double lat = results.get(i).getGeometry().getLocation().getLat();
+                        Double lng = results.get(i).getGeometry().getLocation().getLng();
+                        String placeName = results.get(i).getName();
+                        String vicinity = results.get(i).getVicinity();
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        LatLng latLng = new LatLng(lat, lng);
+                        // Position of Marker on Map
+                        markerOptions.position(latLng);
+                        // Adding Title to the Marker
+                        markerOptions.title(placeName + " : " + vicinity);
+                        // Adding Marker to the Camera.
+                        mMap.addMarker(markerOptions);
+                        // Adding colour to the marker
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        // move map camera
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
+                        markerOptions.snippet(String.valueOf(i));
+                    }
                 }
             }
 
