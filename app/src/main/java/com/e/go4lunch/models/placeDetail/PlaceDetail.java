@@ -1,4 +1,4 @@
-package com.e.go4lunch.models.placedetail;
+package com.e.go4lunch.models.placeDetail;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -11,7 +11,7 @@ public class PlaceDetail {
     private List<Object> htmlAttributions = null;
     @SerializedName("result")
     @Expose
-    private Result result;
+    private ResultDetail result;
     @SerializedName("status")
     @Expose
     private String status;
@@ -24,11 +24,11 @@ public class PlaceDetail {
         this.htmlAttributions = htmlAttributions;
     }
 
-    public Result getResult() {
+    public ResultDetail getResult() {
         return result;
     }
 
-    public void setResult(Result result) {
+    public void setResult(ResultDetail result) {
         this.result = result;
     }
 
@@ -39,4 +39,5 @@ public class PlaceDetail {
     public void setStatus(String status) {
         this.status = status;
     }
+
 }

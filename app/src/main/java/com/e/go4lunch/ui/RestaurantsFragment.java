@@ -16,10 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.e.go4lunch.DetailsActivity;
 import com.e.go4lunch.R;
 import com.e.go4lunch.adapter.RestaurantAdapter;
+import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
-import com.e.go4lunch.models.placedetail.PlaceDetail;
 import com.e.go4lunch.viewmodels.RestaurantViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -28,10 +29,15 @@ import butterknife.ButterKnife;
 
 public class RestaurantsFragment extends Fragment implements RestaurantAdapter.OnNoteListener {
     @BindView(R.id.recycler_view_restaurant)
-     RecyclerView mRecyclerViewRestaurant;
+    RecyclerView mRecyclerViewRestaurant;
+
 
     private RestaurantViewModel mRestaurantViewModel;
     private RestaurantAdapter mAdapter;
+    private ArrayList<Result> mResultArrayList = new ArrayList<>();
+
+
+
 
 
     @Override
@@ -41,10 +47,11 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         ButterKnife.bind(this, view);
 
         mRestaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
+        mRestaurantViewModel.init();
 
         initialization();
+
         subscribeObservers();
-        testRetrofitRequest();
 
 
         return view;
@@ -52,18 +59,15 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     }
 
     private void subscribeObservers() {
-        mRestaurantViewModel.getResults().observe(this, new Observer<List<Result>>() {
+        mRestaurantViewModel.getRestaurantRepository().observe(this, new Observer<MyPlace>() {
             @Override
-            public void onChanged(List<Result> results) {
-                if (results != null){
-
-                }
+            public void onChanged(MyPlace myPlace) {
+                List<Result> results = myPlace.getResults();
+                mResultArrayList.addAll(results);
                 mAdapter.setRestaurants(results);
             }
         });
-
     }
-
 
     private void initialization() {
 
@@ -76,11 +80,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         mRecyclerViewRestaurant.setAdapter(mAdapter);
 
     }
-    private void testRetrofitRequest(){
-        mRestaurantViewModel.searchRestaurantApi("restaurant","49.044238,2.304685",10000);
 
-
-    }
 
     @Override
     public void onNoteClick(int position) {

@@ -1,4 +1,4 @@
-package com.e.go4lunch.models.placedetail;
+package com.e.go4lunch.models.myPlace;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

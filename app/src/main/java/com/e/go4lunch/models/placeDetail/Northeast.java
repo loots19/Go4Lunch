@@ -1,4 +1,4 @@
-package com.e.go4lunch.models.placedetail;
+package com.e.go4lunch.models.placeDetail;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -26,4 +26,5 @@ public class Northeast {
     public void setLng(Double lng) {
         this.lng = lng;
     }
+
 }

@@ -18,11 +18,15 @@ public class Result {
     @SerializedName("name")
     @Expose
     private String name;
-
+    @SerializedName("photos")
+    @Expose
+    private List<Photo> photos = null;
     @SerializedName("place_id")
     @Expose
     private String placeId;
-
+    @SerializedName("plus_code")
+    @Expose
+    private PlusCode plusCode;
     @SerializedName("rating")
     @Expose
     private Double rating;
@@ -41,7 +45,9 @@ public class Result {
     @SerializedName("vicinity")
     @Expose
     private String vicinity;
-
+    @SerializedName("opening_hours")
+    @Expose
+    private OpeningHours openingHours;
     @SerializedName("price_level")
     @Expose
     private Integer priceLevel;
@@ -78,12 +84,28 @@ public class Result {
         this.name = name;
     }
 
+    public List<Photo> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<Photo> photos) {
+        this.photos = photos;
+    }
+
     public String getPlaceId() {
         return placeId;
     }
 
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
+    }
+
+    public PlusCode getPlusCode() {
+        return plusCode;
+    }
+
+    public void setPlusCode(PlusCode plusCode) {
+        this.plusCode = plusCode;
     }
 
     public Double getRating() {
@@ -125,12 +147,21 @@ public class Result {
     public void setUserRatingsTotal(Integer userRatingsTotal) {
         this.userRatingsTotal = userRatingsTotal;
     }
+
     public String getVicinity() {
         return vicinity;
     }
 
     public void setVicinity(String vicinity) {
         this.vicinity = vicinity;
+    }
+
+    public OpeningHours getOpeningHours() {
+        return openingHours;
+    }
+
+    public void setOpeningHours(OpeningHours openingHours) {
+        this.openingHours = openingHours;
     }
 
     public Integer getPriceLevel() {
@@ -140,5 +171,4 @@ public class Result {
     public void setPriceLevel(Integer priceLevel) {
         this.priceLevel = priceLevel;
     }
-
 }

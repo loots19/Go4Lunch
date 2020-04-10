@@ -1,7 +1,7 @@
 package com.e.go4lunch.Retrofit;
 
 import com.e.go4lunch.models.myPlace.MyPlace;
-import com.e.go4lunch.models.placedetail.PlaceDetail;
+import com.e.go4lunch.models.placeDetail.PlaceDetail;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

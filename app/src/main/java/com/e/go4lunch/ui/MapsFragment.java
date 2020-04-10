@@ -18,7 +18,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +26,7 @@ import android.widget.Toast;
 import com.e.go4lunch.DetailsActivity;
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.myPlace.MyPlace;
-import com.e.go4lunch.Retrofit.ApiRequest;
 import com.e.go4lunch.models.myPlace.Result;
-import com.e.go4lunch.util.Constants;
 import com.e.go4lunch.viewmodels.RestaurantViewModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -50,11 +47,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.media.CamcorderProfile.get;
 
@@ -74,6 +66,7 @@ public class MapsFragment extends Fragment implements
     private double latitude, longitude;
     private Marker currentUserLocationMarker;
     private RestaurantViewModel mRestaurantViewModel;
+    public List<MyPlace> mMyPlaces;
 
 
     public MapsFragment() {
@@ -89,6 +82,7 @@ public class MapsFragment extends Fragment implements
         ButterKnife.bind(this, v);
 
         mRestaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
+        mRestaurantViewModel.init();
 
         //Request Runtime permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -193,7 +187,7 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        testRetrofitRequest();
+        //   testRetrofitRequest();
         subscribeObservers();
 
         mMap = googleMap;
@@ -242,9 +236,10 @@ public class MapsFragment extends Fragment implements
     }
 
     private void subscribeObservers() {
-        mRestaurantViewModel.getResults().observe(this, new Observer<List<Result>>() {
+        mRestaurantViewModel.getRestaurantRepository().observe(this, new Observer<MyPlace>() {
             @Override
-            public void onChanged(List<Result> results) {
+            public void onChanged(MyPlace myPlace) {
+                List<Result> results = myPlace.getResults();
                 if (mMap != null) {
                     // This loop will go through all the results and add marker on each location.
                     for (int i = 0; i < results.size(); i++) {
@@ -255,7 +250,7 @@ public class MapsFragment extends Fragment implements
                         String vicinity = results.get(i).getVicinity();
                         MarkerOptions markerOptions = new MarkerOptions();
                         LatLng latLng = new LatLng(lat, lng);
-                        // Position of Marker on Map
+                        //Position of Marker on Map
                         markerOptions.position(latLng);
                         // Adding Title to the Marker
                         markerOptions.title(placeName + " : " + vicinity);
@@ -276,13 +271,10 @@ public class MapsFragment extends Fragment implements
         });
     }
 
-    private void testRetrofitRequest() {
-        mRestaurantViewModel.searchRestaurantApi("restaurant", "49.044238,2.304685", 10000);
-
-    }
 
     private void startDetailActivity() {
         Intent intent = new Intent(getContext(), DetailsActivity.class);
+
         startActivity(intent);
     }
 

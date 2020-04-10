@@ -1,9 +1,10 @@
-package com.e.go4lunch.models.placedetail;
+package com.e.go4lunch.models.placeDetail;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class Southwest {
+
     @SerializedName("lat")
     @Expose
     private Double lat;
@@ -26,4 +27,5 @@ public class Southwest {
     public void setLng(Double lng) {
         this.lng = lng;
     }
+
 }

@@ -15,7 +15,7 @@ public class MyPlace {
     private String nextPageToken;
     @SerializedName("results")
     @Expose
-    private List<Result> results = new ArrayList<Result>();
+    private List<Result> results = null;
     @SerializedName("status")
     @Expose
     private String status;
@@ -51,4 +51,5 @@ public class MyPlace {
     public void setStatus(String status) {
         this.status = status;
     }
+
 }

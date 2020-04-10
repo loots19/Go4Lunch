@@ -1,4 +1,4 @@
-package com.e.go4lunch.models.placedetail;
+package com.e.go4lunch.models.placeDetail;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -26,5 +26,4 @@ public class Geometry {
     public void setViewport(Viewport viewport) {
         this.viewport = viewport;
     }
-
 }

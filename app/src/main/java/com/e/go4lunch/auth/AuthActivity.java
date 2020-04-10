@@ -60,7 +60,7 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.auth_main);
         ButterKnife.bind(this); //Configure Butterknife
-        //alreadySigned();
+        alreadySigned();
 
     }
 
