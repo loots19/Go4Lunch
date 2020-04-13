@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
 import com.e.go4lunch.repositories.RestaurantRepository;
 
+import java.util.List;
+
 public class RestaurantDetailViewModel extends ViewModel {
     private MutableLiveData<PlaceDetail> mMutableLiveData;
     private RestaurantRepository mRestaurantRepository;

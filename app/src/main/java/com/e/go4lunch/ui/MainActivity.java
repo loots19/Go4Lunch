@@ -1,7 +1,9 @@
 package com.e.go4lunch.ui;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -77,8 +79,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureToolbar();
 
 
-
-
         //I added this if statement to keep the selected fragment when rotating the device
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
@@ -122,17 +122,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
 
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
 
     }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -154,8 +157,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
 
             case R.id.logout_drawer:
-                logout();
-                FirebaseAuth.getInstance().signOut();
+                alertLogOut();
+
                 break;
             default:
                 break;
@@ -172,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
             }
+
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -203,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .signOut(this)
                 .addOnSuccessListener(this, this.updateUIAfterRequestCompleted(SIGN_OUT_TASK));
     }
+
     private OnSuccessListener<Void> updateUIAfterRequestCompleted(final int origin) {
         return aVoid -> {
             if (origin == SIGN_OUT_TASK) {
@@ -214,6 +219,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         };
     }
 
+    public void alertLogOut() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are your sure you want to logout.");
+        builder.setPositiveButton("YES", (dialog, which) -> {
+            logout();
+            FirebaseAuth.getInstance().signOut();
+        });
+        builder.setNegativeButton("NO", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
 
 
 }
+

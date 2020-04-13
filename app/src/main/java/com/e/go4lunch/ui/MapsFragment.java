@@ -2,16 +2,26 @@ package com.e.go4lunch.ui;
 
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -37,6 +47,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -66,8 +77,6 @@ public class MapsFragment extends Fragment implements
     private double latitude, longitude;
     private Marker currentUserLocationMarker;
     private RestaurantViewModel mRestaurantViewModel;
-    public List<MyPlace> mMyPlaces;
-
 
     public MapsFragment() {
         // Required empty public constructor
@@ -161,6 +170,7 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public void onLocationChanged(Location location) {
+
         lastLocation = location;
         if (currentUserLocationMarker != null) {
             currentUserLocationMarker.remove();
@@ -185,20 +195,21 @@ public class MapsFragment extends Fragment implements
     }
 
 
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //   testRetrofitRequest();
-        subscribeObservers();
 
         mMap = googleMap;
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             buildGoogleApiClient();
+            subscribeObservers();
             mMap.setMyLocationEnabled(false);
 
             mFab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    subscribeObservers();
 
 
                 }
@@ -255,9 +266,9 @@ public class MapsFragment extends Fragment implements
                         // Adding Title to the Marker
                         markerOptions.title(placeName + " : " + vicinity);
                         // Adding Marker to the Camera.
-                        mMap.addMarker(markerOptions);
                         // Adding colour to the marker
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        markerOptions.icon(bitmapDescriptorFromVector(getContext(),R.drawable.ic_restaurant_black_24dp));
+                        mMap.addMarker(markerOptions);
                         // move map camera
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
@@ -277,6 +288,21 @@ public class MapsFragment extends Fragment implements
 
         startActivity(intent);
     }
+
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes  int vectorDrawableResourceId) {
+        Drawable background = ContextCompat.getDrawable(context, R.drawable.ic_location);
+        background.setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId);
+        vectorDrawable.setBounds(20, 20, vectorDrawable.getIntrinsicWidth() + 20, vectorDrawable.getIntrinsicHeight() + 20);
+        Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        background.draw(canvas);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+
 
 
 }

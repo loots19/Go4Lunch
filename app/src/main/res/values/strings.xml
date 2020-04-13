@@ -30,4 +30,9 @@
     <string name="button_call">CALL</string>
     <string name="button_like">LIKE</string>
     <string name="butoon_webSite">WEBSITE</string>
+
+    <!--FRAGMENT HOLDER-->
+    <string name="Open">Open</string>
+    <string name="Close">Close</string>
+    <string name="opening_hour_not_available">opening hours not available</string>
 </resources>

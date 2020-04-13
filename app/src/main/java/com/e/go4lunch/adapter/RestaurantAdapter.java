@@ -8,12 +8,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.myPlace.Result;
-import com.e.go4lunch.util.Constants;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
@@ -21,15 +18,12 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     private Context mContext;
     private OnNoteListener mOnNoteListener;
     private List<Result> mResults;
-
+    private double latB,lngB;
 
 
     public RestaurantAdapter(Context context, OnNoteListener onNoteListener) {
         this.mContext = context;
         this.mOnNoteListener = onNoteListener;
-
-
-        mResults = new ArrayList<>();
 
 
     }
@@ -44,19 +38,10 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     @Override
     public void onBindViewHolder(@NonNull RestaurantHolder holder, int position) {
 
-        holder.mTvName.setText(mResults.get(position).getName());
-        holder.mTvAdress.setText(mResults.get(position).getVicinity());
 
+        holder.update(this.mResults.get(position));
 
-        Glide.with(mContext)
-                .load( "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="
-                        +mResults.get(0).getPhotos().getPhotoReference()
-                        +"&key="+ Constants.API_KEY)
-                .into(holder.mImageRestaurant);
     }
-
-
-
 
     @Override
     public int getItemCount() {
@@ -71,10 +56,17 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     }
 
     public void setRestaurants(List<Result> results) {
-       mResults = results;
-       notifyDataSetChanged();
+        mResults = results;
+        notifyDataSetChanged();
     }
-
+    public Result getSelectedRestaurant(int position){
+        if(mResults != null){
+            if(mResults.size() > 0){
+                return mResults.get(position);
+            }
+        }
+        return null;
+    }
 
 
 }
