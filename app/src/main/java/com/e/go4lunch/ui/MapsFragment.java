@@ -276,11 +276,15 @@ public class MapsFragment extends Fragment implements
                         markerOptions.snippet(String.valueOf(i));
                     }
                 }
+
             }
 
 
         });
+
     }
+
+
 
 
     private void startDetailActivity() {

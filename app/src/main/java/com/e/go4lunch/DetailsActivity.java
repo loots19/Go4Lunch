@@ -33,9 +33,6 @@ public class DetailsActivity extends AppCompatActivity {
     @BindView(R.id.iv_photo_restaurant_detail_activity)
     ImageView mIvPhotoRestaurant;
     public static final String EXTRA_RESTAURANT = "restaurant";
-    private RestaurantViewModel mRestaurantViewModel;
-    private ArrayList<Result> mResultArrayList = new ArrayList<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,25 +40,7 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
         getIncomingIntent();
-       // mRestaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
-        //mRestaurantViewModel.init();
-        //subscribeObservers();
 
-    }
-
-    private void subscribeObservers() {
-        mRestaurantViewModel.getRestaurantRepository().observe(this, new Observer<MyPlace>() {
-            @Override
-            public void onChanged(MyPlace myPlace) {
-                List<Result> results = myPlace.getResults();
-                for (int i = 0; i < results.size(); i++) {
-                    mTvAddressRestaurant.setText(results.get(i).getVicinity());
-                    mTvNameRestaurant.setText(results.get(i).getName());
-
-                }
-            }
-
-        });
     }
 
     private void getIncomingIntent() {
