@@ -1,4 +1,4 @@
-package com.e.go4lunch.adapter;
+package com.e.go4lunch.restaurant;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,7 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
+import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.Result;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
@@ -18,7 +20,6 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     private Context mContext;
     private OnNoteListener mOnNoteListener;
     private List<Result> mResults;
-    private double latB,lngB;
 
 
     public RestaurantAdapter(Context context, OnNoteListener onNoteListener) {
@@ -37,8 +38,6 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantHolder holder, int position) {
-
-
         holder.update(this.mResults.get(position));
 
     }
@@ -59,9 +58,10 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
         mResults = results;
         notifyDataSetChanged();
     }
-    public Result getSelectedRestaurant(int position){
-        if(mResults != null){
-            if(mResults.size() > 0){
+
+    public Result getSelectedRestaurant(int position) {
+        if (mResults != null) {
+            if (mResults.size() > 0) {
                 return mResults.get(position);
             }
         }

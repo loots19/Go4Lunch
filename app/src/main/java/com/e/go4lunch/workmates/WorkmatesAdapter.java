@@ -1,4 +1,4 @@
-package com.e.go4lunch.adapter;
+package com.e.go4lunch.workmates;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -15,7 +15,7 @@ import com.e.go4lunch.models.Workmates;
 
 import java.util.List;
 
-public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesHolder> {
+public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesHolder>  {
 
 
     Context mContext;

@@ -1,20 +1,20 @@
-package com.e.go4lunch.viewmodels;
+package com.e.go4lunch.restaurant;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.myPlace.MyPlace;
-import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.repositories.RestaurantRepository;
-
-import java.util.List;
+import com.e.go4lunch.repositories.WorkmatesRepository;
 
 public class RestaurantViewModel extends ViewModel {
 
     private MutableLiveData<MyPlace> mMutableLiveData;
     private RestaurantRepository mRestaurantRepository;
+
+
+
 
     public void init() {
         if (mMutableLiveData != null) {

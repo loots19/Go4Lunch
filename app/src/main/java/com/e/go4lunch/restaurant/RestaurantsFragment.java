@@ -1,8 +1,9 @@
-package com.e.go4lunch.ui;
+package com.e.go4lunch.restaurant;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +15,11 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.e.go4lunch.DetailsActivity;
 import com.e.go4lunch.R;
-import com.e.go4lunch.adapter.RestaurantAdapter;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
-import com.e.go4lunch.viewmodels.RestaurantViewModel;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -36,7 +33,9 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
     private RestaurantViewModel mRestaurantViewModel;
     private RestaurantAdapter mAdapter;
-    private ArrayList<Result> mResultArrayList = new ArrayList<>();
+
+
+
 
 
     @Override
@@ -47,6 +46,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
         mRestaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
         mRestaurantViewModel.init();
+
 
         initialization();
 
@@ -62,11 +62,12 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
             @Override
             public void onChanged(MyPlace myPlace) {
                 List<Result> results = myPlace.getResults();
-                //mResultArrayList.addAll(results);
+                Log.e("response", String.valueOf(results));
                 mAdapter.setRestaurants(results);
             }
         });
     }
+
 
 
 
@@ -86,10 +87,11 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     @Override
     public void onNoteClick(int position) {
         Context context = getActivity();
-        Intent intent = new Intent(context, DetailsActivity.class);
+        Intent intent = new Intent(context, DetailsRestaurantActivity.class);
         Gson gson = new Gson();
         String jsonSelectedRestaurant = gson.toJson(mAdapter.getSelectedRestaurant(position));
-        intent.putExtra(DetailsActivity.EXTRA_RESTAURANT,jsonSelectedRestaurant);
+        intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT,jsonSelectedRestaurant);
+        Log.e("onNoteClick",jsonSelectedRestaurant);
         startActivity((intent));
 
 

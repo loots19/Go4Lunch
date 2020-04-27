@@ -1,16 +1,19 @@
 package com.e.go4lunch.repositories;
 
-import androidx.lifecycle.MutableLiveData;
-
 import com.e.go4lunch.models.Workmates;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class WorkmatesRepository {
 
-    private static WorkmatesRepository instance;
-    private ArrayList<Workmates> dataSet = new ArrayList<>();
+
+    private static final String COLLECTION_NAME = "workmates";
+    private static  WorkmatesRepository instance;
+    private CollectionReference workmateCollection;
+    private Workmates mWorkmates;
 
     public static WorkmatesRepository getInstance(){
         if(instance == null){
@@ -18,42 +21,49 @@ public class WorkmatesRepository {
         }
         return instance;
     }
-    public MutableLiveData<List<Workmates>> getWorkmates(){
-     setWorkmates();
-
-     MutableLiveData<List<Workmates>> data = new MutableLiveData<>();
-     data.setValue(dataSet);
-     return data;
+    public WorkmatesRepository(){
+        this.workmateCollection = getWorkmatesCollection();
     }
-    private void setWorkmates(){
-        dataSet.add(
-                new Workmates("","Gilles","gilles@gmail.com","https://cache.marieclaire.fr/data/photo/w1000_ci/4y/gilles-lellouche3.jpg")
-        );
-        dataSet.add(
-                new Workmates("","Lagertha","lagertha@gmail.com","https://mcetv.fr/wp-content/uploads/2017/10/Vikings-saison-6-Une-actrice-confirme-le-retour-de-Lagertha-big.jpg")
-        );
-        dataSet.add(
-                new Workmates("","Daenerys","danerys@gmail.com","https://cdn-s-www.ledauphine.com/images/F5C41CA1-DE03-480C-AAC6-230CFC827DA7/NW_raw/emilia-clarke-incarne-daenerys-targaryen-dans-game-of-thrones-photo-hbo-1553199730.jpg")
-        );
-        dataSet.add(
-                new Workmates("","Morgan","morgan@gmail.com","https://static.lexpress.fr/medias_8012/w_1000,h_435,c_crop,x_0,y_45/w_480,h_270,c_fill,g_north/v1389884413/morgan-freeman-2_4102614.jpg")
-        );
-        dataSet.add(
-                new Workmates("","Alain","alainn@gmail.com","https://www.premiere.fr/sites/default/files/styles/scale_crop_560x800/public/2018-04/alain-chabat.jpg")
-        );
-        dataSet.add(
-                new Workmates("","Leonardo","leonardo@gmail.com","https://fr.web.img3.acsta.net/r_1280_720/newsv7/16/02/19/15/45/1575830.jpg")
-        );
-        dataSet.add(
-                new Workmates("","Lucie","lucie@gmail.com","https://p7.storage.canalblog.com/71/11/902825/75209274.jpg")
-        );
-        dataSet.add(
-                new Workmates("","Big","big@gmail.com","https://i.skyrock.net/7317/53357317/pics/2152860685_small_1.jpg")
-        );
 
 
+    // --- COLLECTION REFERENCE ---
 
+    public static CollectionReference getWorkmatesCollection(){
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
+
+    // --- CREATE ---
+
+    public static Task<Void> createWorkmates(String uid, String workmateName, String workmateMail, String urlPicture){
+        Workmates workmatesToCreate = new Workmates(uid,workmateName,workmateMail,urlPicture);
+        return WorkmatesRepository.getWorkmatesCollection().document(uid).set(workmatesToCreate);
+    }
+
+    // --- GET ---
+
+    public static Task<DocumentSnapshot> getWorkmate(String uid){
+        return WorkmatesRepository.getWorkmatesCollection().document(uid).get();
+    }
+    public static Task<QuerySnapshot> getAllWormateFromFirebase(){
+        return WorkmatesRepository.getWorkmatesCollection().orderBy("username").get();
+    }
+
+    // --- UPDATE ---
+
+    public static Task<Void> updateWorkmateName(String workmateName,String uid){
+        return WorkmatesRepository.getWorkmatesCollection().document(uid).update("workmateName",workmateName);
+    }
+
+    public static Task<Void> updateUrlPicture(String urlPicture,String uid){
+        return WorkmatesRepository.getWorkmatesCollection().document(uid).update("urlPicture",urlPicture);
+    }
+
+    // --- DELETE ---
+
+    public static Task<Void> deleteWorkmateName(String uid){
+        return WorkmatesRepository.getWorkmatesCollection().document(uid).delete();
+    }
+
 
 
 

@@ -1,11 +1,16 @@
 package com.e.go4lunch.repositories;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.e.go4lunch.Retrofit.ApiRequest;
 import com.e.go4lunch.Retrofit.RetrofitRequest;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
+import com.e.go4lunch.models.placeDetail.ResultDetail;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -13,7 +18,9 @@ import retrofit2.Response;
 
 public class RestaurantRepository {
 
-    private static RestaurantRepository instance;
+    private List<ResultDetail>mResultDetails;
+
+    private static  RestaurantRepository instance;
 
 
     public static RestaurantRepository getInstance() {
@@ -55,6 +62,7 @@ public class RestaurantRepository {
             public void onResponse(Call<PlaceDetail> call, Response<PlaceDetail> response) {
                 if (response.isSuccessful()) {
                     newData.setValue(response.body());
+
                 }
             }
 

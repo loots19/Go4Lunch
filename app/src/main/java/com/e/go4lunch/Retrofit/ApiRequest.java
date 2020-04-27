@@ -10,11 +10,11 @@ import retrofit2.http.Query;
 public interface ApiRequest {
 
 
-    @GET("api/place/nearbysearch/json?location=49.044238,2.304685&radius=10000&types=restaurant&key=AIzaSyCbD-Ektsu_fCIS7YIU0G5BWic30ZXpDiA")
-    Call<MyPlace>getNearbyPlaces(@Query("restaurant") String type, @Query("location") String location, @Query("radius") int radius);
+    @GET("api/place/nearbysearch/json?key=AIzaSyCbD-Ektsu_fCIS7YIU0G5BWic30ZXpDiA")
+    Call<MyPlace>getNearbyPlaces(@Query("type") String type, @Query("location") String location, @Query("radius") int radius);
 
-    @GET("maps/api/place/details/json?key=AIzaSyCbD-Ektsu_fCIS7YIU0G5BWic30ZXpDiA")
-    Call<PlaceDetail> getDetailsRestaurant(@Query("placeid") String placeId);
+    @GET("api/place/details/json?key=AIzaSyCbD-Ektsu_fCIS7YIU0G5BWic30ZXpDiA")
+    Call<PlaceDetail> getDetailsRestaurant(@Query("place_id") String placeId);
 
 
 

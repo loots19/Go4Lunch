@@ -1,4 +1,4 @@
-package com.e.go4lunch.ui;
+package com.e.go4lunch.restaurant;
 
 
 import android.Manifest;
@@ -6,38 +6,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.e.go4lunch.DetailsActivity;
 import com.e.go4lunch.R;
+import com.e.go4lunch.injection.Injection;
+import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
-import com.e.go4lunch.viewmodels.RestaurantViewModel;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -53,6 +49,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -60,6 +57,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static android.media.CamcorderProfile.get;
+import static com.e.go4lunch.restaurant.DetailsRestaurantActivity.EXTRA_RESTAURANT;
 
 public class MapsFragment extends Fragment implements
         OnMapReadyCallback,
@@ -78,6 +76,12 @@ public class MapsFragment extends Fragment implements
     private Marker currentUserLocationMarker;
     private RestaurantViewModel mRestaurantViewModel;
 
+
+
+
+
+
+
     public MapsFragment() {
         // Required empty public constructor
     }
@@ -92,6 +96,7 @@ public class MapsFragment extends Fragment implements
 
         mRestaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
         mRestaurantViewModel.init();
+
 
         //Request Runtime permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -123,6 +128,7 @@ public class MapsFragment extends Fragment implements
                         if (mGoolgeApiClient == null) {
                             buildGoogleApiClient();
                             mMap.setMyLocationEnabled(true);
+
                         }
 
                     }
@@ -195,7 +201,6 @@ public class MapsFragment extends Fragment implements
     }
 
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -215,20 +220,18 @@ public class MapsFragment extends Fragment implements
                 }
             });
 
+
+
         }
         // make event click on marker
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
+        mMap.setOnMarkerClickListener(marker -> {
+            lunchDetailActivity(marker);
 
-                startDetailActivity();
-
-                return true;
-            }
-
+           return false;
         });
 
     }
+
 
     public boolean checkUserLocationPermission() {
 
@@ -237,7 +240,7 @@ public class MapsFragment extends Fragment implements
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
             } else {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
-
+                subscribeObservers();
             }
             return false;
         } else {
@@ -250,31 +253,42 @@ public class MapsFragment extends Fragment implements
         mRestaurantViewModel.getRestaurantRepository().observe(this, new Observer<MyPlace>() {
             @Override
             public void onChanged(MyPlace myPlace) {
+
                 List<Result> results = myPlace.getResults();
                 if (mMap != null) {
                     // This loop will go through all the results and add marker on each location.
                     for (int i = 0; i < results.size(); i++) {
+                        int CurrentPlace = i;
 
-                        Double lat = results.get(i).getGeometry().getLocation().getLat();
-                        Double lng = results.get(i).getGeometry().getLocation().getLng();
-                        String placeName = results.get(i).getName();
-                        String vicinity = results.get(i).getVicinity();
+                        Double lat = results.get(CurrentPlace).getGeometry().getLocation().getLat();
+                        Double lng = results.get(CurrentPlace).getGeometry().getLocation().getLng();
+                        String placeName = results.get(CurrentPlace).getName();
+                        String vicinity = results.get(CurrentPlace).getVicinity();
                         MarkerOptions markerOptions = new MarkerOptions();
+                        Log.e("test", String.valueOf(CurrentPlace));
                         LatLng latLng = new LatLng(lat, lng);
                         //Position of Marker on Map
                         markerOptions.position(latLng);
                         // Adding Title to the Marker
-                        markerOptions.title(placeName + " : " + vicinity);
+                        markerOptions.title(placeName + " : " + vicinity );
                         // Adding Marker to the Camera.
                         // Adding colour to the marker
-                        markerOptions.icon(bitmapDescriptorFromVector(getContext(),R.drawable.ic_restaurant_black_24dp));
-                        mMap.addMarker(markerOptions);
+                        markerOptions.icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_restaurant_black_24dp));
                         // move map camera
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
-                        markerOptions.snippet(String.valueOf(i));
+
+                        Marker marker = mMap.addMarker(markerOptions);
+                        Gson gson = new Gson();
+                        String jsonSelectedRestaurant = gson.toJson(results.get(i));
+                        marker.setTag(jsonSelectedRestaurant);
+                        Log.e("marker", String.valueOf(results.get(i).getPlaceId()));
+
+
                     }
+
+
                 }
 
             }
@@ -285,16 +299,7 @@ public class MapsFragment extends Fragment implements
     }
 
 
-
-
-    private void startDetailActivity() {
-        Intent intent = new Intent(getContext(), DetailsActivity.class);
-
-        startActivity(intent);
-    }
-
-
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes  int vectorDrawableResourceId) {
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
         Drawable background = ContextCompat.getDrawable(context, R.drawable.ic_location);
         background.setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId);
@@ -305,11 +310,23 @@ public class MapsFragment extends Fragment implements
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
+    private void lunchDetailActivity(Marker marker){
+        String placeId = (String)marker.getTag();
+        Intent intent = new Intent(getContext(), DetailsRestaurantActivity.class);
+        intent.putExtra(EXTRA_RESTAURANT,placeId);
+        startActivity(intent);
+    }
+
+
+    }
 
 
 
 
-}
+
+
+
+
 
 
 

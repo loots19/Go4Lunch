@@ -4,35 +4,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ClipData;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.media.browse.MediaBrowser;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.e.go4lunch.Retrofit.UserHelper;
 import com.e.go4lunch.ui.MainActivity;
 import com.e.go4lunch.R;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Collections;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,6 +48,7 @@ public class AuthActivity extends AppCompatActivity {
         setContentView(R.layout.auth_main);
         ButterKnife.bind(this); //Configure Butterknife
         alreadySigned();
+        createUserInFirestore();
 
     }
 
@@ -182,10 +170,11 @@ public class AuthActivity extends AppCompatActivity {
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
-                        .setTheme(R.style.AppTheme)
+                        .setTheme(R.style.MyTheme)
                         .setAvailableProviders(
                                 Arrays.asList(
                                         new AuthUI.IdpConfig.EmailBuilder().build()))
+
                         .build(), RC_SIGN_IN);
     }
 
@@ -203,7 +192,13 @@ public class AuthActivity extends AppCompatActivity {
             String workmateEmail = this.getCurrentUser().getEmail();
             String uid = this.getCurrentUser().getUid();
 
-            UserHelper.createWorkmates(uid, workmateName, workmateEmail, urlPicture).addOnFailureListener(this.onFailureListener());
+
+            Log.e ("name",workmateName);
+            Log.e ("emal",workmateEmail);
+            Log.e ("uid",uid);
+
+
+
         }
     }
     // --------------------
