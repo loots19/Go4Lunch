@@ -33,6 +33,7 @@ import com.e.go4lunch.models.placeDetail.PlaceDetail;
 import com.e.go4lunch.models.placeDetail.ResultDetail;
 import com.e.go4lunch.util.Constants;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -68,15 +69,15 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     FloatingActionButton mfab;
 
     public static final String EXTRA_RESTAURANT = "restaurant";
-    public static final String EXTRA_MARKER = "Marker";
+
     private static final int REQUEST_CALL = 10;
     private static String TAG = "test";
     private RestaurantDetailViewModel mRestaurantDetailViewModel;
     PlacesClient placesClient;
     private Restaurant mRestaurant;
-
     private ResultDetail mResultDetail;
     private String placeId;
+    private String phone;
 
 
     @Override
@@ -85,17 +86,14 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
 
-        placeId = getIntent().getStringExtra(EXTRA_MARKER);
-
         userActionClick();
-
         getIncomingIntent();
+        placeId = getIntent().getStringExtra(EXTRA_RESTAURANT);
 
-
-        mRestaurantDetailViewModel = ViewModelProviders.of(this).get(RestaurantDetailViewModel.class);
-        mRestaurantDetailViewModel.init();
-
-        subscribeObservers();
+//       mRestaurantDetailViewModel = ViewModelProviders.of(this).get(RestaurantDetailViewModel.class);
+        //      mRestaurantDetailViewModel.setInput(placeId);
+        //setupObservers();
+        //subscribeObservers();
 
 
     }
@@ -107,6 +105,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             Gson gson = new Gson();
             Result result = gson.fromJson(jsonResult, Result.class);
             Log.e(EXTRA_RESTAURANT, gson.toJson(result));
+
             mTvAddressRestaurant.setText(result.getVicinity());
             mTvNameRestaurant.setText(result.getName());
             Glide.with(this)
@@ -115,18 +114,20 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                             + "&key=" + Constants.API_KEY)
                     .centerCrop()
                     .into(mIvPhotoRestaurant);
-
+            placeId = result.getPlaceId();
 
 
         }
 
     }
 
+
     public void CallRestaurant() {
         if (!Places.isInitialized()) {
             String gApiKey = Constants.API_KEY;
             Places.initialize(this, gApiKey);
         }
+
         placesClient = Places.createClient(this);
         List<Place.Field> placeFields = Arrays.asList(Place.Field.PHONE_NUMBER);
         // Construct a request object, passing the place ID and fields array.
@@ -187,16 +188,34 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     }
 
-    private void subscribeObservers() {
+    //private void subscribeObservers() {
 
-        mRestaurantDetailViewModel.getRestaurantRepository().observe(this, new Observer<PlaceDetail>() {
+    //    mRestaurantDetailViewModel.getRestaurantRepository().observe(this, new Observer<PlaceDetail>() {
+    //        @Override
+    //        public void onChanged(PlaceDetail placeDetail) {
+    //            mResultDetail = placeDetail.getResult();
+    //            String name = mResultDetail.getName();
+    //            String phone = mResultDetail.getFormattedPhoneNumber();
+    //            Log.e("from viewModel", String.valueOf(name));
+    //            Log.e("from viewModel", String.valueOf(phone));
+    //        }
+    //    });
+
+    //}
+
+    private void setupObservers() {
+        mRestaurantDetailViewModel.getPlaceDetail().observe(this, new Observer<PlaceDetail>() {
             @Override
             public void onChanged(PlaceDetail placeDetail) {
                 mResultDetail = placeDetail.getResult();
                 String name = mResultDetail.getName();
-                Log.e("from viewModel", String.valueOf(name));
+                Log.e("from ViewModel", name);
+
             }
         });
 
+
     }
+
+
 }

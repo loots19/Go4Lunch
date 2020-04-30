@@ -98,4 +98,5 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     }
 
 
+
 }

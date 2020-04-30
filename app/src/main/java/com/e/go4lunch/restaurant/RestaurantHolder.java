@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -19,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.e.go4lunch.R;
-import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.restaurant.RestaurantAdapter;
@@ -33,6 +34,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.maps.android.SphericalUtil;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -41,7 +43,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.e.go4lunch.restaurant.DetailsRestaurantActivity.EXTRA_MARKER;
 
 public class RestaurantHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -67,9 +68,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     private Result mResult;
     private LatLng currentPlace;
     private static final int REQUEST_CALL = 10;
-    PlacesClient placesClient;
-
-
+    private Location lastLocation;
+    private double latitude, longitude;
+    private Intent mIntent;
 
 
     public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
@@ -77,6 +78,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         ButterKnife.bind(this, itemView);
         this.OnNoteListener = onNoteListener;
         itemView.setOnClickListener(this);
+
     }
 
     @Override
@@ -84,6 +86,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         OnNoteListener.onNoteClick(getAdapterPosition());
 
     }
+
 
     public void update(Result result) {
 
@@ -116,45 +119,25 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
                     .apply(RequestOptions.circleCropTransform())
                     .into(mImageRestaurant);
         }
+
+
         //---------- Distance ----------
-        this.calculateDistance(result);
-        //this.display_distance_to_restaurant(result);
-
-    }
-
-
-
-    private void display_distance_to_restaurant(Result result) {
-
-        if (currentPlace != null &&  result.getGeometry() != null) {
-
-            if (result.getGeometry().getLocation() != null) {
-
-                DistanceCalcul tool_distance_calcul = new DistanceCalcul();
-
-                String text = tool_distance_calcul.calulate_distance(currentPlace.latitude, currentPlace.longitude,
-                        result.getGeometry().getLocation().getLat(),
-                        result.getGeometry().getLocation().getLng());
-
-                this.mTvMetters.setText(text);
-            }
-        }
-    }
-
-    // Method that calculate the distance between user location and restaurant location
-    private void calculateDistance(Result result){
-        LatLng destinationLocation = new LatLng(result.getGeometry().getLocation().getLat(), result.getGeometry().getLocation().getLng());
-        double doubleDistanceToRestaurant = SphericalUtil.computeDistanceBetween(Geometry.getInstance().getLocation(), destinationLocation);
-        int intDistanceToRestaurant = (int)Math.round(doubleDistanceToRestaurant)/1000;
-        String stringDistanceToRestaurant = "" + intDistanceToRestaurant + "m";
-        this.mTvMetters.setText(stringDistanceToRestaurant);
-    }
-
+        Location currentLocation = new Location("locationA");
+        currentLocation.setLatitude(49.044238);
+        currentLocation.setLongitude(2.304685);
+        Location destination = new Location("locationB");
+        destination.setLatitude(result.getGeometry().getLocation().getLat());
+        destination.setLongitude(result.getGeometry().getLocation().getLng());
+        double distance = currentLocation.distanceTo(destination);
+        double distanceF = distance / 1000;
+        String rounded = String.format("%.0f", distanceF);
+        mTvMetters.setText(rounded + " KMS");
 
 
     }
 
 
+}
 
 
 

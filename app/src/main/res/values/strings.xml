@@ -38,4 +38,9 @@
     <string name="Close">Close</string>
     <string name="opening_hour_not_available">opening hours not available</string>
     <string name="list_unit_distance">%1$sm</string>
+
+    <!-- NOTIFICATION SERVICE -->
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="notification_title">"Vous avez reçu une notification"</string>
+
 </resources>

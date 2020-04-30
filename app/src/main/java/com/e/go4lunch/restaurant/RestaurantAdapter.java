@@ -22,9 +22,11 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     private List<Result> mResults;
 
 
-    public RestaurantAdapter(Context context, OnNoteListener onNoteListener) {
+
+    public RestaurantAdapter( Context context, OnNoteListener onNoteListener) {
         this.mContext = context;
         this.mOnNoteListener = onNoteListener;
+
 
 
     }

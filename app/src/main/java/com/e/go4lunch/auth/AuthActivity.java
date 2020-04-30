@@ -47,6 +47,7 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.auth_main);
         ButterKnife.bind(this); //Configure Butterknife
+
         alreadySigned();
         createUserInFirestore();
 
@@ -167,15 +168,8 @@ public class AuthActivity extends AppCompatActivity {
     }
 
     private void startSignInActivityForMailPassword() {
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setTheme(R.style.MyTheme)
-                        .setAvailableProviders(
-                                Arrays.asList(
-                                        new AuthUI.IdpConfig.EmailBuilder().build()))
-
-                        .build(), RC_SIGN_IN);
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
     }
 
     // --------------------

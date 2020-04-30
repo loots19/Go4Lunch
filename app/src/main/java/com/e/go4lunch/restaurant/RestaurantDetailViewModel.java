@@ -1,46 +1,58 @@
 package com.e.go4lunch.restaurant;
 
-import android.util.Log;
+import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.e.go4lunch.models.Restaurant;
-import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
 import com.e.go4lunch.repositories.RestaurantRepository;
-
-
-
-import static android.content.Intent.getIntent;
-import static com.e.go4lunch.restaurant.DetailsRestaurantActivity.EXTRA_MARKER;
+import com.e.go4lunch.util.AbsentLiveData;
 
 public class RestaurantDetailViewModel extends ViewModel {
 
     private RestaurantRepository mRestaurantRepository;
-    private MutableLiveData<String> nameRestaurant = new MutableLiveData<>();
-    private MutableLiveData<String> adressRestaurant = new MutableLiveData<>();
-    private MutableLiveData<String> phoneNumber = new MutableLiveData<>();
-    private MutableLiveData<String> webSite = new MutableLiveData<>();
-    private MutableLiveData<String> urlPhoto = new MutableLiveData<>();
-    private MutableLiveData<PlaceDetail> mMutableLiveData;
-    private MutableLiveData<String> place_id;
+    private MutableLiveData<String> place_id = new MutableLiveData<>();
+    private LiveData<PlaceDetail> placeDetail;
 
 
-    public void init() {
-        if (mMutableLiveData != null) {
-            return;
-        }
-        mRestaurantRepository = RestaurantRepository.getInstance();
-        mMutableLiveData = mRestaurantRepository.getRestaurantDetail("ChIJxwCVpMlC5kcRYDWLaMOCCwQ");
+
+    public RestaurantDetailViewModel(RestaurantRepository repository) {
+        this.mRestaurantRepository = repository;
+        placeDetail = Transformations.switchMap(place_id,input -> {
+            if(input.isEmpty()){
+                return AbsentLiveData.create();
+            }
+            return mRestaurantRepository.getRestaurantDetail(input);
+        });
+
+
+    }
+    public void setInput(String input){
+        place_id.setValue(input);
+    }
+    public LiveData<PlaceDetail>getPlaceDetail(){
+        return placeDetail;
     }
 
-    public LiveData<PlaceDetail> getRestaurantRepository() {
-        return mMutableLiveData;
-    }
 }
+
+
+ // public void init() {
+ //     if (mMutableLiveData != null) {
+ //         return;
+ //     }
+ //     mRestaurantRepository = RestaurantRepository.getInstance();
+ //     mMutableLiveData = mRestaurantRepository.getRestaurantDetail("ChIJZ4qmwcFp5kcRLOgPcnzLISc");
+ // }
+//
+ // public LiveData<PlaceDetail> getRestaurantRepository() {
+ //     return mMutableLiveData;
+ // }
+
+
 
 
 

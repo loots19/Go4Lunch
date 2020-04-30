@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.e.go4lunch.R;
 import com.e.go4lunch.injection.Injection;
 import com.e.go4lunch.injection.ViewModelFactory;
+import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.google.android.gms.common.ConnectionResult;
@@ -75,11 +76,7 @@ public class MapsFragment extends Fragment implements
     private double latitude, longitude;
     private Marker currentUserLocationMarker;
     private RestaurantViewModel mRestaurantViewModel;
-
-
-
-
-
+    LatLng latLng;
 
 
     public MapsFragment() {
@@ -185,6 +182,7 @@ public class MapsFragment extends Fragment implements
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         LatLng latLng = new LatLng(latitude, longitude);
+        Log.e("location",String.valueOf(latLng));
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("You are here");
@@ -208,6 +206,7 @@ public class MapsFragment extends Fragment implements
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             buildGoogleApiClient();
+
             subscribeObservers();
             mMap.setMyLocationEnabled(false);
 
@@ -221,14 +220,15 @@ public class MapsFragment extends Fragment implements
             });
 
 
-
         }
         // make event click on marker
         mMap.setOnMarkerClickListener(marker -> {
+
             lunchDetailActivity(marker);
 
-           return false;
+            return false;
         });
+
 
     }
 
@@ -270,7 +270,7 @@ public class MapsFragment extends Fragment implements
                         //Position of Marker on Map
                         markerOptions.position(latLng);
                         // Adding Title to the Marker
-                        markerOptions.title(placeName + " : " + vicinity );
+                        markerOptions.title(placeName + " : " + vicinity);
                         // Adding Marker to the Camera.
                         // Adding colour to the marker
                         markerOptions.icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_restaurant_black_24dp));
@@ -310,15 +310,16 @@ public class MapsFragment extends Fragment implements
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
-    private void lunchDetailActivity(Marker marker){
-        String placeId = (String)marker.getTag();
+
+    private void lunchDetailActivity(Marker marker) {
+        String placeId = (String) marker.getTag();
         Intent intent = new Intent(getContext(), DetailsRestaurantActivity.class);
-        intent.putExtra(EXTRA_RESTAURANT,placeId);
+        intent.putExtra(EXTRA_RESTAURANT, placeId);
         startActivity(intent);
     }
 
 
-    }
+}
 
 
 
