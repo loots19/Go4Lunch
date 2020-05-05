@@ -33,6 +33,7 @@ public class RestaurantDetailViewModel extends ViewModel {
     public void setInput(String input){
         place_id.setValue(input);
     }
+
     public LiveData<PlaceDetail>getPlaceDetail(){
         return placeDetail;
     }
@@ -40,17 +41,7 @@ public class RestaurantDetailViewModel extends ViewModel {
 }
 
 
- // public void init() {
- //     if (mMutableLiveData != null) {
- //         return;
- //     }
- //     mRestaurantRepository = RestaurantRepository.getInstance();
- //     mMutableLiveData = mRestaurantRepository.getRestaurantDetail("ChIJZ4qmwcFp5kcRLOgPcnzLISc");
- // }
-//
- // public LiveData<PlaceDetail> getRestaurantRepository() {
- //     return mMutableLiveData;
- // }
+
 
 
 

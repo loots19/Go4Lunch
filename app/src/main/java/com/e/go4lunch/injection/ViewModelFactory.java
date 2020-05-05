@@ -6,30 +6,35 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
+import com.e.go4lunch.restaurant.RestaurantDetailViewModel;
 import com.e.go4lunch.restaurant.RestaurantViewModel;
 import com.e.go4lunch.workmates.WorkmateViewModel;
 
-public class ViewModelFactory  {
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
+import static io.reactivex.rxjava3.processors.MulticastProcessor.create;
 
+public class ViewModelFactory implements ViewModelProvider.Factory {
 
+    private final RestaurantRepository mRestaurantRepository;
+    private final WorkmatesRepository mWorkmatesRepository;
 
- // private final RestaurantRepository mRestaurantRepository;
- // private final WorkmatesRepository mWorkmatesRepository;
+    public ViewModelFactory(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
+        this.mRestaurantRepository = restaurantRepository;
+        this.mWorkmatesRepository = workmatesRepository;
+    }
 
- // public ViewModelFactory(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
- //     this.mRestaurantRepository = restaurantRepository;
- //     this.mWorkmatesRepository = workmatesRepository;
- // }
-
- // @NonNull
- // @Override
- // public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
- //     if(modelClass.isAssignableFrom(RestaurantViewModel.class)) {
- //         return (T) new RestaurantViewModel(mRestaurantRepository,mWorkmatesRepository);
- //     }
- //     if(modelClass.isAssignableFrom(WorkmateViewModel.class)){
- //         return (T) new WorkmateViewModel(mRestaurantRepository,mWorkmatesRepository);
- //     }
- //     throw new IllegalArgumentException("Unknown ViewModel class");
- // }
+    @NonNull
+    @Override
+    public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+        if (modelClass.isAssignableFrom(RestaurantViewModel.class)) {
+            return (T) new RestaurantViewModel(mRestaurantRepository);
+        }
+        if (modelClass.isAssignableFrom(RestaurantDetailViewModel.class)) {
+            return (T) new RestaurantDetailViewModel(mRestaurantRepository);
+        }
+        if (modelClass.isAssignableFrom(WorkmateViewModel.class)) {
+            return (T) new WorkmateViewModel(mRestaurantRepository, mWorkmatesRepository);
+        }
+        throw new IllegalArgumentException("Unknown ViewModel class");
+    }
 }

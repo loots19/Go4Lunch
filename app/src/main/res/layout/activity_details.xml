@@ -21,24 +21,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="28dp"
-        app:backgroundTint="@android:color/white"
+        android:focusable="true"
         android:src="@drawable/ic_check_circle_black_24dp"
+        app:backgroundTint="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/frameLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.704"
-        android:focusable="true" />
+        app:layout_constraintVertical_bias="0.704" />
 
     <LinearLayout
         android:id="@+id/linear_1"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:orientation="horizontal"
-        android:gravity="center"
         android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity"/>
+        app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
 
     <TextView
         android:id="@+id/tv_name_restaurant_detail_activity"
@@ -46,20 +47,31 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
-        app:layout_constraintStart_toStartOf="parent"
         android:textColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
 
     <TextView
         android:id="@+id/tv_adress_restaurant_detail_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
         android:layout_marginStart="10dp"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="@+id/linear_1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_star_border_black_24dp"
+
+        app:layout_constraintBottom_toBottomOf="@+id/linear_1"
+        app:layout_constraintEnd_toStartOf="@+id/fab_detail_activity"
+        app:layout_constraintHorizontal_bias="0.08"
+        app:layout_constraintStart_toEndOf="@+id/tv_name_restaurant_detail_activity"
+        app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity"
+        app:layout_constraintVertical_bias="0.13" />
 
     <LinearLayout
         android:id="@+id/line"
@@ -110,9 +122,10 @@
         android:layout_height="250dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/line">
+        app:layout_constraintTop_toBottomOf="@+id/line"
+        app:layout_constraintVertical_bias="1.0">
 
     </FrameLayout>
 

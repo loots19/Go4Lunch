@@ -23,6 +23,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
 
 
+
     public RestaurantAdapter( Context context, OnNoteListener onNoteListener) {
         this.mContext = context;
         this.mOnNoteListener = onNoteListener;

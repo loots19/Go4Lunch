@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -21,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
@@ -76,8 +78,11 @@ public class MapsFragment extends Fragment implements
     private double latitude, longitude;
     private Marker currentUserLocationMarker;
     private RestaurantViewModel mRestaurantViewModel;
-    LatLng latLng;
-
+    public LatLng mlatLng;
+    private Context mContext;
+    private String mlocation;
+    private String type = "restaurants";
+    int raduis = 10000;
 
     public MapsFragment() {
         // Required empty public constructor
@@ -91,13 +96,20 @@ public class MapsFragment extends Fragment implements
         View v = inflater.inflate(R.layout.fragment_maps, container, false);
         ButterKnife.bind(this, v);
 
-        mRestaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
-        mRestaurantViewModel.init();
+
+
+       // ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(mContext);
+       // this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
+       // mRestaurantViewModel.init();
+        configureViewModel();
+
+
 
 
         //Request Runtime permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkUserLocationPermission();
+
         }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
@@ -125,6 +137,7 @@ public class MapsFragment extends Fragment implements
                         if (mGoolgeApiClient == null) {
                             buildGoogleApiClient();
                             mMap.setMyLocationEnabled(true);
+
 
                         }
 
@@ -156,6 +169,8 @@ public class MapsFragment extends Fragment implements
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoolgeApiClient, mLocationRequest, this);
+
+
         }
 
     }
@@ -181,22 +196,21 @@ public class MapsFragment extends Fragment implements
         // Place current location marker
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        LatLng latLng = new LatLng(latitude, longitude);
-        Log.e("location",String.valueOf(latLng));
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("You are here");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-        currentUserLocationMarker = mMap.addMarker(markerOptions);
+        LatLng mlatLng = new LatLng(latitude, longitude);
+        Log.e("location", String.valueOf(mlatLng));
         // move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(mlatLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+
+
 
 
         if (mGoolgeApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoolgeApiClient, this);
         }
+
     }
+
 
 
     @Override
@@ -206,7 +220,6 @@ public class MapsFragment extends Fragment implements
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             buildGoogleApiClient();
-
             subscribeObservers();
             mMap.setMyLocationEnabled(false);
 
@@ -214,8 +227,6 @@ public class MapsFragment extends Fragment implements
                 @Override
                 public void onClick(View v) {
                     subscribeObservers();
-
-
                 }
             });
 
@@ -297,6 +308,14 @@ public class MapsFragment extends Fragment implements
         });
 
     }
+    // Configuring ViewModel
+    private void configureViewModel() {
+        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(mContext);
+        this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
+        mRestaurantViewModel.init();
+
+
+    }
 
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
@@ -317,6 +336,9 @@ public class MapsFragment extends Fragment implements
         intent.putExtra(EXTRA_RESTAURANT, placeId);
         startActivity(intent);
     }
+
+
+
 
 
 }

@@ -13,8 +13,23 @@ public class WorkmateViewModel extends ViewModel {
     private  WorkmatesRepository mWorkmatesRepository;
     private RestaurantRepository mRestaurantRepository;
 
+
     //---- LIVE DATA ---
-    private MutableLiveData<List<Workmates>> mWorkmates;
+    private MutableLiveData<List<Workmates>> mWorkmates = new MutableLiveData<>();
+
+    public WorkmateViewModel(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
+        this.mRestaurantRepository = restaurantRepository;
+        this.mWorkmatesRepository = workmatesRepository;
+    }
+
+    public MutableLiveData<List<Workmates>> getWorkmates() {
+        return mWorkmates;
+    }
+    public WorkmateViewModel(WorkmatesRepository workmatesRepository){
+        this.mWorkmatesRepository = workmatesRepository;
+
+    }
+
 
 
 

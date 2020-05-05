@@ -1,43 +1,25 @@
 package com.e.go4lunch.restaurant;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
-import android.net.Uri;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.e.go4lunch.R;
-import com.e.go4lunch.models.myPlace.MyPlace;
+import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.myPlace.Result;
-import com.e.go4lunch.restaurant.RestaurantAdapter;
 import com.e.go4lunch.util.Constants;
-import com.e.go4lunch.util.DistanceCalcul;
-import com.e.go4lunch.util.Geometry;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.maps.android.SphericalUtil;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -56,16 +38,15 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     TextView mTvMetters;
     @BindView(R.id.tv_numbers_restaurant_item)
     TextView mTvNumbers;
-    @BindView(R.id.iv_stars_restaurant_item)
-    ImageView mIvStars;
+    @BindView(R.id.iv_RatingBar_item)
+    RatingBar mRatingBar;
     @BindView(R.id.iv_photo_restaurant_item)
     ImageView mImageRestaurant;
 
 
     RestaurantAdapter.OnNoteListener OnNoteListener;
     Context mContext;
-    private List<Result> mResults;
-    private Result mResult;
+
     private LatLng currentPlace;
     private static final int REQUEST_CALL = 10;
     private Location lastLocation;
@@ -89,8 +70,51 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
 
 
     public void update(Result result) {
-
         //---------- Opening ----------
+        displayOpeningHours(result);
+
+        //---------- Name ----------
+        this.mTvName.setText(result.getName());
+
+        //---------- Address ----------
+        this.mTvAdress.setText(result.getVicinity());
+
+        //---------- Photo ----------
+        displayPhotoOfRestaurant(result);
+
+        //---------- Rating ----------
+        displayRating(result);
+
+        //---------- Distance ----------
+        displayDistance(result);
+
+    }
+    // set rating of the place
+    private void displayRating(Result result) {
+        if (result.getRating() != 0) {
+            double googleRating = result.getRating();
+            double rating = googleRating / 5 * 3;
+            this.mRatingBar.setRating((float) rating);
+            this.mRatingBar.setVisibility(View.VISIBLE);
+        } else {
+            this.mRatingBar.setVisibility(View.GONE);
+        }
+    }
+    // set distance of the place
+    public void displayDistance(Result result) {
+        Location currentLocation = new Location("locationA");
+        currentLocation.setLatitude(49.044238);
+        currentLocation.setLongitude(2.304685);
+        Location destination = new Location("locationB");
+        destination.setLatitude(result.getGeometry().getLocation().getLat());
+        destination.setLongitude(result.getGeometry().getLocation().getLng());
+        double distance = currentLocation.distanceTo(destination);
+        double distanceF = distance / 1000;
+        String rounded = String.format("%.0f", distanceF);
+        mTvMetters.setText(rounded + " KMS");
+    }
+    // set opening hours of the place
+    public void displayOpeningHours (Result result){
         if (result.getOpeningHours() != null) {
             if (result.getOpeningHours().getOpenNow()) {
                 if (result.getOpeningHours().getOpenNow())
@@ -105,12 +129,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
             mTvTime.setText(itemView.getContext().getString(R.string.opening_hour_not_available));
             mTvTime.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.quantum_black_100));
         }
-        //---------- Name ----------
-        this.mTvName.setText(result.getName());
-        //---------- Address ----------
-        this.mTvAdress.setText(result.getVicinity());
-
-        //---------- Photo ----------
+    }
+    //set photo of the place
+    public void displayPhotoOfRestaurant(Result result){
         if (result.getPhotos() != null) {
             Glide.with(itemView)
                     .load(Constants.BASE_URL_PHOTO
@@ -119,23 +140,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
                     .apply(RequestOptions.circleCropTransform())
                     .into(mImageRestaurant);
         }
-
-
-        //---------- Distance ----------
-        Location currentLocation = new Location("locationA");
-        currentLocation.setLatitude(49.044238);
-        currentLocation.setLongitude(2.304685);
-        Location destination = new Location("locationB");
-        destination.setLatitude(result.getGeometry().getLocation().getLat());
-        destination.setLongitude(result.getGeometry().getLocation().getLng());
-        double distance = currentLocation.distanceTo(destination);
-        double distanceF = distance / 1000;
-        String rounded = String.format("%.0f", distanceF);
-        mTvMetters.setText(rounded + " KMS");
-
-
     }
-
 
 }
 

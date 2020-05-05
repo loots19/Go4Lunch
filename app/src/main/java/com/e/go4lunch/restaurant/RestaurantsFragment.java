@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
+import com.e.go4lunch.injection.Injection;
+import com.e.go4lunch.injection.ViewModelFactory;
+import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.google.gson.Gson;
@@ -33,6 +36,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
     private RestaurantViewModel mRestaurantViewModel;
     private RestaurantAdapter mAdapter;
+    private Context mContext;
 
 
 
@@ -44,14 +48,9 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         View view = inflater.inflate(R.layout.fragment_restaurants, container, false);
         ButterKnife.bind(this, view);
 
-        mRestaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
-        mRestaurantViewModel.init();
-
-
+        configureViewModel();
         initialization();
-
         subscribeObservers();
-
 
         return view;
 
@@ -83,6 +82,13 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
     }
 
+    // Configuring ViewModel
+    private void configureViewModel() {
+        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(mContext);
+        this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
+        mRestaurantViewModel.init();
+
+    }
 
     @Override
     public void onNoteClick(int position) {

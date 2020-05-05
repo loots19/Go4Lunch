@@ -4,8 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="210dp"
-    android:background="@drawable/lunch"
+    android:background="@android:color/white"
     android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.3"
+        android:scaleType="centerCrop"
+        android:src="@drawable/lunch" />
 
     <TextView
         android:id="@+id/textView3"
@@ -14,7 +21,8 @@
         android:layout_gravity="center"
         android:layout_marginTop="30dp"
         android:text="@string/tittle_name_first_screen"
-        android:textColor="@android:color/white"
+        android:fontFamily="@font/aladin"
+        android:textColor="@android:color/black"
         android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,8 +31,8 @@
 
     <ImageView
         android:id="@+id/imageProfile_header"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:layout_marginStart="10dp"
         android:background="@drawable/ic_launcher_foreground"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -35,9 +43,8 @@
         android:id="@+id/tv_name_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:text="NAme"
+        android:textColor="@android:color/black"
         android:layout_marginStart="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageProfile_header"
@@ -48,8 +55,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:textColor="@android:color/white"
-        android:text="EMAIL"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/imageProfile_header"
         app:layout_constraintTop_toBottomOf="@+id/tv_name_header" />
 

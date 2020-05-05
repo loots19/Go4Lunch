@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -26,6 +27,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.e.go4lunch.R;
 import com.e.go4lunch.Retrofit.RetrofitRequest;
+import com.e.go4lunch.injection.Injection;
+import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
@@ -69,15 +72,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     FloatingActionButton mfab;
 
     public static final String EXTRA_RESTAURANT = "restaurant";
-
-    private static final int REQUEST_CALL = 10;
-    private static String TAG = "test";
     private RestaurantDetailViewModel mRestaurantDetailViewModel;
-    PlacesClient placesClient;
-    private Restaurant mRestaurant;
     private ResultDetail mResultDetail;
     private String placeId;
-    private String phone;
 
 
     @Override
@@ -88,24 +85,19 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
         userActionClick();
         getIncomingIntent();
-        placeId = getIntent().getStringExtra(EXTRA_RESTAURANT);
-
-//       mRestaurantDetailViewModel = ViewModelProviders.of(this).get(RestaurantDetailViewModel.class);
-        //      mRestaurantDetailViewModel.setInput(placeId);
-        //setupObservers();
-        //subscribeObservers();
+        configureViewModel();
+        setupObservers();
 
 
     }
 
-
+    //get intent from recyclerView and map and show details
     private void getIncomingIntent() {
         if (getIntent().hasExtra(EXTRA_RESTAURANT)) {
             String jsonResult = getIntent().getStringExtra(EXTRA_RESTAURANT);
             Gson gson = new Gson();
             Result result = gson.fromJson(jsonResult, Result.class);
             Log.e(EXTRA_RESTAURANT, gson.toJson(result));
-
             mTvAddressRestaurant.setText(result.getVicinity());
             mTvNameRestaurant.setText(result.getName());
             Glide.with(this)
@@ -121,65 +113,35 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     }
 
-
-    public void CallRestaurant() {
-        if (!Places.isInitialized()) {
-            String gApiKey = Constants.API_KEY;
-            Places.initialize(this, gApiKey);
+    // show phone number of the place
+    public void callRestaurant() {
+        if (mResultDetail.getInternationalPhoneNumber() != null) {
+            Intent callIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mResultDetail.getInternationalPhoneNumber(), null));
+            startActivity(callIntent);
+        } else {
+            Toast.makeText(this, ("nono"), Toast.LENGTH_SHORT).show();
         }
-
-        placesClient = Places.createClient(this);
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.PHONE_NUMBER);
-        // Construct a request object, passing the place ID and fields array.
-        FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
-        placesClient = Places.createClient(this);
-        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-            Place place = response.getPlace();
-            if (place.getPhoneNumber() != null) {
-                Intent callIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", place.getPhoneNumber(), null));
-                startActivity(callIntent);
-            } else {
-                Toast.makeText(this, ("nono"), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
-    public void openWebsitePage(String url) {
-
-        if (!Places.isInitialized()) {
-            String gApiKey = Constants.API_KEY;
-            Places.initialize(this, gApiKey);
+    // show webSite of the place
+    public void openWebsitePage() {
+        if (mResultDetail.getWebsite() != null) {
+            Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(mResultDetail.getWebsite()));
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Error text", Toast.LENGTH_SHORT).show();
         }
-        placesClient = Places.createClient(this);
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.WEBSITE_URI);
-        // Construct a request object, passing the place ID and fields array.
-        FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
-        placesClient = Places.createClient(this);
-        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-            Place place = response.getPlace();
-            Uri uri = Uri.parse(String.valueOf(place.getWebsiteUri()));
-            Log.e(TAG, String.valueOf(uri));
-            if (url != null) {
-                Uri webPage = Uri.parse(String.valueOf(uri));
-                Intent intent = new Intent(Intent.ACTION_VIEW, webPage);
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                }
-            } else {
-                Toast.makeText(DetailsRestaurantActivity.this, "no", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
-
+    // Action of user
     public void userActionClick() {
         mButtonCall.setOnClickListener(v -> {
-            CallRestaurant();
-
+            callRestaurant();
 
         });
         mButtonWeb.setOnClickListener(v ->
-                openWebsitePage("")
+                openWebsitePage()
         );
         mfab.setOnClickListener(v -> {
 
@@ -188,28 +150,19 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     }
 
-    //private void subscribeObservers() {
 
-    //    mRestaurantDetailViewModel.getRestaurantRepository().observe(this, new Observer<PlaceDetail>() {
-    //        @Override
-    //        public void onChanged(PlaceDetail placeDetail) {
-    //            mResultDetail = placeDetail.getResult();
-    //            String name = mResultDetail.getName();
-    //            String phone = mResultDetail.getFormattedPhoneNumber();
-    //            Log.e("from viewModel", String.valueOf(name));
-    //            Log.e("from viewModel", String.valueOf(phone));
-    //        }
-    //    });
-
-    //}
+    // Configuring ViewModel
+    private void configureViewModel() {
+        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
+        this.mRestaurantDetailViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantDetailViewModel.class);
+        mRestaurantDetailViewModel.setInput(placeId);
+    }
 
     private void setupObservers() {
         mRestaurantDetailViewModel.getPlaceDetail().observe(this, new Observer<PlaceDetail>() {
             @Override
             public void onChanged(PlaceDetail placeDetail) {
                 mResultDetail = placeDetail.getResult();
-                String name = mResultDetail.getName();
-                Log.e("from ViewModel", name);
 
             }
         });

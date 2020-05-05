@@ -15,19 +15,23 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.e.go4lunch.R;
+import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BaseActivity {
 
     //FOR DESIGN
+    @BindView(R.id.et_name_register)
+    EditText mNameRegister;
     @BindView(R.id.et_email_register)
     EditText mEmailRegister;
     @BindView(R.id.et_password_register)
@@ -38,6 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
     ProgressBar mProgressBar;
 
     FirebaseAuth mFirebaseAuth;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +53,11 @@ public class RegisterActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
 
 
-
         mButtonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 registerNewWorkmate();
+                createUserInFirestore();
             }
         });
     }
@@ -60,7 +65,8 @@ public class RegisterActivity extends AppCompatActivity {
     private void registerNewWorkmate() {
         mProgressBar.setVisibility(View.VISIBLE);
 
-        String email, password;
+        String name, email, password;
+        name = mNameRegister.getText().toString();
         email = mEmailRegister.getText().toString();
         password = mPasswordRegister.getText().toString();
 
@@ -72,11 +78,17 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Please enter password!", Toast.LENGTH_LONG).show();
             return;
         }
+        if (TextUtils.isEmpty(name)) {
+            Toast.makeText(getApplicationContext(), "Please enter name!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
                             Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
                             mProgressBar.setVisibility(View.GONE);
 
@@ -93,22 +105,27 @@ public class RegisterActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+    // --------------------
+    // REST REQUEST
+    // --------------------
+
+    //  Http request that create user in firestore
+    private void createUserInFirestore() {
+
+        if (this.getCurrentUser() != null) {
+
+            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
+            String workmateName = this.getCurrentUser().getDisplayName();
+            String workmateEmail = this.getCurrentUser().getEmail();
+            String uid = this.getCurrentUser().getUid();
 
 
-
-        // --------------------
-        // UTILS
-        // --------------------
-
+            Log.e("name", workmateName);
+            Log.e("email", workmateEmail);
+            Log.e("uid", uid);
 
 
-
-    @Nullable
-    protected FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
-    }
-
-    protected Boolean isCurrentUserLogged() {
-        return (this.getCurrentUser() != null);
+        }
     }
 }
+

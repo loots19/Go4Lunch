@@ -10,14 +10,26 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.ui.MainActivity;
 import com.e.go4lunch.R;
+import com.e.go4lunch.util.Constants;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.DefaultLogger;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.util.Arrays;
 
@@ -25,7 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AuthActivity extends AppCompatActivity {
+public class AuthActivity extends BaseActivity {
 
     //FOR DESIGN
     @BindView(R.id.btnGG)
@@ -45,6 +57,7 @@ public class AuthActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initTwitter();
         setContentView(R.layout.auth_main);
         ButterKnife.bind(this); //Configure Butterknife
 
@@ -195,33 +208,26 @@ public class AuthActivity extends AppCompatActivity {
 
         }
     }
-    // --------------------
-    // UTILS
-    // --------------------
 
-    @Nullable
-    protected FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
-    }
-
-    protected Boolean isCurrentUserLogged() {
-        return (this.getCurrentUser() != null);
-    }
-
-    protected OnFailureListener onFailureListener() {
-        return new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), "unknown_error", Toast.LENGTH_LONG).show();
-            }
-        };
-
-
-    }
     public void alreadySigned(){
         if (this.isCurrentUserLogged()) {
             this.startMapsActivity();
         }
+
+    }
+
+    //init twitter
+    public void initTwitter() {
+
+        TwitterConfig config = new TwitterConfig.Builder(this)
+                .logger(new DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(new TwitterAuthConfig(Constants.CONSUMER_KEY,Constants.CONSUMER_SECRET))
+                .debug(false)
+                .build();
+        Twitter.initialize(config);
+
+
+
     }
 }
 
