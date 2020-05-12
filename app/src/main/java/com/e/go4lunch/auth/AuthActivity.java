@@ -62,7 +62,7 @@ public class AuthActivity extends BaseActivity {
         ButterKnife.bind(this); //Configure Butterknife
 
         alreadySigned();
-        createUserInFirestore();
+        createWorkmates();
 
     }
 
@@ -123,7 +123,7 @@ public class AuthActivity extends BaseActivity {
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                this.createUserInFirestore();
+                this.createWorkmates();
                 Toast.makeText(this, "" + user.getEmail(), Toast.LENGTH_SHORT).show();
                 startMapsActivity();
             } else { // ERRORS
@@ -190,7 +190,7 @@ public class AuthActivity extends BaseActivity {
     // --------------------
 
     // 1 - Http request that create user in firestore
-    private void createUserInFirestore() {
+    private void createWorkmates() {
 
         if (this.getCurrentUser() != null) {
 
@@ -218,7 +218,6 @@ public class AuthActivity extends BaseActivity {
 
     //init twitter
     public void initTwitter() {
-
         TwitterConfig config = new TwitterConfig.Builder(this)
                 .logger(new DefaultLogger(Log.DEBUG))
                 .twitterAuthConfig(new TwitterAuthConfig(Constants.CONSUMER_KEY,Constants.CONSUMER_SECRET))

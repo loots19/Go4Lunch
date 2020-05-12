@@ -62,10 +62,10 @@
         app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
 
     <ImageView
+        android:id="@+id/Im_Star_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/ic_star_border_black_24dp"
-
         app:layout_constraintBottom_toBottomOf="@+id/linear_1"
         app:layout_constraintEnd_toStartOf="@+id/fab_detail_activity"
         app:layout_constraintHorizontal_bias="0.08"

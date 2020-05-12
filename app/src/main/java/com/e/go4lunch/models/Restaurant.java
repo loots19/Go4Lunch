@@ -4,142 +4,129 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.e.go4lunch.models.myPlace.Geometry;
+import com.e.go4lunch.models.myPlace.Location;
+import com.e.go4lunch.models.myPlace.MyPlace;
+import com.e.go4lunch.models.myPlace.Result;
 import com.google.android.gms.maps.model.LatLng;
 
-public class Restaurant implements Parcelable {
-    private String name ;
-    private String distance;
-    private String photurl;
-    private String adress;
-    private String phone_no;
-    private String time;
-    private String id;
-    private Uri websiteUri;
-    private LatLng latlng;
+public class Restaurant {
 
-    public Restaurant(String name, String distance, String photurl, String adress, String phone_no, String time, String id, Uri websiteUri, LatLng latlng) {
+    private String placeId;
+    private String name;
+    private String address;
+    private String urlPhoto;
+    private String phoneNumber;
+    private String WebSite;
+    private Boolean openNow;
+    private int distanceCurrentuser;
+    private Location mLocation;
+    private double rating;
+
+
+    public Restaurant(String placeId, String name, String address, String urlPhoto, String phoneNumber, String webSite, Location location, double rating) {
+        this.placeId = placeId;
         this.name = name;
-        this.distance = distance;
-        this.photurl = photurl;
-        this.adress = adress;
-        this.phone_no = phone_no;
-        this.time = time;
-        this.id = id;
-        this.websiteUri = websiteUri;
-        this.latlng = latlng;
+        this.address = address;
+        this.urlPhoto = urlPhoto;
+        this.phoneNumber = phoneNumber;
+        WebSite = webSite;
+        mLocation = location;
+        this.rating = rating;
     }
 
-    protected Restaurant(Parcel in) {
-        name = in.readString();
-        distance = in.readString();
-        photurl = in.readString();
-        adress = in.readString();
-        phone_no = in.readString();
-        time = in.readString();
-        id = in.readString();
-        websiteUri = in.readParcelable(Uri.class.getClassLoader());
-        latlng = in.readParcelable(LatLng.class.getClassLoader());
+    // Constructor for my place
+    public Restaurant(String placeId, String name, String address, String urlPhoto, Boolean openNow, Location location, double rating) {
+        this.placeId = placeId;
+        this.name = name;
+        this.address = address;
+        this.urlPhoto = urlPhoto;
+        this.openNow = openNow;
+        mLocation = location;
+        this.rating = rating;
     }
 
-    public static final Creator<Restaurant> CREATOR = new Creator<Restaurant>() {
-        @Override
-        public Restaurant createFromParcel(Parcel in) {
-            return new Restaurant(in);
-        }
+    //---------Getters---------
 
-        @Override
-        public Restaurant[] newArray(int size) {
-            return new Restaurant[size];
-        }
-    };
+    public String getPlaceId() {
+        return placeId;
+    }
 
     public String getName() {
         return name;
     }
 
-    public String getDistance() {
-        return distance;
+    public String getAddress() {
+        return address;
     }
 
-    public String getPhoturl() {
-        return photurl;
+    public String getUrlPhoto() {
+        return urlPhoto;
     }
 
-    public String getAdress() {
-        return adress;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public String getPhone_no() {
-        return phone_no;
+    public String getWebSite() {
+        return WebSite;
     }
 
-    public String getTime() {
-        return time;
+    public Boolean getOpenNow() {
+        return openNow;
     }
 
-    public String getId() {
-        return id;
+    public int getDistanceCurrentuser() {
+        return distanceCurrentuser;
     }
 
-    public Uri getWebsiteUri() {
-        return websiteUri;
+    public Location getLocation() {
+        return mLocation;
     }
 
-    public LatLng getLatlng() {
-        return latlng;
+    public double getRating() {
+        return rating;
+    }
+
+    //---------Setters---------
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setDistance(String distance) {
-        this.distance = distance;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public void setPhoturl(String photurl) {
-        this.photurl = photurl;
+    public void setUrlPhoto(String urlPhoto) {
+        this.urlPhoto = urlPhoto;
     }
 
-    public void setAdress(String adress) {
-        this.adress = adress;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public void setPhone_no(String phone_no) {
-        this.phone_no = phone_no;
+    public void setWebSite(String webSite) {
+        WebSite = webSite;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setOpenNow(Boolean openNow) {
+        this.openNow = openNow;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setDistanceCurrentuser(int distanceCurrentuser) {
+        this.distanceCurrentuser = distanceCurrentuser;
     }
 
-    public void setWebsiteUri(Uri websiteUri) {
-        this.websiteUri = websiteUri;
+    public void setLocation(Location location) {
+        mLocation = location;
     }
 
-    public void setLatlng(LatLng latlng) {
-        this.latlng = latlng;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(distance);
-        dest.writeString(photurl);
-        dest.writeString(adress);
-        dest.writeString(phone_no);
-        dest.writeString(time);
-        dest.writeString(id);
-        dest.writeParcelable(websiteUri, flags);
-        dest.writeParcelable(latlng, flags);
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 }

@@ -34,6 +34,8 @@ import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
 import com.e.go4lunch.models.placeDetail.ResultDetail;
+import com.e.go4lunch.repositories.WorkmatesRepository;
+import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.util.Constants;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
@@ -54,7 +56,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Retrofit;
 
-public class DetailsRestaurantActivity extends AppCompatActivity {
+import static com.e.go4lunch.ui.MainActivity.EXTRA_AUTOCOMPLETE;
+
+public class DetailsRestaurantActivity extends BaseActivity {
 
     @BindView(R.id.tv_name_restaurant_detail_activity)
     TextView mTvNameRestaurant;
@@ -70,11 +74,15 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     Button mButtonWeb;
     @BindView(R.id.fab_detail_activity)
     FloatingActionButton mfab;
+    @BindView(R.id.Im_Star_detail)
+    ImageView mImageViewStar;
 
     public static final String EXTRA_RESTAURANT = "restaurant";
+    public static final String EXTRA_AUTOCOMPLETE = "restaurantId";
     private RestaurantDetailViewModel mRestaurantDetailViewModel;
     private ResultDetail mResultDetail;
     private String placeId;
+    private static List<Restaurant> restaurants = new ArrayList<>();
 
 
     @Override
@@ -96,21 +104,20 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         if (getIntent().hasExtra(EXTRA_RESTAURANT)) {
             String jsonResult = getIntent().getStringExtra(EXTRA_RESTAURANT);
             Gson gson = new Gson();
-            Result result = gson.fromJson(jsonResult, Result.class);
-            Log.e(EXTRA_RESTAURANT, gson.toJson(result));
-            mTvAddressRestaurant.setText(result.getVicinity());
-            mTvNameRestaurant.setText(result.getName());
+            Restaurant restaurant = gson.fromJson(jsonResult, Restaurant.class);
+            Log.e(EXTRA_RESTAURANT, gson.toJson(restaurant));
+            mTvAddressRestaurant.setText(restaurant.getAddress());
+            mTvNameRestaurant.setText(restaurant.getName());
             Glide.with(this)
                     .load(Constants.BASE_URL_PHOTO
-                            + result.getPhotos().get(0).getPhotoReference()
+                            + restaurant.getUrlPhoto()
                             + "&key=" + Constants.API_KEY)
                     .centerCrop()
                     .into(mIvPhotoRestaurant);
-            placeId = result.getPlaceId();
+            placeId = restaurant.getPlaceId();
 
 
         }
-
     }
 
     // show phone number of the place
@@ -147,6 +154,13 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
 
         });
+        mButtonLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickOnLikeButton();
+
+            }
+        });
 
     }
 
@@ -164,11 +178,21 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             public void onChanged(PlaceDetail placeDetail) {
                 mResultDetail = placeDetail.getResult();
 
+
             }
         });
 
 
     }
 
+    private void clickOnLikeButton() {
+        mImageViewStar.setImageResource(R.drawable.ic_star_black_24dp);
+        Toast.makeText(this, "add to favorites", Toast.LENGTH_LONG).show();
+
+    }
+
 
 }
+
+
+

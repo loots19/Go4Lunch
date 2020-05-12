@@ -37,7 +37,9 @@ import com.e.go4lunch.auth.AuthActivity;
 import com.e.go4lunch.auth.RegisterActivity;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
+import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
+import com.e.go4lunch.models.placeDetail.PlaceDetail;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
@@ -88,11 +90,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private ImageView mImageViewProfil;
     private TextView mTextViewName;
     private TextView mTextViewEmail;
+    private MyPlace mMyPlace;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
     private static final int SIGN_OUT_TASK = 10;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 11;
+    public static final String EXTRA_AUTOCOMPLETE = "restaurantId";
     private static final String TAG = "FROM_AUTOCOMPLETE";
     // Creating identifier to identify REST REQUEST (Update username)
     private static final int UPDATE_USERNAME = 30;
@@ -283,6 +287,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onSearchCalled() {
         // Set the fields to specify which types of place data to return.
         List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ID);
+
         // Create a RectangularBounds object.
         RectangularBounds bounds = RectangularBounds.newInstance(
                 new LatLng(49.044238, 2.304685), //dummy lat/lng
@@ -304,13 +309,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 String placeId = place.getId();
-                Intent intent = new Intent(this, DetailsRestaurantActivity.class);
-                Gson gson = new Gson();
-                String jsonSelectedRestaurant = gson.toJson(place);
-                intent.putExtra(EXTRA_RESTAURANT, jsonSelectedRestaurant);
-                Log.e(TAG, "Place: " + jsonSelectedRestaurant);
-                startActivity((intent));
-
+                Log.e(TAG, "Place: " + placeId);
                 Toast.makeText(MainActivity.this, "Name: " + place.getName(), Toast.LENGTH_LONG).show();
 
 
@@ -346,15 +345,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             this.mTextViewEmail.setText(email);
             this.mTextViewName.setText(name);
 
-            //  Get additional data from Firestore (Username)
-            WorkmatesRepository.getWorkmate(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    Workmates currentUser = documentSnapshot.toObject(Workmates.class);
-                    String username = TextUtils.isEmpty(currentUser.getWorkmateName()) ? getString(Integer.parseInt("info_no_username_found")) : currentUser.getWorkmateName();
-                    mTextViewName.setText(username);
-                }
-            });
+         //  //  Get additional data from Firestore (Username)
+         //  WorkmatesRepository.getWorkmate(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+         //      @Override
+         //      public void onSuccess(DocumentSnapshot documentSnapshot) {
+         //          Workmates currentUser = documentSnapshot.toObject(Workmates.class);
+         //          String username = TextUtils.isEmpty(currentUser.getWorkmateName()) ? getString(Integer.parseInt("info_no_username_found")) : currentUser.getWorkmateName();
+         //          mTextViewName.setText(username);
+         //      }
+         //  });
         }
     }
 

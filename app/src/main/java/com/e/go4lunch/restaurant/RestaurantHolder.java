@@ -69,30 +69,30 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     }
 
 
-    public void update(Result result) {
+    public void update(Restaurant restaurant) {
         //---------- Opening ----------
-        displayOpeningHours(result);
+        displayOpeningHours(restaurant);
 
         //---------- Name ----------
-        this.mTvName.setText(result.getName());
+        this.mTvName.setText(restaurant.getName());
 
         //---------- Address ----------
-        this.mTvAdress.setText(result.getVicinity());
+        this.mTvAdress.setText(restaurant.getAddress());
 
         //---------- Photo ----------
-        displayPhotoOfRestaurant(result);
+        displayPhotoOfRestaurant(restaurant);
 
         //---------- Rating ----------
-        displayRating(result);
+        displayRating(restaurant);
 
         //---------- Distance ----------
-        displayDistance(result);
+        displayDistance(restaurant);
 
     }
     // set rating of the place
-    private void displayRating(Result result) {
-        if (result.getRating() != 0) {
-            double googleRating = result.getRating();
+    private void displayRating(Restaurant restaurant) {
+        if (restaurant.getRating() != 0) {
+            double googleRating = restaurant.getRating();
             double rating = googleRating / 5 * 3;
             this.mRatingBar.setRating((float) rating);
             this.mRatingBar.setVisibility(View.VISIBLE);
@@ -101,23 +101,24 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         }
     }
     // set distance of the place
-    public void displayDistance(Result result) {
+    public void displayDistance(Restaurant restaurant) {
+
         Location currentLocation = new Location("locationA");
         currentLocation.setLatitude(49.044238);
         currentLocation.setLongitude(2.304685);
         Location destination = new Location("locationB");
-        destination.setLatitude(result.getGeometry().getLocation().getLat());
-        destination.setLongitude(result.getGeometry().getLocation().getLng());
+        destination.setLatitude(restaurant.getLocation().getLat());
+        destination.setLongitude(restaurant.getLocation().getLng());
         double distance = currentLocation.distanceTo(destination);
         double distanceF = distance / 1000;
         String rounded = String.format("%.0f", distanceF);
         mTvMetters.setText(rounded + " KMS");
     }
     // set opening hours of the place
-    public void displayOpeningHours (Result result){
-        if (result.getOpeningHours() != null) {
-            if (result.getOpeningHours().getOpenNow()) {
-                if (result.getOpeningHours().getOpenNow())
+    public void displayOpeningHours (Restaurant restaurant){
+        if (restaurant.getOpenNow()!= null) {
+            if (restaurant.getOpenNow()) {
+                if (restaurant.getOpenNow())
                     mTvTime.setText(R.string.Open);
                 mTvTime.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.quantum_lightblue));
             } else {
@@ -131,11 +132,11 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         }
     }
     //set photo of the place
-    public void displayPhotoOfRestaurant(Result result){
-        if (result.getPhotos() != null) {
+    public void displayPhotoOfRestaurant(Restaurant restaurant){
+        if (restaurant.getUrlPhoto() != null) {
             Glide.with(itemView)
                     .load(Constants.BASE_URL_PHOTO
-                            + result.getPhotos().get(0).getPhotoReference()
+                            + restaurant.getUrlPhoto()
                             + "&key=" + Constants.API_KEY)
                     .apply(RequestOptions.circleCropTransform())
                     .into(mImageRestaurant);

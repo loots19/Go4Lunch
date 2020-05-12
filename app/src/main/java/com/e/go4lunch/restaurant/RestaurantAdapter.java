@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
+import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.Result;
 import com.google.android.gms.maps.model.LatLng;
@@ -19,7 +20,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
     private Context mContext;
     private OnNoteListener mOnNoteListener;
-    private List<Result> mResults;
+    private List<Restaurant> mRestaurants;
 
 
 
@@ -41,14 +42,14 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantHolder holder, int position) {
-        holder.update(this.mResults.get(position));
+        holder.update(this.mRestaurants.get(position));
 
     }
 
     @Override
     public int getItemCount() {
-        if (mResults != null) {
-            return mResults.size();
+        if (mRestaurants != null) {
+            return mRestaurants.size();
         }
         return 0;
     }
@@ -57,15 +58,15 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
         void onNoteClick(int position);
     }
 
-    public void setRestaurants(List<Result> results) {
-        mResults = results;
+    public void setRestaurants(List<Restaurant> results) {
+        mRestaurants= results;
         notifyDataSetChanged();
     }
 
-    public Result getSelectedRestaurant(int position) {
-        if (mResults != null) {
-            if (mResults.size() > 0) {
-                return mResults.get(position);
+    public Restaurant getSelectedRestaurant(int position) {
+        if (mRestaurants != null) {
+            if (mRestaurants.size() > 0) {
+                return mRestaurants.get(position);
             }
         }
         return null;

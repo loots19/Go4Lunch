@@ -4,6 +4,7 @@ package com.e.go4lunch.restaurant;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -54,11 +55,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.content.Context.MODE_PRIVATE;
 import static android.media.CamcorderProfile.get;
 import static com.e.go4lunch.restaurant.DetailsRestaurantActivity.EXTRA_RESTAURANT;
 
@@ -67,6 +70,7 @@ public class MapsFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+
 
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     @BindView(R.id.fab)
@@ -81,8 +85,10 @@ public class MapsFragment extends Fragment implements
     public LatLng mlatLng;
     private Context mContext;
     private String mlocation;
-    private String type = "restaurants";
-    int raduis = 10000;
+    private List<Restaurant> restaurants = new ArrayList<>();
+
+
+
 
     public MapsFragment() {
         // Required empty public constructor
@@ -96,14 +102,7 @@ public class MapsFragment extends Fragment implements
         View v = inflater.inflate(R.layout.fragment_maps, container, false);
         ButterKnife.bind(this, v);
 
-
-
-       // ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(mContext);
-       // this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
-       // mRestaurantViewModel.init();
         configureViewModel();
-
-
 
 
         //Request Runtime permission
@@ -203,15 +202,11 @@ public class MapsFragment extends Fragment implements
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
 
-
-
         if (mGoolgeApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoolgeApiClient, this);
         }
 
     }
-
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -264,7 +259,7 @@ public class MapsFragment extends Fragment implements
         mRestaurantViewModel.getRestaurantRepository().observe(this, new Observer<MyPlace>() {
             @Override
             public void onChanged(MyPlace myPlace) {
-
+                restaurants = new ArrayList<>();
                 List<Result> results = myPlace.getResults();
                 if (mMap != null) {
                     // This loop will go through all the results and add marker on each location.
@@ -275,8 +270,8 @@ public class MapsFragment extends Fragment implements
                         Double lng = results.get(CurrentPlace).getGeometry().getLocation().getLng();
                         String placeName = results.get(CurrentPlace).getName();
                         String vicinity = results.get(CurrentPlace).getVicinity();
+
                         MarkerOptions markerOptions = new MarkerOptions();
-                        Log.e("test", String.valueOf(CurrentPlace));
                         LatLng latLng = new LatLng(lat, lng);
                         //Position of Marker on Map
                         markerOptions.position(latLng);
@@ -289,17 +284,27 @@ public class MapsFragment extends Fragment implements
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
+                        String placeId = results.get(i).getPlaceId();
+                        String name = results.get(i).getName();
+                        String address = results.get(i).getVicinity();
+                        String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
+                        double rating = results.get(i).getRating();
+                        Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
+                        if (results.get(i).getGeometry().getLocation() != null) {
+                            com.e.go4lunch.models.myPlace.Location location = results.get(i).getGeometry().getLocation();
+                            Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
+                            restaurants.add(restaurant);
 
-                        Marker marker = mMap.addMarker(markerOptions);
-                        Gson gson = new Gson();
-                        String jsonSelectedRestaurant = gson.toJson(results.get(i));
-                        marker.setTag(jsonSelectedRestaurant);
-                        Log.e("marker", String.valueOf(results.get(i).getPlaceId()));
+                            Marker marker = mMap.addMarker(markerOptions);
+                            Gson gson = new Gson();
+                            String jsonSelectedRestaurant = gson.toJson(restaurants.get(i));
+                            marker.setTag(jsonSelectedRestaurant);
+                            Log.e("marker", String.valueOf(restaurants.get(i).getPlaceId()));
 
+
+                        }
 
                     }
-
-
                 }
 
             }

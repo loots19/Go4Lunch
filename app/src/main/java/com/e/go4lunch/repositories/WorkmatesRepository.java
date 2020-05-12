@@ -53,6 +53,9 @@ public class WorkmatesRepository {
     public static Task<Void> updateWorkmateName(String workmateName,String uid){
         return WorkmatesRepository.getWorkmatesCollection().document(uid).update("workmateName",workmateName);
     }
+    public static Task<Void> updateRestaurantSelected(String uid, Boolean restaurantSelected) {
+        return WorkmatesRepository.getWorkmatesCollection().document(uid).update("isSelected", restaurantSelected);
+    }
 
     public static Task<Void> updateUrlPicture(String urlPicture,String uid){
         return WorkmatesRepository.getWorkmatesCollection().document(uid).update("urlPicture",urlPicture);

@@ -4,56 +4,55 @@ import javax.annotation.Nullable;
 
 public class Workmates {
 
-    private String uid;
+
     private String workmateName;
     private String workmateEmail;
-    @Nullable
+    private boolean restaurantSelected;
     private String urlPicture;
 
     public Workmates(){
 
     }
-    public Workmates(String uid, String workmateName, String workmateEmail, @Nullable String urlPicture) {
-        this.uid = uid;
+
+    public Workmates( String workmateName, String workmateEmail, String urlPicture) {
         this.workmateName = workmateName;
         this.workmateEmail = workmateEmail;
+        this.restaurantSelected = false;
         this.urlPicture = urlPicture;
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
+    //---------Getters---------
 
     public String getWorkmateName() {
         return workmateName;
-    }
-
-    public void setWorkmateName(String morkmateName) {
-        this.workmateName = morkmateName;
     }
 
     public String getWorkmateEmail() {
         return workmateEmail;
     }
 
+    public boolean isRestaurantSelected() {
+        return restaurantSelected;
+    }
+
+    public String getUrlPicture() {
+        return urlPicture;
+    }
+    //---------Setters---------
+
+    public void setWorkmateName(String workmateName) {
+        this.workmateName = workmateName;
+    }
+
     public void setWorkmateEmail(String workmateEmail) {
         this.workmateEmail = workmateEmail;
     }
 
-    @Nullable
-    public String getUrlPicture() {
-        return urlPicture;
+    public void setRestaurantSelected(boolean restaurantSelected) {
+        this.restaurantSelected = restaurantSelected;
     }
 
-    public void setUrlPicture(@Nullable String urlPicture) {
+    public void setUrlPicture(String urlPicture) {
         this.urlPicture = urlPicture;
     }
-
-
-
-
 }
