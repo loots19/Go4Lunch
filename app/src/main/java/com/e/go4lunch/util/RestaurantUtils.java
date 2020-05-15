@@ -1,13 +1,9 @@
 package com.e.go4lunch.util;
 
-import com.e.go4lunch.models.myPlace.Location;
-import com.e.go4lunch.models.myPlace.Result;
-import com.google.protobuf.DescriptorProtos;
 
-
-import java.util.List;
+import android.location.Location;
 
 public abstract class RestaurantUtils {
 
-    
+
 }

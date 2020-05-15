@@ -1,40 +1,76 @@
 package com.e.go4lunch.workmates;
 
+import android.app.DownloadManager;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
+import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorkmateViewModel extends ViewModel {
-    private  WorkmatesRepository mWorkmatesRepository;
+    private WorkmatesRepository mWorkmatesRepository;
     private RestaurantRepository mRestaurantRepository;
 
 
     //---- LIVE DATA ---
-    private MutableLiveData<List<Workmates>> mWorkmates = new MutableLiveData<>();
+    private MutableLiveData<List<Workmates>> mWorkmatesList = new MutableLiveData<>();
+    private MutableLiveData<Workmates>mWorkmatesMutableLiveData = new MutableLiveData<>();
 
     public WorkmateViewModel(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
         this.mRestaurantRepository = restaurantRepository;
         this.mWorkmatesRepository = workmatesRepository;
     }
 
-    public MutableLiveData<List<Workmates>> getWorkmates() {
-        return mWorkmates;
+    public MutableLiveData<Workmates>getWorkmatesMutableLiveData(String uid){
+        if (this.mWorkmatesMutableLiveData != null){
+            this.setWorkmatesMutableLiveData(uid);
+        }
+        return this.mWorkmatesMutableLiveData;
     }
-    public WorkmateViewModel(WorkmatesRepository workmatesRepository){
-        this.mWorkmatesRepository = workmatesRepository;
-
+    private void setWorkmatesMutableLiveData(String uid){
+        this.mWorkmatesRepository.getWorkmate(uid).addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()){
+                Workmates workmates = documentSnapshot.toObject(Workmates.class);
+                mWorkmatesMutableLiveData.setValue(workmates);
+            }
+        });
     }
 
 
+    public MutableLiveData<List<Workmates>> getWorkmatesList() {
+
+        if (mWorkmatesList != null) {
+
+            loadWorkmatesList();
+        }
+        return mWorkmatesList;
+    }
+
+    private void loadWorkmatesList() {
+        mWorkmatesRepository.getAllWorkmates().addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (queryDocumentSnapshots != null) {
+                List<DocumentSnapshot> workmateList = queryDocumentSnapshots.getDocuments();
+                List<Workmates> workmate = new ArrayList<>();
+                int size = workmateList.size();
+                for (int i = 0; i < size; i++) {
+                    Workmates workmates = workmateList.get(i).toObject(Workmates.class);
+                    workmate.add(workmates);
+                }
+                mWorkmatesList.setValue(workmate);
+            }
+        });
 
 
-
-
+    }
+    public void createWorkmate (String uid,String email,String name, String urlPicture){
+        mWorkmatesRepository.createWorkmates(uid, email, name, urlPicture);
+    }
 
 
 }

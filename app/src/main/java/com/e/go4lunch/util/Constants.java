@@ -1,8 +1,11 @@
 package com.e.go4lunch.util;
 
-import android.location.Location;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.e.go4lunch.models.myPlace.Location;
+import com.google.android.gms.maps.model.LatLng;
 
 public class Constants extends AppCompatActivity {
 
@@ -12,7 +15,13 @@ public class Constants extends AppCompatActivity {
     public static final String BASE_URL_PHOTO = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=";
     public static final String CONSUMER_KEY = "1247489415326371840-wvMEMazHZXIXod5bHpzsJtTREcmRWN";
     public static final String CONSUMER_SECRET ="wcCeXo8p7GQ4mv7om3vfwE9iIZMKlYCdq5cvcYU6WNFUc";
+    public static final int RADIUS = 10000;
+    public static final String TYPE = "restaurant";
+
+
 
 
 
 }
+
+

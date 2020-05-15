@@ -15,7 +15,7 @@ public class Injection {
     }
 
     public static WorkmatesRepository provideWorkmatesRepository(Context context) {
-        return WorkmatesRepository.getInstance();
+        return new WorkmatesRepository();
     }
 
     public static ViewModelFactory provideViewModelFactory(Context context) {

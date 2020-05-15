@@ -18,7 +18,6 @@ import retrofit2.Response;
 
 public class RestaurantRepository {
 
-    private List<ResultDetail>mResultDetails;
 
     private static  RestaurantRepository instance;
 

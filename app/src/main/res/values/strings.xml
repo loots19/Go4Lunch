@@ -47,4 +47,11 @@
     <string name="twitter_api_key" translatable="false">R1247489415326371840-8cwSQGaAyKQ0isKOOCC6WfMF2Ohp1C</string>
     <string name="twitter_api_secret" translatable="false">46eHsD5SQrxmdgY8JQtE7hEMtEaB1QGUTY86WjOkXyiBw</string>
 
+    <!-- REGISTER -->
+    <string name="input_error_email_invalid">enter a valid email</string>
+    <string name="registration_success">Registered Successfully</string>
+
+
+
+
 </resources>

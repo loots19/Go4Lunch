@@ -29,12 +29,16 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.e.go4lunch.R;
 import com.e.go4lunch.auth.AuthActivity;
 import com.e.go4lunch.auth.RegisterActivity;
+import com.e.go4lunch.injection.Injection;
+import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.MyPlace;
@@ -47,6 +51,7 @@ import com.e.go4lunch.restaurant.MapsFragment;
 import com.e.go4lunch.restaurant.RestaurantsFragment;
 import com.e.go4lunch.util.Constants;
 import com.e.go4lunch.workmates.ListFragment;
+import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
@@ -90,7 +95,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private ImageView mImageViewProfil;
     private TextView mTextViewName;
     private TextView mTextViewEmail;
-    private MyPlace mMyPlace;
+    private WorkmateViewModel mWorkmateViewModel;
+    private String mWorkmates;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -345,17 +351,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             this.mTextViewEmail.setText(email);
             this.mTextViewName.setText(name);
 
-         //  //  Get additional data from Firestore (Username)
-         //  WorkmatesRepository.getWorkmate(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-         //      @Override
-         //      public void onSuccess(DocumentSnapshot documentSnapshot) {
-         //          Workmates currentUser = documentSnapshot.toObject(Workmates.class);
-         //          String username = TextUtils.isEmpty(currentUser.getWorkmateName()) ? getString(Integer.parseInt("info_no_username_found")) : currentUser.getWorkmateName();
-         //          mTextViewName.setText(username);
-         //      }
-         //  });
+            //  Get additional data from Firestore (Username)
+
         }
     }
+
 
     private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
         return new OnSuccessListener<Void>() {
@@ -370,6 +370,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         };
     }
+
+
 
 
 }

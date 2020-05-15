@@ -14,13 +14,19 @@ public class Workmates {
 
     }
 
-    public Workmates( String workmateName, String workmateEmail, String urlPicture) {
-        this.workmateName = workmateName;
+
+    public Workmates(  String workmateEmail,String workmateName, String urlPicture) {
         this.workmateEmail = workmateEmail;
+        this.workmateName = workmateName;
         this.restaurantSelected = false;
         this.urlPicture = urlPicture;
     }
 
+    public Workmates(String workmateName, String workmateEmail) {
+        this.workmateName = workmateName;
+        this.workmateEmail = workmateEmail;
+        this.restaurantSelected = false;
+    }
     //---------Getters---------
 
     public String getWorkmateName() {

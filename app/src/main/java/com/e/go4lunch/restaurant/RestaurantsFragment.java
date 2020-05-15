@@ -23,6 +23,8 @@ import com.e.go4lunch.models.myPlace.Geometry;
 import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
+import com.e.go4lunch.util.Constants;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -60,32 +62,31 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
     }
 
-    private void subscribeObservers() {
-        mRestaurantViewModel.getRestaurantRepository().observe(this, new Observer<MyPlace>() {
-            @Override
-            public void onChanged(MyPlace myPlace) {
-                restaurants = new ArrayList<>();
-                List<Result> results = myPlace.getResults();
-                int size = results.size();
-                for (int i = 0; i < size; i++) {
-                    String placeId = results.get(i).getPlaceId();
-                    String name = results.get(i).getName();
-                    String address = results.get(i).getVicinity();
-                    String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
-                    double rating = results.get(i).getRating();
-                    Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
-                    if (results.get(i).getGeometry().getLocation() != null) {
-                        Location location = results.get(i).getGeometry().getLocation();
-                    Restaurant restaurant = new Restaurant(placeId,name,address,urlPhoto,openNow,location,rating);
-                    restaurants.add(restaurant);
-                    mAdapter.setRestaurants(restaurants);
-                    }
-                }
-            }
-        });
-    }
+   private void subscribeObservers() {
+       mRestaurantViewModel.getMyPlace().observe(this, new Observer<MyPlace>() {
+           @Override
+           public void onChanged(MyPlace myPlace) {
+               restaurants = new ArrayList<>();
+               List<Result> results = myPlace.getResults();
+               int size = results.size();
+               for (int i = 0; i < size; i++) {
+                   String placeId = results.get(i).getPlaceId();
+                   String name = results.get(i).getName();
+                   String address = results.get(i).getVicinity();
+                   String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
+                   double rating = results.get(i).getRating();
+                   Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
+                   if (results.get(i).getGeometry().getLocation() != null) {
+                       Location location = results.get(i).getGeometry().getLocation();
+                       Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
+                       restaurants.add(restaurant);
+                       mAdapter.setRestaurants(restaurants);
+                   }
+               }
+           }
+       });
 
-
+   }
 
 
     private void initialization() {
@@ -104,7 +105,8 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(mContext);
         this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
-        mRestaurantViewModel.init();
+
+        mRestaurantViewModel.setPlace(Constants.TYPE, "49.044238,2.304685", Constants.RADIUS);
 
     }
 

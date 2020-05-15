@@ -44,14 +44,8 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     ImageView mImageRestaurant;
 
 
-    RestaurantAdapter.OnNoteListener OnNoteListener;
-    Context mContext;
 
-    private LatLng currentPlace;
-    private static final int REQUEST_CALL = 10;
-    private Location lastLocation;
-    private double latitude, longitude;
-    private Intent mIntent;
+    RestaurantAdapter.OnNoteListener OnNoteListener;
 
 
     public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
@@ -59,6 +53,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         ButterKnife.bind(this, itemView);
         this.OnNoteListener = onNoteListener;
         itemView.setOnClickListener(this);
+
 
     }
 
@@ -89,6 +84,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         displayDistance(restaurant);
 
     }
+
     // set rating of the place
     private void displayRating(Restaurant restaurant) {
         if (restaurant.getRating() != 0) {
@@ -100,6 +96,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
             this.mRatingBar.setVisibility(View.GONE);
         }
     }
+
     // set distance of the place
     public void displayDistance(Restaurant restaurant) {
 
@@ -113,13 +110,14 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         double distanceF = distance / 1000;
         String rounded = String.format("%.0f", distanceF);
         mTvMetters.setText(rounded + " KMS");
+
+        // set opening hours of the place
     }
-    // set opening hours of the place
-    public void displayOpeningHours (Restaurant restaurant){
-        if (restaurant.getOpenNow()!= null) {
+
+    public void displayOpeningHours(Restaurant restaurant) {
+        if (restaurant.getOpenNow() != null) {
             if (restaurant.getOpenNow()) {
-                if (restaurant.getOpenNow())
-                    mTvTime.setText(R.string.Open);
+                mTvTime.setText(R.string.Open);
                 mTvTime.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.quantum_lightblue));
             } else {
                 mTvTime.setText(R.string.Close);
@@ -131,8 +129,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
             mTvTime.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.quantum_black_100));
         }
     }
+
     //set photo of the place
-    public void displayPhotoOfRestaurant(Restaurant restaurant){
+    public void displayPhotoOfRestaurant(Restaurant restaurant) {
         if (restaurant.getUrlPhoto() != null) {
             Glide.with(itemView)
                     .load(Constants.BASE_URL_PHOTO
@@ -142,6 +141,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
                     .into(mImageRestaurant);
         }
     }
+
 
 }
 

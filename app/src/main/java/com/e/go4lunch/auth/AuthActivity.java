@@ -3,17 +3,24 @@ package com.e.go4lunch.auth;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.e.go4lunch.injection.Injection;
+import com.e.go4lunch.injection.ViewModelFactory;
+import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.ui.MainActivity;
 import com.e.go4lunch.R;
 import com.e.go4lunch.util.Constants;
+import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -32,6 +39,8 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +61,10 @@ public class AuthActivity extends BaseActivity {
 
     //FOR DATA
     private static final int RC_SIGN_IN = 123;
+    private WorkmateViewModel mWorkmateViewModel;
+    private Context mContext;
+    private List<Workmates> mWorkmatesList;
+
 
 
     @Override
@@ -61,8 +74,9 @@ public class AuthActivity extends BaseActivity {
         setContentView(R.layout.auth_main);
         ButterKnife.bind(this); //Configure Butterknife
 
+        configureViewModel();
         alreadySigned();
-        createWorkmates();
+
 
     }
 
@@ -122,14 +136,16 @@ public class AuthActivity extends BaseActivity {
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK) {
+                subscribeObservers();
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                this.createWorkmates();
-                Toast.makeText(this, "" + user.getEmail(), Toast.LENGTH_SHORT).show();
-                startMapsActivity();
+
+                if (user != null) {
+                    Toast.makeText(this, "" + user.getEmail(), Toast.LENGTH_SHORT).show();
+                }
             } else { // ERRORS
                 if (response == null) {
                     Toast.makeText(this, "error_authentication_canceled", Toast.LENGTH_SHORT).show();
-                } else if (response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
+                } else if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
                     Toast.makeText(this, "no_network", Toast.LENGTH_SHORT).show();
                 } else if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
                     Toast.makeText(this, "unknown_error", Toast.LENGTH_SHORT).show();
@@ -185,31 +201,8 @@ public class AuthActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    // --------------------
-    // REST REQUEST
-    // --------------------
 
-    // 1 - Http request that create user in firestore
-    private void createWorkmates() {
-
-        if (this.getCurrentUser() != null) {
-
-            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
-            String workmateName = this.getCurrentUser().getDisplayName();
-            String workmateEmail = this.getCurrentUser().getEmail();
-            String uid = this.getCurrentUser().getUid();
-
-
-            Log.e ("name",workmateName);
-            Log.e ("emal",workmateEmail);
-            Log.e ("uid",uid);
-
-
-
-        }
-    }
-
-    public void alreadySigned(){
+    public void alreadySigned() {
         if (this.isCurrentUserLogged()) {
             this.startMapsActivity();
         }
@@ -220,16 +213,45 @@ public class AuthActivity extends BaseActivity {
     public void initTwitter() {
         TwitterConfig config = new TwitterConfig.Builder(this)
                 .logger(new DefaultLogger(Log.DEBUG))
-                .twitterAuthConfig(new TwitterAuthConfig(Constants.CONSUMER_KEY,Constants.CONSUMER_SECRET))
+                .twitterAuthConfig(new TwitterAuthConfig(Constants.CONSUMER_KEY, Constants.CONSUMER_SECRET))
                 .debug(false)
                 .build();
         Twitter.initialize(config);
 
 
+    }
+
+    // Configuring ViewModel
+    private void configureViewModel() {
+        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
+        this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
+
+    }
+
+    private void subscribeObservers() {
+        mWorkmateViewModel.getWorkmatesList().observe(this, new Observer<List<Workmates>>() {
+            @Override
+            public void onChanged(List<Workmates> workmates) {
+                mWorkmatesList = workmates;
+                createUserInFirestore();
+
+            }
+        });
+    }
+
+
+    private void createUserInFirestore(){
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        String urlPicture = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()).toString();
+
+        mWorkmateViewModel.createWorkmate(uid, email, name, urlPicture);
+        this.startMapsActivity();
+
 
     }
 }
-
 
 
 

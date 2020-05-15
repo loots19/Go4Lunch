@@ -23,12 +23,9 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     private List<Restaurant> mRestaurants;
 
 
-
-
-    public RestaurantAdapter( Context context, OnNoteListener onNoteListener) {
+    public RestaurantAdapter(Context context, OnNoteListener onNoteListener) {
         this.mContext = context;
         this.mOnNoteListener = onNoteListener;
-
 
 
     }
@@ -59,7 +56,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     }
 
     public void setRestaurants(List<Restaurant> results) {
-        mRestaurants= results;
+        mRestaurants = results;
         notifyDataSetChanged();
     }
 
