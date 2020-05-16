@@ -45,24 +45,27 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Retrofit;
 
 import static com.e.go4lunch.ui.MainActivity.EXTRA_AUTOCOMPLETE;
+import static java.security.AccessController.getContext;
 
 public class DetailsRestaurantActivity extends BaseActivity {
 
     @BindView(R.id.tv_name_restaurant_detail_activity)
     TextView mTvNameRestaurant;
-    @BindView(R.id.tv_adress_restaurant_detail_activity)
+    @BindView(R.id.tv_address_restaurant_detail_activity)
     TextView mTvAddressRestaurant;
     @BindView(R.id.iv_photo_restaurant_detail_activity)
     ImageView mIvPhotoRestaurant;
@@ -77,6 +80,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
     @BindView(R.id.Im_Star_detail)
     ImageView mImageViewStar;
 
+    private final static int REQUEST_CODE_CALL = 3;
     public static final String EXTRA_RESTAURANT = "restaurant";
     public static final String EXTRA_AUTOCOMPLETE = "restaurantId";
     private RestaurantDetailViewModel mRestaurantDetailViewModel;
@@ -120,16 +124,27 @@ public class DetailsRestaurantActivity extends BaseActivity {
         }
     }
 
-    // show phone number of the place
+    // call phone number of the place
     public void callRestaurant() {
         if (mResultDetail.getInternationalPhoneNumber() != null) {
-            Intent callIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mResultDetail.getInternationalPhoneNumber(), null));
-            startActivity(callIntent);
-        } else {
-            Toast.makeText(this, ("nono"), Toast.LENGTH_SHORT).show();
+            String phone = mResultDetail.getInternationalPhoneNumber();
+            Uri uri = Uri.parse("tel:" + phone);
+            Intent callIntent = new Intent(Intent.ACTION_CALL,uri);
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED)
+            {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CODE_CALL);
+            }
+            else
+            {
+                startActivity(callIntent);
+            }
+        }
+        else
+        {
+            Toast.makeText(this, getResources().getString(R.string.no_phone), Toast.LENGTH_LONG).show();
         }
     }
-
     // show webSite of the place
     public void openWebsitePage() {
         if (mResultDetail.getWebsite() != null) {
@@ -137,7 +152,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
             intent.setData(Uri.parse(mResultDetail.getWebsite()));
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Error text", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,  getResources().getString(R.string.no_web_site), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -154,13 +169,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
 
         });
-        mButtonLike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickOnLikeButton();
-
-            }
-        });
+        mButtonLike.setOnClickListener(v -> clickOnLikeButton());
 
     }
 
@@ -173,21 +182,14 @@ public class DetailsRestaurantActivity extends BaseActivity {
     }
 
     private void setupObservers() {
-        mRestaurantDetailViewModel.getPlaceDetail().observe(this, new Observer<PlaceDetail>() {
-            @Override
-            public void onChanged(PlaceDetail placeDetail) {
-                mResultDetail = placeDetail.getResult();
-
-
-            }
-        });
+        mRestaurantDetailViewModel.getPlaceDetail().observe(this, placeDetail -> mResultDetail = placeDetail.getResult());
 
 
     }
 
     private void clickOnLikeButton() {
         mImageViewStar.setImageResource(R.drawable.ic_star_black_24dp);
-        Toast.makeText(this, "add to favorites", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getResources().getString(R.string.add_to_favorites), Toast.LENGTH_LONG).show();
 
     }
 

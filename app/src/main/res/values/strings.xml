@@ -31,7 +31,13 @@
     <!--DETAIL ACTIVITY-->
     <string name="button_call">CALL</string>
     <string name="button_like">LIKE</string>
-    <string name="butoon_webSite">WEBSITE</string>
+    <string name="button_webSite">WEBSITE</string>
+    <string name="no_phone">Phone number not found</string>
+    <string name="no_web_site">Web site not found</string>
+    <string name="add_to_favorites">Restaurant add to your favorite list</string>
+
+
+
 
     <!--FRAGMENT HOLDER-->
     <string name="Open">Open</string>

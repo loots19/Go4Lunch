@@ -72,7 +72,7 @@ public class MapsFragment extends Fragment implements
     @BindView(R.id.fab)
     FloatingActionButton mFab;
     private GoogleMap mMap;
-    private GoogleApiClient mGoolgeApiClient;
+    private GoogleApiClient mGoogleApiClient;
     private Location lastLocation;
     private double latitude, longitude;
     private Marker currentUserLocationMarker;
@@ -128,7 +128,7 @@ public class MapsFragment extends Fragment implements
             case REQUEST_USER_LOCATION_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        if (mGoolgeApiClient == null) {
+                        if (mGoogleApiClient == null) {
                             buildGoogleApiClient();
                             mMap.setMyLocationEnabled(true);
 
@@ -144,13 +144,13 @@ public class MapsFragment extends Fragment implements
     }
 
     protected synchronized void buildGoogleApiClient() {
-        mGoolgeApiClient = new GoogleApiClient.Builder(Objects.requireNonNull(getActivity()))
+        mGoogleApiClient = new GoogleApiClient.Builder(Objects.requireNonNull(getActivity()))
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
 
-        mGoolgeApiClient.connect();
+        mGoogleApiClient.connect();
 
     }
 
@@ -162,7 +162,7 @@ public class MapsFragment extends Fragment implements
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoolgeApiClient, locationRequest, this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
 
         }
 
@@ -170,7 +170,7 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public void onConnectionSuspended(int i) {
-        mGoolgeApiClient.connect();
+        mGoogleApiClient.connect();
 
     }
 
@@ -187,8 +187,8 @@ public class MapsFragment extends Fragment implements
             currentUserLocationMarker.remove();
         }
         // Place current location marker
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
+        latitude = lastLocation.getLatitude();
+        longitude = lastLocation.getLongitude();
         Log.e("location", String.valueOf(latitude));
         mLatLng = new LatLng(latitude, longitude);
         Log.e("location", String.valueOf(mLatLng));
@@ -197,8 +197,8 @@ public class MapsFragment extends Fragment implements
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
 
-        if (mGoolgeApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoolgeApiClient, this);
+        if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
     }
@@ -258,7 +258,6 @@ public class MapsFragment extends Fragment implements
                     this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
 
                     mRestaurantViewModel.setPlace(Constants.TYPE, String.valueOf(mLatLng), Constants.RADIUS);
-
                     Log.e("wiew", String.valueOf(mLatLng));
 
     }
@@ -296,6 +295,7 @@ public class MapsFragment extends Fragment implements
                                     String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
                                     double rating = results.get(i).getRating();
                                     Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
+
                                     if (results.get(i).getGeometry().getLocation() != null) {
                                         com.e.go4lunch.models.myPlace.Location location = results.get(i).getGeometry().getLocation();
                                         Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);

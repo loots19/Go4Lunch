@@ -17,6 +17,7 @@ public class Constants extends AppCompatActivity {
     public static final String CONSUMER_SECRET ="wcCeXo8p7GQ4mv7om3vfwE9iIZMKlYCdq5cvcYU6WNFUc";
     public static final int RADIUS = 10000;
     public static final String TYPE = "restaurant";
+    //RestaurantRepository.getNearbyPlace("restaurant", "49.044238,2.304685", 10000);
 
 
 

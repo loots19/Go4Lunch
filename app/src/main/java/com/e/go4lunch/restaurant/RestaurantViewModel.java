@@ -12,25 +12,24 @@ import com.e.go4lunch.util.AbsentLiveData;
 import java.util.Objects;
 
 public class RestaurantViewModel extends ViewModel {
-   private RestaurantRepository mRestaurantRepository;
-   private MutableLiveData<GetPlace> getPlace = new MutableLiveData<>();
-   private LiveData<MyPlace> myPlace;
+    private RestaurantRepository mRestaurantRepository;
+    private MutableLiveData<GetPlace> getPlace = new MutableLiveData<>();
+    private LiveData<MyPlace> myPlace;
 
 
+    public RestaurantViewModel(RestaurantRepository restaurantRepository) {
+        this.mRestaurantRepository = restaurantRepository;
+        myPlace = Transformations.switchMap(getPlace, input -> {
+            if (input == null) {
+                return AbsentLiveData.create();
+            }
+            return mRestaurantRepository.getNearbyPlace(input.type, input.location, input.radius);
+        });
 
-   public RestaurantViewModel(RestaurantRepository restaurantRepository) {
-       this.mRestaurantRepository = restaurantRepository;
-       myPlace = Transformations.switchMap(getPlace,input ->{
-           if(input == null){
-               return AbsentLiveData.create();
-           }
-           return mRestaurantRepository.getNearbyPlace(input.type, input.location, input.radius);
-       });
+    }
 
-   }
-
-   public LiveData<MyPlace> getMyPlace() {
-       return myPlace;
+    public LiveData<MyPlace> getMyPlace() {
+        return myPlace;
     }
 
     public void setPlace(String type, String location, int radius) {
@@ -52,15 +51,8 @@ public class RestaurantViewModel extends ViewModel {
         }
 
 
-}
+    }
 
- //RestaurantRepository.getNearbyPlace("restaurant", "49.044238,2.304685", 10000);
- //  }
-
- //  public LiveData<MyPlace> getRestaurantRepository() {
- //      return mMutableLiveData;
-
- //  }
 
 }
 

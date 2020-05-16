@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".auth.AuthActivity">
+    tools:context=".auth.AuthActivity"
+    android:fillViewport="true">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/imageView4"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:alpha="0.2"
         android:scaleType="centerCrop"
         android:src="@drawable/lunch"
@@ -20,19 +24,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <!-- MAIN CONTAINER -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/imageView4"
-        app:layout_constraintTop_toTopOf="parent">
+
 
         <!--IMAGE ICON BOWL-->
         <ImageView
@@ -86,16 +78,14 @@
             android:id="@+id/btnFb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:text="@string/button_facebook_sign"
             app:iconSize="30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="60dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView5"
-            app:layout_constraintVertical_bias="0.23000002"
             app:roundedCorner="true"
             app:roundedCornerRadius="10dp" />
 
@@ -103,15 +93,14 @@
             android:id="@+id/btnGG"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:text="@string/button_google_sign"
             app:iconSize="30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="22dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnFb"
-            app:layout_constraintVertical_bias="0.06999999"
             app:roundedCorner="true"
             app:roundedCornerRadius="10dp" />
 
@@ -119,14 +108,13 @@
             android:id="@+id/btnTw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="22dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
             android:text="@string/button_twitter_sign"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnGG"
-            app:layout_constraintVertical_bias="0.13999999"
             app:roundedCorner="true"
             app:roundedCornerRadius="10dp" />
 
@@ -134,17 +122,17 @@
             android:id="@+id/btnLog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/button"
+            android:layout_marginTop="22dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
             android:backgroundTint="@android:color/holo_blue_bright"
             android:text="Email and Password"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnTw"
-            app:layout_constraintVertical_bias="0.32999998" />
+            app:layout_constraintTop_toBottomOf="@+id/btnTw" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

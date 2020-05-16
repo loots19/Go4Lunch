@@ -7,6 +7,7 @@
     tools:context=".restaurant.DetailsRestaurantActivity"
     tools:layout_editor_absoluteY="25dp">
 
+
     <ImageView
         android:id="@+id/iv_photo_restaurant_detail_activity"
         android:layout_width="match_parent"
@@ -37,7 +38,6 @@
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
 
@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
 
     <TextView
-        android:id="@+id/tv_adress_restaurant_detail_activity"
+        android:id="@+id/tv_address_restaurant_detail_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -110,7 +110,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:drawableTop="@drawable/ic_public_black_24dp"
-            android:text="@string/butoon_webSite"
+            android:text="@string/button_webSite"
             android:textColor="@color/colorPrimary" />
 
 

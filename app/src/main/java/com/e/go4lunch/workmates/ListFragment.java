@@ -78,7 +78,7 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
                     String email = mWorkmatesList.get(i).getWorkmateEmail();
                     String url = mWorkmatesList.get(i).getUrlPicture();
                     Workmates workmates1 = new Workmates(name,email,url);
-                    Log.e("newnew", name);
+                    Log.e("viewModelWorkmate", name);
 
                     mWorkmatesList.add(workmates1);
                     mWorkmatesAdapter.setWorkmates(mWorkmatesList);
