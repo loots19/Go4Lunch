@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.e.go4lunch.models.myPlace.Location;
 import com.google.android.gms.maps.model.LatLng;
 
-public class Constants extends AppCompatActivity {
+public class Constants  {
 
 
     public static final String BASE_URL = "https://maps.googleapis.com/maps/";
@@ -17,7 +17,7 @@ public class Constants extends AppCompatActivity {
     public static final String CONSUMER_SECRET ="wcCeXo8p7GQ4mv7om3vfwE9iIZMKlYCdq5cvcYU6WNFUc";
     public static final int RADIUS = 10000;
     public static final String TYPE = "restaurant";
-    //RestaurantRepository.getNearbyPlace("restaurant", "49.044238,2.304685", 10000);
+    //Restaurant "49.044238,2.304685"
 
 
 

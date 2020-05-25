@@ -10,9 +10,11 @@
     <string name="button_google_sign">Sign in with Google</string>
     <string name="button_twitter_sign">Sign in with Twitter</string>
     <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
+
     <!-- FACEBOOK PURPOSE -->
     <string name="facebook_application_id" translatable="false">515858332701600</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb515858332701600</string>
+
     <!-- BOTTOM NAVIGATION VIEW -->
     <string name="bottom_navigation_menu_mapView">MapView</string>
     <string name="bottom_navigation_menu_listView">ListView</string>
@@ -35,8 +37,7 @@
     <string name="no_phone">Phone number not found</string>
     <string name="no_web_site">Web site not found</string>
     <string name="add_to_favorites">Restaurant add to your favorite list</string>
-
-
+    <string name="remove_to_favorites">Restaurant remove to your favorite list</string>
 
 
     <!--FRAGMENT HOLDER-->
@@ -45,17 +46,26 @@
     <string name="opening_hour_not_available">opening hours not available</string>
     <string name="list_unit_distance">%1$sm</string>
 
-    <!-- NOTIFICATION SERVICE -->
+    <!-- NOTIFICATION WORKMANAGER -->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
-    <string name="notification_title">"Vous avez reçu une notification"</string>
+    <string name="notification_title">"Go4Lunch"</string>
+    <string name="notification_message">you have a planned lunch</string>
 
     <!-- TWITTER -->
     <string name="twitter_api_key" translatable="false">R1247489415326371840-8cwSQGaAyKQ0isKOOCC6WfMF2Ohp1C</string>
     <string name="twitter_api_secret" translatable="false">46eHsD5SQrxmdgY8JQtE7hEMtEaB1QGUTY86WjOkXyiBw</string>
 
     <!-- REGISTER -->
-    <string name="input_error_email_invalid">enter a valid email</string>
-    <string name="registration_success">Registered Successfully</string>
+    <string name="input_error_email_invalid">enter a valid email!</string>
+    <string name="Registered_Successfully">Registered Successfully</string>
+    <string name="Please_enter_name">Please enter name!</string>
+    <string name="Please_enter_email">Please enter email…</string>
+
+
+    <!-- HOLDER WORKMATES -->
+    <string name="is_eating">is eating</string>
+
+
 
 
 

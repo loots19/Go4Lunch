@@ -2,8 +2,10 @@ package com.e.go4lunch.restaurant;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +32,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.e.go4lunch.R;
+import com.e.go4lunch.injection.Globals;
 import com.e.go4lunch.injection.Injection;
 import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
@@ -59,7 +63,9 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.e.go4lunch.restaurant.DetailsRestaurantActivity.EXTRA_RESTAURANT;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class MapsFragment extends Fragment implements
         OnMapReadyCallback,
@@ -68,20 +74,19 @@ public class MapsFragment extends Fragment implements
         LocationListener {
 
 
-    private static final int REQUEST_USER_LOCATION_CODE = 99;
     @BindView(R.id.fab)
     FloatingActionButton mFab;
+
+    private static final int REQUEST_USER_LOCATION_CODE = 99;
+    public static final String MY_PREF = "MY_PREF";
+    public static final String LAT = "LAT";
+    public static final String LNG = "LNG";
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
-    private Location lastLocation;
-    private double latitude, longitude;
     private Marker currentUserLocationMarker;
     private RestaurantViewModel mRestaurantViewModel;
     private Context mContext;
     private List<Restaurant> restaurants = new ArrayList<>();
-    private LatLng mLatLng;
-
-
 
 
     public MapsFragment() {
@@ -97,7 +102,6 @@ public class MapsFragment extends Fragment implements
         ButterKnife.bind(this, v);
 
         configureViewModel();
-
 
 
         //Request Runtime permission
@@ -181,27 +185,31 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public void onLocationChanged(Location location) {
-
-        lastLocation = location;
         if (currentUserLocationMarker != null) {
             currentUserLocationMarker.remove();
         }
         // Place current location marker
-        latitude = lastLocation.getLatitude();
-        longitude = lastLocation.getLongitude();
-        Log.e("location", String.valueOf(latitude));
-        mLatLng = new LatLng(latitude, longitude);
-        Log.e("location", String.valueOf(mLatLng));
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        LatLng latLng = new LatLng(latitude, longitude);
         // move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        SharedPreferences prefs = Objects.requireNonNull(getActivity()).getSharedPreferences("MY_PREF", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = prefs.edit();
+        mEditor.putString(LAT, String.valueOf(latitude));
+        mEditor.putString(LNG, String.valueOf(longitude));
+        mEditor.apply();
+
 
 
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
 
+
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -219,8 +227,6 @@ public class MapsFragment extends Fragment implements
                     subscribeObservers();
                 }
             });
-
-
 
 
         }
@@ -254,73 +260,74 @@ public class MapsFragment extends Fragment implements
 
     // Configuring ViewModel
     private void configureViewModel() {
-                    ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(mContext);
-                    this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
-
-                    mRestaurantViewModel.setPlace(Constants.TYPE, String.valueOf(mLatLng), Constants.RADIUS);
-                    Log.e("wiew", String.valueOf(mLatLng));
+        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(mContext);
+        this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
+        Globals globals = (Globals)getApplicationContext();
+        String lat = globals.getLat();
+        String lng = globals.getLng();
+        mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " +lng, Constants.RADIUS);
 
     }
+
     private void subscribeObservers() {
-                    mRestaurantViewModel.getMyPlace().observe(this, new Observer<MyPlace>() {
-                        @Override
-                        public void onChanged(MyPlace myPlace) {
-                            restaurants = new ArrayList<>();
-                            List<Result> results = myPlace.getResults();
-                            if (mMap != null) {
-                                // This loop will go through all the results and add marker on each location.
-                                for (int i = 0; i < results.size(); i++) {
+        mRestaurantViewModel.getMyPlace().observe(this, new Observer<MyPlace>() {
+            @Override
+            public void onChanged(MyPlace myPlace) {
+                restaurants = new ArrayList<>();
+                List<Result> results = myPlace.getResults();
+                if (mMap != null) {
+                    // This loop will go through all the results and add marker on each location.
+                    for (int i = 0; i < results.size(); i++) {
 
-                                    Double lat = results.get(i).getGeometry().getLocation().getLat();
-                                    Double lng = results.get(i).getGeometry().getLocation().getLng();
-                                    String placeName = results.get(i).getName();
-                                    String vicinity = results.get(i).getVicinity();
+                        Double lat = results.get(i).getGeometry().getLocation().getLat();
+                        Double lng = results.get(i).getGeometry().getLocation().getLng();
+                        String placeName = results.get(i).getName();
+                        String vicinity = results.get(i).getVicinity();
 
-                                    MarkerOptions markerOptions = new MarkerOptions();
-                                    LatLng latLng = new LatLng(lat, lng);
-                                    //Position of Marker on Map
-                                    markerOptions.position(latLng);
-                                    // Adding Title to the Marker
-                                    markerOptions.title(placeName + " : " + vicinity);
-                                    // Adding Marker to the Camera.
-                                    // Adding colour to the marker
-                                    markerOptions.icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_restaurant_black_24dp));
-                                    // move map camera
-                                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                                    mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        LatLng latLng = new LatLng(lat, lng);
+                        //Position of Marker on Map
+                        markerOptions.position(latLng);
+                        // Adding Title to the Marker
+                        markerOptions.title(placeName + " : " + vicinity);
+                        // Adding Marker to the Camera.
+                        // Adding colour to the marker
+                        markerOptions.icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_restaurant_black_24dp));
+                        // move map camera
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
-                                    String placeId = results.get(i).getPlaceId();
-                                    String name = results.get(i).getName();
-                                    String address = results.get(i).getVicinity();
-                                    String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
-                                    double rating = results.get(i).getRating();
-                                    Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
+                        String placeId = results.get(i).getPlaceId();
+                        String name = results.get(i).getName();
+                        String address = results.get(i).getVicinity();
+                        String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
+                        double rating = results.get(i).getRating();
+                        Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
 
-                                    if (results.get(i).getGeometry().getLocation() != null) {
-                                        com.e.go4lunch.models.myPlace.Location location = results.get(i).getGeometry().getLocation();
-                                        Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
+                        if (results.get(i).getGeometry().getLocation() != null) {
+                            com.e.go4lunch.models.myPlace.Location location = results.get(i).getGeometry().getLocation();
+                            Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
 
-                                        restaurants.add(restaurant);
+                            restaurants.add(restaurant);
 
-                                        Marker marker = mMap.addMarker(markerOptions);
-                                        Gson gson = new Gson();
-                                        String jsonSelectedRestaurant = gson.toJson(restaurants.get(i));
-                                        marker.setTag(jsonSelectedRestaurant);
-                                        Log.e("marker", String.valueOf(restaurants.get(i).getPlaceId()));
+                            Marker marker = mMap.addMarker(markerOptions);
+                            Gson gson = new Gson();
+                            String jsonSelectedRestaurant = gson.toJson(restaurants.get(i));
+                            marker.setTag(jsonSelectedRestaurant);
+                            Log.e("marker", String.valueOf(restaurants.get(i).getPlaceId()));
 
-
-                                    }
-
-                                }
-                            }
 
                         }
 
-
-                    });
-
+                    }
                 }
 
+            }
+
+
+        });
+
+    }
 
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
@@ -341,9 +348,6 @@ public class MapsFragment extends Fragment implements
         intent.putExtra(EXTRA_RESTAURANT, placeId);
         startActivity(intent);
     }
-
-
-
 
 
 }

@@ -27,9 +27,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.e.go4lunch.R;
 import com.e.go4lunch.Retrofit.RetrofitRequest;
+import com.e.go4lunch.injection.Globals;
 import com.e.go4lunch.injection.Injection;
 import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
+import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
@@ -37,6 +39,7 @@ import com.e.go4lunch.models.placeDetail.ResultDetail;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.util.Constants;
+import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
@@ -47,6 +50,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -84,8 +88,13 @@ public class DetailsRestaurantActivity extends BaseActivity {
     public static final String EXTRA_RESTAURANT = "restaurant";
     public static final String EXTRA_AUTOCOMPLETE = "restaurantId";
     private RestaurantDetailViewModel mRestaurantDetailViewModel;
+    private RestaurantViewModel mRestaurantViewModel;
+    private WorkmateViewModel mWorkmateViewModel;
     private ResultDetail mResultDetail;
     private String placeId;
+    private String workmateId;
+    private Workmates currentWorkmate;
+    private Restaurant mRestaurant;
     private static List<Restaurant> restaurants = new ArrayList<>();
 
 
@@ -95,10 +104,14 @@ public class DetailsRestaurantActivity extends BaseActivity {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
 
+
         userActionClick();
         getIncomingIntent();
-        configureViewModel();
+        configureViewModelDetail();
+        configureViewModelWorkmate();
+        configureViewModelRestaurant();
         setupObservers();
+        getCurrentWorkmate();
 
 
     }
@@ -129,22 +142,18 @@ public class DetailsRestaurantActivity extends BaseActivity {
         if (mResultDetail.getInternationalPhoneNumber() != null) {
             String phone = mResultDetail.getInternationalPhoneNumber();
             Uri uri = Uri.parse("tel:" + phone);
-            Intent callIntent = new Intent(Intent.ACTION_CALL,uri);
+            Intent callIntent = new Intent(Intent.ACTION_CALL, uri);
 
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED)
-            {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CODE_CALL);
-            }
-            else
-            {
+            } else {
                 startActivity(callIntent);
             }
-        }
-        else
-        {
+        } else {
             Toast.makeText(this, getResources().getString(R.string.no_phone), Toast.LENGTH_LONG).show();
         }
     }
+
     // show webSite of the place
     public void openWebsitePage() {
         if (mResultDetail.getWebsite() != null) {
@@ -152,33 +161,43 @@ public class DetailsRestaurantActivity extends BaseActivity {
             intent.setData(Uri.parse(mResultDetail.getWebsite()));
             startActivity(intent);
         } else {
-            Toast.makeText(this,  getResources().getString(R.string.no_web_site), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getResources().getString(R.string.no_web_site), Toast.LENGTH_LONG).show();
         }
     }
 
     // Action of user
     public void userActionClick() {
-        mButtonCall.setOnClickListener(v -> {
-            callRestaurant();
+        mButtonCall.setOnClickListener(v -> callRestaurant());
 
-        });
-        mButtonWeb.setOnClickListener(v ->
-                openWebsitePage()
-        );
+        mButtonWeb.setOnClickListener(v -> openWebsitePage());
+
         mfab.setOnClickListener(v -> {
-
-
         });
+
         mButtonLike.setOnClickListener(v -> clickOnLikeButton());
+
 
     }
 
 
     // Configuring ViewModel
-    private void configureViewModel() {
+    private void configureViewModelDetail() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.mRestaurantDetailViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantDetailViewModel.class);
         mRestaurantDetailViewModel.setInput(placeId);
+    }
+
+    private void configureViewModelWorkmate() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
+        this.mWorkmateViewModel = ViewModelProviders.of(this, viewModelFactory).get(WorkmateViewModel.class);
+        this.getCurrentWorkmate();
+    }
+
+    private void configureViewModelRestaurant() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
+        this.mRestaurantViewModel = ViewModelProviders.of(this, viewModelFactory).get(RestaurantViewModel.class);
+
+
     }
 
     private void setupObservers() {
@@ -187,14 +206,59 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
     }
 
-    private void clickOnLikeButton() {
-        mImageViewStar.setImageResource(R.drawable.ic_star_black_24dp);
-        Toast.makeText(this, getResources().getString(R.string.add_to_favorites), Toast.LENGTH_LONG).show();
-
+    private void getCurrentWorkmate() {
+        workmateId = FirebaseAuth.getInstance().getUid();
+        mWorkmateViewModel.getWorkmatesMutableLiveData(workmateId).observe(this, new Observer<Workmates>() {
+            @Override
+            public void onChanged(Workmates workmates) {
+                currentWorkmate = workmates;
+            }
+        });
     }
 
 
+    private void clickOnLikeButton() {
+
+        List<Restaurant> restaurantList;
+        if (currentWorkmate.getRestaurantListFav() == null) {
+            restaurantList = new ArrayList<>();
+
+        } else {
+            restaurantList = currentWorkmate.getRestaurantListFav();
+        }
+        if (!currentWorkmate.getRestaurantListFav().contains(mRestaurant)) {
+            restaurantList.add(mRestaurant);
+        } else {
+            restaurantList.remove(mRestaurant);
+        }
+        this.mRestaurantViewModel.updateRestaurantListFavorite(workmateId, restaurantList);
+        Log.e("testUpdate", String.valueOf(restaurantList));
+        this.updateLike();
+
+    }
+
+    private void updateLike() {
+        boolean fav = false;
+
+        if (currentWorkmate.getRestaurantListFav() != null) {
+
+            if (currentWorkmate.getRestaurantListFav().contains(mRestaurant)) {
+                fav = true;
+            }
+        }
+        if (fav) {
+            this.mImageViewStar.setImageResource(R.drawable.ic_star_black_24dp);
+
+            Toast.makeText(this, getResources().getString(R.string.add_to_favorites), Toast.LENGTH_LONG).show();
+
+        } else {
+            this.mImageViewStar.setImageResource(R.drawable.ic_star_border_black_24dp);
+            Toast.makeText(this, getResources().getString(R.string.remove_to_favorites), Toast.LENGTH_LONG).show();
+
+        }
+
+
+    }
+
 }
-
-
 

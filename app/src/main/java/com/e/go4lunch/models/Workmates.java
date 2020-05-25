@@ -1,5 +1,8 @@
 package com.e.go4lunch.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 public class Workmates {
@@ -7,8 +10,10 @@ public class Workmates {
 
     private String workmateName;
     private String workmateEmail;
-    private boolean restaurantSelected;
+    private boolean restaurantLiked;
     private String urlPicture;
+    private List<Restaurant> restaurantListFav;
+
 
     public Workmates(){
 
@@ -18,15 +23,12 @@ public class Workmates {
     public Workmates(  String workmateEmail,String workmateName, String urlPicture) {
         this.workmateEmail = workmateEmail;
         this.workmateName = workmateName;
-        this.restaurantSelected = false;
+        this.restaurantLiked = false;
         this.urlPicture = urlPicture;
+        this.restaurantListFav = new ArrayList<>();
     }
 
-    public Workmates(String workmateName, String workmateEmail) {
-        this.workmateName = workmateName;
-        this.workmateEmail = workmateEmail;
-        this.restaurantSelected = false;
-    }
+
     //---------Getters---------
 
     public String getWorkmateName() {
@@ -38,12 +40,21 @@ public class Workmates {
     }
 
     public boolean isRestaurantSelected() {
-        return restaurantSelected;
+        return restaurantLiked;
     }
 
     public String getUrlPicture() {
         return urlPicture;
     }
+
+    public boolean isRestaurantLiked() {
+        return restaurantLiked;
+    }
+
+    public List<Restaurant> getRestaurantListFav() {
+        return restaurantListFav;
+    }
+
     //---------Setters---------
 
     public void setWorkmateName(String workmateName) {
@@ -55,10 +66,18 @@ public class Workmates {
     }
 
     public void setRestaurantSelected(boolean restaurantSelected) {
-        this.restaurantSelected = restaurantSelected;
+        this.restaurantLiked = restaurantSelected;
     }
 
     public void setUrlPicture(String urlPicture) {
         this.urlPicture = urlPicture;
+    }
+
+    public void setRestaurantLiked(boolean restaurantLiked) {
+        this.restaurantLiked = restaurantLiked;
+    }
+
+    public void setRestaurantListFav(List<Restaurant> restaurantListFav) {
+        this.restaurantListFav = restaurantListFav;
     }
 }

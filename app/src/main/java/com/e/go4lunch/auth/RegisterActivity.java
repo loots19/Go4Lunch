@@ -3,6 +3,7 @@ package com.e.go4lunch.auth;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
@@ -32,6 +33,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.List;
+import java.util.Objects;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -51,6 +55,8 @@ public class RegisterActivity extends BaseActivity {
 
     FirebaseAuth mFirebaseAuth;
     private WorkmateViewModel mWorkmateViewModel;
+    private List<Workmates> mWorkmatesList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +67,11 @@ public class RegisterActivity extends BaseActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         configureViewModel();
 
+
         mButtonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 registerNewWorkmate();
-                createUserInFirestore();
             }
         });
     }
@@ -75,11 +81,13 @@ public class RegisterActivity extends BaseActivity {
 
         String name, email, password;
         name = mNameRegister.getText().toString().trim();
+        Log.e("testname", name);
         email = mEmailRegister.getText().toString();
         password = mPasswordRegister.getText().toString();
 
+
         if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getApplicationContext(), "Please enter email...", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),  getResources().getString(R.string.Please_enter_email), Toast.LENGTH_LONG).show();
             return;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -88,34 +96,28 @@ public class RegisterActivity extends BaseActivity {
             return;
         }
         if (TextUtils.isEmpty(password)) {
-            Toast.makeText(getApplicationContext(), "Please enter password!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registered_Successfully), Toast.LENGTH_LONG).show();
             return;
         }
         if (TextUtils.isEmpty(name)) {
-            Toast.makeText(getApplicationContext(), "Please enter name!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.Please_enter_name), Toast.LENGTH_LONG).show();
             return;
         }
 
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-
-                            Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
-                            mProgressBar.setVisibility(View.GONE);
-                            createUserInFirestore();
-
-                            startMapsActivity();
-                        } else {
-                            Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                            mProgressBar.setVisibility(View.GONE);
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        createUserInFirestore();
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registered_Successfully), Toast.LENGTH_LONG).show();
+                        mProgressBar.setVisibility(View.GONE);
+                        startMapsActivity();
+                    } else {
+                        Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        mProgressBar.setVisibility(View.GONE);
                     }
                 });
 
     }
-
 
 
     private void startMapsActivity() {
@@ -127,28 +129,22 @@ public class RegisterActivity extends BaseActivity {
     // --------------------
 
     //  Http request that create user in firestore
-    private void createUserInFirestore() {
-
-        if (this.getCurrentUser() != null) {
-
-            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
-            String workmateName = this.getCurrentUser().getDisplayName();
-            String workmateEmail = this.getCurrentUser().getEmail();
-            String uid = this.getCurrentUser().getUid();
-            mWorkmateViewModel.createWorkmate(uid, workmateEmail, workmateName, urlPicture);
-
-            Log.e("name", workmateName);
-            Log.e("email", workmateEmail);
-            Log.e("uid", uid);
-
-
-        }
-    }
 
     // Configuring ViewModel
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
+
+    }
+
+    private void createUserInFirestore() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        String email = mEmailRegister.getText().toString();
+        String name = mNameRegister.getText().toString();
+        Log.e("testname", name);
+        String urlPicture = null;
+        mWorkmateViewModel.createWorkmate(uid, email, name, urlPicture);
     }
 
 }
+

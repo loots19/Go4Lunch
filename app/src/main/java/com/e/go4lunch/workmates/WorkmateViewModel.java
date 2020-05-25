@@ -1,7 +1,10 @@
 package com.e.go4lunch.workmates;
 
 import android.app.DownloadManager;
+import android.content.Context;
+import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -68,6 +71,9 @@ public class WorkmateViewModel extends ViewModel {
 
 
     }
+
+
+
     public void createWorkmate (String uid,String email,String name, String urlPicture){
         mWorkmatesRepository.createWorkmates(uid, email, name, urlPicture);
     }

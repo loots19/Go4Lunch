@@ -5,16 +5,23 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.e.go4lunch.models.Restaurant;
+import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.util.AbsentLiveData;
+import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class RestaurantViewModel extends ViewModel {
     private RestaurantRepository mRestaurantRepository;
     private MutableLiveData<GetPlace> getPlace = new MutableLiveData<>();
     private LiveData<MyPlace> myPlace;
+    private MutableLiveData<List<Restaurant>> mRestaurantList = new MutableLiveData<>();
+    private MutableLiveData<Restaurant>mRestaurantMutableLiveData = new MutableLiveData<>();
 
 
     public RestaurantViewModel(RestaurantRepository restaurantRepository) {
@@ -53,8 +60,24 @@ public class RestaurantViewModel extends ViewModel {
 
     }
 
+    public void createRestaurant(String placeId,String name,String address,List<Workmates> workmatesList){
+        this.mRestaurantRepository.createRestaurant(placeId, name, address, workmatesList);
+    }
 
-}
+    public void updateRestaurantListFavorite (String uid, List<Restaurant> restaurantList){
+        this.mRestaurantRepository.updateRestaurantListFavorites(uid, restaurantList);
+    }
+
+
+
+
+
+
+    }
+
+
+
+
 
 
 

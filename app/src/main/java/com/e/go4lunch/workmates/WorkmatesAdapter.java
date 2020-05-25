@@ -52,7 +52,7 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesHolder>  {
 
     }
     public void setWorkmates(List<Workmates> workmatesList) {
-        mWorkmates= workmatesList;
+        mWorkmates = workmatesList;
         notifyDataSetChanged();
     }
 

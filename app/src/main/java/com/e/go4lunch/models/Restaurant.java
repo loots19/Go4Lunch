@@ -10,6 +10,8 @@ import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
+
 public class Restaurant {
 
     private String placeId;
@@ -22,6 +24,7 @@ public class Restaurant {
     private int distanceCurrentuser;
     private Location mLocation;
     private double rating;
+    private List<Workmates> mWorkmatesList;
 
 
     public Restaurant(String placeId, String name, String address, String urlPhoto, String phoneNumber, String webSite, Location location, double rating) {
@@ -44,6 +47,13 @@ public class Restaurant {
         this.openNow = openNow;
         mLocation = location;
         this.rating = rating;
+    }
+    // Constructor for Firebase
+    public Restaurant(String placeId, String name, String address,List<Workmates> workmatesList) {
+        this.placeId = placeId;
+        this.name = name;
+        this.address = address;
+        this.mWorkmatesList = workmatesList;
     }
 
     //---------Getters---------
@@ -88,6 +98,9 @@ public class Restaurant {
         return rating;
     }
 
+    public List<Workmates> getWorkmatesList() {
+        return mWorkmatesList;
+    }
     //---------Setters---------
 
     public void setPlaceId(String placeId) {
@@ -128,5 +141,9 @@ public class Restaurant {
 
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+    public void setWorkmatesList(List<Workmates> workmatesList) {
+        mWorkmatesList = workmatesList;
     }
 }

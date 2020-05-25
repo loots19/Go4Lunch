@@ -26,22 +26,29 @@ public class WorkmatesHolder extends RecyclerView.ViewHolder implements View.OnC
 
     public WorkmatesHolder(@NonNull View itemView, WorkmatesAdapter.OnNoteListener onNoteListener) {
         super(itemView);
-        ButterKnife.bind(this,itemView);
+        ButterKnife.bind(this, itemView);
         this.OnNoteListener = onNoteListener;
         itemView.setOnClickListener(this);
 
     }
-    public void update(Workmates workmates){
-        Glide.with(itemView)
-                .load(workmates.getUrlPicture())
-                .apply(RequestOptions.circleCropTransform())
-                .into(mImageView);
-        String text = (workmates.getWorkmateName()+"is eating");
+
+    public void update(Workmates workmates) {
+        if (workmates.getUrlPicture() != null) {
+            Glide.with(itemView)
+                    .load(workmates.getUrlPicture())
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(mImageView);
+        } else {
+            Glide.with(itemView)
+                    .load(R.drawable.ic_people_black_24dp)
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(mImageView);
+
+        }
+        String text = (workmates.getWorkmateName() + " " + itemView.getContext().getResources().getString(R.string.is_eating));
         mTextView.setText(text);
 
     }
-
-
 
 
     @Override

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
+import com.e.go4lunch.injection.Globals;
 import com.e.go4lunch.injection.Injection;
 import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
@@ -33,6 +34,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 
 public class RestaurantsFragment extends Fragment implements RestaurantAdapter.OnNoteListener {
     @BindView(R.id.recycler_view_restaurant)
@@ -43,6 +46,8 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     private RestaurantAdapter mAdapter;
     private Context mContext;
     private static List<Restaurant> restaurants = new ArrayList<>();
+    Globals mGlobals;
+
 
 
 
@@ -57,6 +62,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         configureViewModel();
         initialization();
         subscribeObservers();
+
 
         return view;
 
@@ -106,7 +112,11 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(mContext);
         this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
 
-        mRestaurantViewModel.setPlace(Constants.TYPE, "49.044238,2.304685", Constants.RADIUS);
+        Globals globals = (Globals)getApplicationContext();
+        String lat = globals.getLat();
+        Log.e("testGlobalsFrag",lat);
+        String lng = globals.getLng();
+        mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " +lng, Constants.RADIUS);
 
     }
 

@@ -66,7 +66,6 @@ public class AuthActivity extends BaseActivity {
     private List<Workmates> mWorkmatesList;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -240,10 +239,11 @@ public class AuthActivity extends BaseActivity {
     }
 
 
-    private void createUserInFirestore(){
+    private void createUserInFirestore() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        Log.e("testname", name);
         String urlPicture = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()).toString();
 
         mWorkmateViewModel.createWorkmate(uid, email, name, urlPicture);

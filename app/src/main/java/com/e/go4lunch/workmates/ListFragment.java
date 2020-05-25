@@ -47,6 +47,7 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
         ButterKnife.bind(this,view);
 
         configureRecyclerView();
+
         configureViewModel();
         subscribeObservers();
 
@@ -57,36 +58,19 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
     private void configureViewModel(){
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(mContext);
         this.mWorkmateViewModel = ViewModelProviders.of(this,mViewModelFactory).get(WorkmateViewModel.class);
-        subscribeObservers();
+
     }
     // Configuring RecyclerView
     private void configureRecyclerView(){
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
         mRecyclerView.addItemDecoration(dividerItemDecoration);
+        mWorkmatesAdapter = new WorkmatesAdapter(this.mContext, this);
         mRecyclerView.setAdapter(mWorkmatesAdapter);
 
     }
     private void subscribeObservers(){
-        mWorkmateViewModel.getWorkmatesList().observe(this, new Observer<List<Workmates>>() {
-            @Override
-            public void onChanged(List<Workmates> workmates) {
-                mWorkmatesList = new ArrayList<>();
-                int size = mWorkmatesList.size();
-                for (int i = 0; i < size; i++){
-                    String name = mWorkmatesList.get(i).getWorkmateName();
-                    String email = mWorkmatesList.get(i).getWorkmateEmail();
-                    String url = mWorkmatesList.get(i).getUrlPicture();
-                    Workmates workmates1 = new Workmates(name,email,url);
-                    Log.e("viewModelWorkmate", name);
-
-                    mWorkmatesList.add(workmates1);
-                    mWorkmatesAdapter.setWorkmates(mWorkmatesList);
-                }
-
-
-            }
-        });
+        mWorkmateViewModel.getWorkmatesList().observe(this, workmates -> mWorkmatesAdapter.setWorkmates(workmates));
     }
 
     @Override

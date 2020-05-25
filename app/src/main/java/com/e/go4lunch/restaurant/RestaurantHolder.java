@@ -1,8 +1,11 @@
 package com.e.go4lunch.restaurant;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -15,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.e.go4lunch.R;
+import com.e.go4lunch.injection.Globals;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.util.Constants;
@@ -24,6 +28,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.content.Context.MODE_PRIVATE;
+import static com.e.go4lunch.restaurant.MapsFragment.MY_PREF;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class RestaurantHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -42,7 +50,6 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     RatingBar mRatingBar;
     @BindView(R.id.iv_photo_restaurant_item)
     ImageView mImageRestaurant;
-
 
 
     RestaurantAdapter.OnNoteListener OnNoteListener;
@@ -99,10 +106,12 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
 
     // set distance of the place
     public void displayDistance(Restaurant restaurant) {
-
+        Globals globals = (Globals) getApplicationContext();
+        String lat = globals.getLat();
+        String lng = globals.getLng();
         Location currentLocation = new Location("locationA");
-        currentLocation.setLatitude(49.044238);
-        currentLocation.setLongitude(2.304685);
+        currentLocation.setLatitude(Double.parseDouble(lat));
+        currentLocation.setLongitude(Double.parseDouble(lng));
         Location destination = new Location("locationB");
         destination.setLatitude(restaurant.getLocation().getLat());
         destination.setLongitude(restaurant.getLocation().getLng());
@@ -111,9 +120,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         String rounded = String.format("%.0f", distanceF);
         mTvMetters.setText(rounded + " KMS");
 
-        // set opening hours of the place
     }
 
+    // set opening hours of the place
     public void displayOpeningHours(Restaurant restaurant) {
         if (restaurant.getOpenNow() != null) {
             if (restaurant.getOpenNow()) {

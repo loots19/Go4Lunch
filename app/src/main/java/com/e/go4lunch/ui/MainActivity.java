@@ -31,6 +31,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -44,6 +49,7 @@ import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
+import com.e.go4lunch.notifications.MyWorker;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
@@ -74,8 +80,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.gson.Gson;
 
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -98,14 +107,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private WorkmateViewModel mWorkmateViewModel;
     private String mWorkmates;
 
-    private ActionBarDrawerToggle mDrawerToggle;
 
+    private ActionBarDrawerToggle mDrawerToggle;
+    private static final String WORK_TAG = "WORK_REQUEST_TAG_Go4Lunch";
     private static final int SIGN_OUT_TASK = 10;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 11;
     public static final String EXTRA_AUTOCOMPLETE = "restaurantId";
     private static final String TAG = "FROM_AUTOCOMPLETE";
     // Creating identifier to identify REST REQUEST (Update username)
     private static final int UPDATE_USERNAME = 30;
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -124,7 +135,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         configureNavigationView();
         configureBottomNavigationView();
         configureToolbar();
+        configureViewModel();
         updateUIWhenCreating();
+        scheduleWork(15,06);
 
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), Constants.API_KEY);
@@ -261,7 +274,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mBottomNavigationView.setOnNavigationItemSelectedListener(navListener);
     }
 
-    // logout from drawerMenu create a request
+    // logout from firebase in drawerMenu create a request
     private void logout() {
         AuthUI.getInstance()
                 .signOut(this)
@@ -335,7 +348,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     //  Arranging method that updating UI with Firestore data
     private void updateUIWhenCreating() {
-
+        setupObservers();
         if (this.getCurrentUser() != null) {
 
             if (this.getCurrentUser().getPhotoUrl() != null) {
@@ -343,35 +356,85 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         .load(this.getCurrentUser().getPhotoUrl())
                         .apply(RequestOptions.circleCropTransform())
                         .into(mImageViewProfil);
-            }
+            } else {
+                Glide.with(this)
+                        .load(R.drawable.ic_hot_food_in_a_bowl2)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(mImageViewProfil);
 
+            }
+            if (this.getCurrentUser().getDisplayName() == null) {
+                String name = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getString(Integer.parseInt("info_no_username_found")) : this.getCurrentUser().getDisplayName();
+                this.mTextViewName.setText(name);
+            } else {
+                setupObservers();
+            }
             String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(Integer.parseInt("info_no_email_found")) : this.getCurrentUser().getEmail();
-            String name = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getString(Integer.parseInt("info_no_username_found")) : this.getCurrentUser().getDisplayName();
 
             this.mTextViewEmail.setText(email);
-            this.mTextViewName.setText(name);
 
-            //  Get additional data from Firestore (Username)
 
         }
+
     }
 
+    // Get additional data from Firestore (Username)
+    // Configuring ViewModel
+    private void configureViewModel() {
+        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
+        this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
+    }
+
+    private void setupObservers() {
+        String workmateUid = FirebaseAuth.getInstance().getUid();
+        mWorkmateViewModel.getWorkmatesMutableLiveData(workmateUid).observe(this, new Observer<Workmates>() {
+            @Override
+            public void onChanged(Workmates workmates) {
+                String name = workmates.getWorkmateName();
+                mTextViewName.setText(name);
+
+            }
+        });
+
+    }
 
     private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
-        return new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                switch (origin) {
-                    // Hiding Progress bar after request completed
-                    case UPDATE_USERNAME:
+        return aVoid -> {
+            switch (origin) {
+                // Hiding Progress bar after request completed
+                case UPDATE_USERNAME:
 
-                        break;
-                }
+                    break;
             }
         };
     }
+    public static void scheduleWork(int hour, int minute) {
+        Calendar calendar = Calendar.getInstance();
+        long nowMillis = calendar.getTimeInMillis();
 
+        if(calendar.get(Calendar.HOUR_OF_DAY) > hour ||
+                (calendar.get(Calendar.HOUR_OF_DAY) == hour && calendar.get(Calendar.MINUTE)+1 >= minute)) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
 
+        calendar.set(Calendar.HOUR_OF_DAY,hour);
+        calendar.set(Calendar.MINUTE,minute);
 
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+        long diff = calendar.getTimeInMillis() - nowMillis;
 
+        WorkManager mWorkManager = WorkManager.getInstance();
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+        mWorkManager.cancelAllWorkByTag(WORK_TAG);
+        OneTimeWorkRequest mRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+                .setConstraints(constraints)
+                .setInitialDelay(diff,TimeUnit.MILLISECONDS)
+                .addTag(WORK_TAG)
+                .build();
+        mWorkManager.enqueue(mRequest);
+
+    }
 }
