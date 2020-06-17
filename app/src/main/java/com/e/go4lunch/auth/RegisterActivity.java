@@ -124,9 +124,6 @@ public class RegisterActivity extends BaseActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
-    // --------------------
-    // REST REQUEST
-    // --------------------
 
     //  Http request that create user in firestore
 
@@ -141,7 +138,6 @@ public class RegisterActivity extends BaseActivity {
         String uid = FirebaseAuth.getInstance().getUid();
         String email = mEmailRegister.getText().toString();
         String name = mNameRegister.getText().toString();
-        Log.e("testname", name);
         String urlPicture = null;
         mWorkmateViewModel.createWorkmate(uid, email, name, urlPicture);
     }

@@ -63,7 +63,15 @@
 
 
     <!-- HOLDER WORKMATES -->
-    <string name="is_eating">is eating</string>
+    <string name="is_eating">is eating at:</string>
+
+    <!-- AUTOCOMPLETE -->
+    <string name="autocomplete_hint">"Restaurant"</string>
+
+    <!-- HOLDER WORKMATESDETAIL -->
+    <string name="is_joining">is joining</string>
+
+
 
 
 

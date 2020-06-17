@@ -1,6 +1,8 @@
 package com.e.go4lunch.workmates;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,9 @@ import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.Result;
+import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
 import com.e.go4lunch.restaurant.RestaurantAdapter;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +70,8 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesHolder>  {
 
     public interface OnNoteListener {
         void onNoteClick(int position);
+
     }
+
 
 }

@@ -1,21 +1,9 @@
 package com.e.go4lunch.restaurant;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.Manifest;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,49 +12,37 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.e.go4lunch.R;
-import com.e.go4lunch.Retrofit.RetrofitRequest;
-import com.e.go4lunch.injection.Globals;
 import com.e.go4lunch.injection.Injection;
 import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.models.myPlace.MyPlace;
-import com.e.go4lunch.models.myPlace.Result;
-import com.e.go4lunch.models.placeDetail.PlaceDetail;
 import com.e.go4lunch.models.placeDetail.ResultDetail;
-import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.util.Constants;
 import com.e.go4lunch.workmates.WorkmateViewModel;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.PhotoMetadata;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPhotoRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Retrofit;
-
-import static com.e.go4lunch.ui.MainActivity.EXTRA_AUTOCOMPLETE;
-import static java.security.AccessController.getContext;
 
 public class DetailsRestaurantActivity extends BaseActivity {
 
+    // ----------------- FOR DESIGN -----------------
     @BindView(R.id.tv_name_restaurant_detail_activity)
     TextView mTvNameRestaurant;
     @BindView(R.id.tv_address_restaurant_detail_activity)
@@ -83,19 +59,26 @@ public class DetailsRestaurantActivity extends BaseActivity {
     FloatingActionButton mfab;
     @BindView(R.id.Im_Star_detail)
     ImageView mImageViewStar;
+    @BindView(R.id.recycler_view_detail)
+    RecyclerView mRecyclerViewDetail;
 
+
+    // ----------------- FOR DATA -----------------
     private final static int REQUEST_CODE_CALL = 3;
     public static final String EXTRA_RESTAURANT = "restaurant";
-    public static final String EXTRA_AUTOCOMPLETE = "restaurantId";
     private RestaurantDetailViewModel mRestaurantDetailViewModel;
     private RestaurantViewModel mRestaurantViewModel;
     private WorkmateViewModel mWorkmateViewModel;
     private ResultDetail mResultDetail;
     private String placeId;
-    private String workmateId;
-    private Workmates currentWorkmate;
+    private String placeId2;
+    private String workmateUid;
     private Restaurant mRestaurant;
-    private static List<Restaurant> restaurants = new ArrayList<>();
+    private Workmates currentWorkmate;
+    private List<Restaurant> mRestaurantListFavFromFirebase;
+    private List<Restaurant> mRestaurantListFromFirebase;
+    private List<Workmates> mWorkmatesList = new ArrayList<>();
+    private RestaurantDetailAdapter mRestaurantDetailAdapter;
 
 
     @Override
@@ -105,18 +88,23 @@ public class DetailsRestaurantActivity extends BaseActivity {
         ButterKnife.bind(this);
 
 
-        userActionClick();
         getIncomingIntent();
-        configureViewModelDetail();
-        configureViewModelWorkmate();
+        configureRecyclerView();
         configureViewModelRestaurant();
-        setupObservers();
+        configureViewModelWorkmate();
+        configureViewModelDetail();
         getCurrentWorkmate();
+        getDetailOfPlace();
+        userActionClick();
+        //getRestaurantListWithWorkmate();
+        getRestaurant();
+        getRestaurantList();
 
 
     }
 
-    //get intent from recyclerView and map and show details
+
+    //----------------- get intent from recyclerView and map and show details -----------------
     private void getIncomingIntent() {
         if (getIntent().hasExtra(EXTRA_RESTAURANT)) {
             String jsonResult = getIntent().getStringExtra(EXTRA_RESTAURANT);
@@ -128,16 +116,20 @@ public class DetailsRestaurantActivity extends BaseActivity {
             Glide.with(this)
                     .load(Constants.BASE_URL_PHOTO
                             + restaurant.getUrlPhoto()
-                            + "&key=" + Constants.API_KEY)
+                            + "&key=" + getString(R.string.google_api_key))
                     .centerCrop()
                     .into(mIvPhotoRestaurant);
             placeId = restaurant.getPlaceId();
+            mRestaurant = restaurant;
+            configureRecyclerView();
+
 
 
         }
     }
 
-    // call phone number of the place
+
+    // ----------------- call phone number of the place -----------------
     public void callRestaurant() {
         if (mResultDetail.getInternationalPhoneNumber() != null) {
             String phone = mResultDetail.getInternationalPhoneNumber();
@@ -154,7 +146,8 @@ public class DetailsRestaurantActivity extends BaseActivity {
         }
     }
 
-    // show webSite of the place
+    // ----------------- show webSite of the place -----------------
+
     public void openWebsitePage() {
         if (mResultDetail.getWebsite() != null) {
             Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
@@ -165,32 +158,36 @@ public class DetailsRestaurantActivity extends BaseActivity {
         }
     }
 
-    // Action of user
+    // ----------------- Action of user -----------------
+
     public void userActionClick() {
         mButtonCall.setOnClickListener(v -> callRestaurant());
 
         mButtonWeb.setOnClickListener(v -> openWebsitePage());
 
-        mfab.setOnClickListener(v -> {
-        });
+        mfab.setOnClickListener(v -> DetailsRestaurantActivity.this.actionOnFab());
 
-        mButtonLike.setOnClickListener(v -> clickOnLikeButton());
+        mButtonLike.setOnClickListener(v -> actionOnLikeButton());
 
 
     }
 
 
-    // Configuring ViewModel
+    // ----------------- Configuring ViewModel -----------------
+
     private void configureViewModelDetail() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.mRestaurantDetailViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantDetailViewModel.class);
         mRestaurantDetailViewModel.setInput(placeId);
+
+
     }
 
     private void configureViewModelWorkmate() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         this.mWorkmateViewModel = ViewModelProviders.of(this, viewModelFactory).get(WorkmateViewModel.class);
-        this.getCurrentWorkmate();
+
+
     }
 
     private void configureViewModelRestaurant() {
@@ -199,66 +196,165 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
 
     }
+    // ----------------- Configuring Observers -----------------
 
-    private void setupObservers() {
+    private void getDetailOfPlace() {
         mRestaurantDetailViewModel.getPlaceDetail().observe(this, placeDetail -> mResultDetail = placeDetail.getResult());
+
 
 
     }
 
     private void getCurrentWorkmate() {
-        workmateId = FirebaseAuth.getInstance().getUid();
-        mWorkmateViewModel.getWorkmatesMutableLiveData(workmateId).observe(this, new Observer<Workmates>() {
-            @Override
-            public void onChanged(Workmates workmates) {
-                currentWorkmate = workmates;
+        workmateUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        mWorkmateViewModel.getWorkmate(workmateUid).observe(this, workmates -> {
+            currentWorkmate = workmates;
+            mRestaurantListFavFromFirebase = workmates.getListRestaurantFavorite();
+            updateRestaurant(mRestaurant);
+
+
+        });
+
+    }
+
+    private void getRestaurantList() {
+        mRestaurantViewModel.getRestaurantList().observe(this, restaurants -> {
+            mRestaurantListFromFirebase = restaurants;
+            if(!mRestaurantListFromFirebase.contains(mRestaurant)){
+                mWorkmatesList = new ArrayList<>();
+                mRestaurantViewModel.createRestaurant(mRestaurant.getPlaceId(),mRestaurant.getName(),mRestaurant.getAddress(),mRestaurant.getUrlPhoto(),mWorkmatesList);
             }
+            getCurrentWorkmate();
+
+
         });
     }
 
+    private void getRestaurant() {
+        mRestaurantViewModel.getRestaurant(placeId).observe(this, restaurant -> {
+            mWorkmatesList = restaurant.getWorkmatesList();
+            mRestaurant.setWorkmatesList(mWorkmatesList);
+            mRestaurantDetailAdapter.setWorkmates(mWorkmatesList);
 
-    private void clickOnLikeButton() {
 
-        List<Restaurant> restaurantList;
-        if (currentWorkmate.getRestaurantListFav() == null) {
-            restaurantList = new ArrayList<>();
+        });
+    }
+
+    // Configuring LikeButton
+    private void actionOnLikeButton() {
+
+        if (currentWorkmate.getListRestaurantFavorite() == null) {
+
+            mRestaurantListFavFromFirebase = new ArrayList<>();
 
         } else {
-            restaurantList = currentWorkmate.getRestaurantListFav();
+            mRestaurantListFavFromFirebase = currentWorkmate.getListRestaurantFavorite();
         }
-        if (!currentWorkmate.getRestaurantListFav().contains(mRestaurant)) {
-            restaurantList.add(mRestaurant);
+        if (!currentWorkmate.getListRestaurantFavorite().contains(mRestaurant)) {
+            mRestaurantListFavFromFirebase.add(mRestaurant);
+
+
         } else {
-            restaurantList.remove(mRestaurant);
+            mRestaurantListFavFromFirebase.remove(mRestaurant);
         }
-        this.mRestaurantViewModel.updateRestaurantListFavorite(workmateId, restaurantList);
-        Log.e("testUpdate", String.valueOf(restaurantList));
-        this.updateLike();
+        this.mWorkmateViewModel.updateIsRestaurantFavorite(workmateUid, mRestaurantListFavFromFirebase);
+        this.updateIVLike();
+
 
     }
 
-    private void updateLike() {
+    // updating like Star
+    private void updateIVLike() {
+
         boolean fav = false;
-
-        if (currentWorkmate.getRestaurantListFav() != null) {
-
-            if (currentWorkmate.getRestaurantListFav().contains(mRestaurant)) {
+        if (currentWorkmate.getListRestaurantFavorite() != null) {
+            if (currentWorkmate.getListRestaurantFavorite().contains(mRestaurant)) {
                 fav = true;
+
             }
         }
+
         if (fav) {
-            this.mImageViewStar.setImageResource(R.drawable.ic_star_black_24dp);
-
-            Toast.makeText(this, getResources().getString(R.string.add_to_favorites), Toast.LENGTH_LONG).show();
-
+            this.mImageViewStar.setImageResource(R.drawable.ic_star_black1_24dp);
         } else {
             this.mImageViewStar.setImageResource(R.drawable.ic_star_border_black_24dp);
-            Toast.makeText(this, getResources().getString(R.string.remove_to_favorites), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    // Configuring ChoiceButton FAB
+    private void actionOnFab() {
+
+        Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
+
+        if (currentWorkmate.getRestaurantChoosen() == null) {
+            this.mfab.setImageResource(R.drawable.ic_check_circle_black_24dp);
+            this.mRestaurantViewModel.createRestaurant(placeId, mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mWorkmatesList);
+            this.mRestaurantDetailAdapter.notifyDataSetChanged();
+            this.mWorkmatesList.add(workmatesChoice);
+            this.currentWorkmate.setRestaurantChoosen(mRestaurant);
+            this.mWorkmateViewModel.updateRestaurantChoosen(workmateUid, currentWorkmate.getRestaurantChoosen());
+            this.mRestaurantViewModel.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
+
+        } else {
+            this.mfab.setImageResource(R.drawable.ic_check_black_24dp);
+            this.mRestaurantDetailAdapter.notifyDataSetChanged();
+            this.mWorkmatesList.remove(workmatesChoice);
+            this.mRestaurantViewModel.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
+            this.currentWorkmate.setRestaurantChoosen(null);
+            this.mWorkmateViewModel.updateRestaurantChoosen(workmateUid, currentWorkmate.getRestaurantChoosen());
+
 
         }
 
 
     }
 
-}
 
+
+
+    private void updateFab() {
+        if (this.currentWorkmate.getRestaurantChoosen() != null) {
+            if (currentWorkmate.getRestaurantChoosen().equals(mRestaurant))
+                this.mfab.setImageResource(R.drawable.ic_check_circle_black_24dp);
+
+        } else {
+            this.mfab.setImageResource(R.drawable.ic_check_black_24dp);
+
+
+        }
+
+    }
+
+
+    // Configuring RecyclerView
+    private void configureRecyclerView() {
+        mRecyclerViewDetail.setLayoutManager(new LinearLayoutManager(this));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerViewDetail.getContext(), DividerItemDecoration.VERTICAL);
+        mRecyclerViewDetail.addItemDecoration(dividerItemDecoration);
+        mRestaurantDetailAdapter = new RestaurantDetailAdapter(this);
+        mRecyclerViewDetail.setAdapter(mRestaurantDetailAdapter);
+        mRestaurantDetailAdapter.notifyDataSetChanged();
+
+
+    }
+
+    private void updateRestaurant(Restaurant restaurant) {
+        String name = String.valueOf(restaurant.getName());
+        String address = String.valueOf(restaurant.getAddress());
+        String photo = String.valueOf(restaurant.getUrlPhoto());
+        this.mTvNameRestaurant.setText(name);
+        this.mTvAddressRestaurant.setText(address);
+        Glide.with(this)
+                .load(Constants.BASE_URL_PHOTO
+                        + photo
+                        + "&key=" + getString(R.string.google_api_key))
+                .centerCrop()
+                .into(mIvPhotoRestaurant);
+        updateIVLike();
+        updateFab();
+
+
+    }
+
+
+}

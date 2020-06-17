@@ -1,9 +1,5 @@
 package com.e.go4lunch.restaurant;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.util.Log;
 import android.view.View;
@@ -18,41 +14,40 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.e.go4lunch.R;
-import com.e.go4lunch.injection.Globals;
+import com.e.go4lunch.injection.App;
 import com.e.go4lunch.models.Restaurant;
-import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.util.Constants;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static android.content.Context.MODE_PRIVATE;
-import static com.e.go4lunch.restaurant.MapsFragment.MY_PREF;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class RestaurantHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+    // ----------------- FOR DESIGN -----------------
     @BindView(R.id.tv_name_restaurant_item)
     TextView mTvName;
-    @BindView(R.id.tv_adress_restaurant_item)
-    TextView mTvAdress;
+    @BindView(R.id.tv_address_restaurant_item)
+    TextView mTvAddress;
     @BindView(R.id.tv_time_restaurant_item)
     TextView mTvTime;
-    @BindView(R.id.tv_metters_restaurant_item)
-    TextView mTvMetters;
+    @BindView(R.id.tv_meters_restaurant_item)
+    TextView mTvMeters;
     @BindView(R.id.tv_numbers_restaurant_item)
     TextView mTvNumbers;
     @BindView(R.id.iv_RatingBar_item)
     RatingBar mRatingBar;
     @BindView(R.id.iv_photo_restaurant_item)
     ImageView mImageRestaurant;
+    @BindView(R.id.imageView2)
+    ImageView mImageViewWorkmates;
 
 
     RestaurantAdapter.OnNoteListener OnNoteListener;
+    private int numberWorkmates;
+
 
 
     public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
@@ -68,6 +63,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     public void onClick(View v) {
         OnNoteListener.onNoteClick(getAdapterPosition());
 
+
     }
 
 
@@ -79,7 +75,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         this.mTvName.setText(restaurant.getName());
 
         //---------- Address ----------
-        this.mTvAdress.setText(restaurant.getAddress());
+        this.mTvAddress.setText(restaurant.getAddress());
 
         //---------- Photo ----------
         displayPhotoOfRestaurant(restaurant);
@@ -89,6 +85,11 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
 
         //---------- Distance ----------
         displayDistance(restaurant);
+
+        //---------- NumbersWorkmates ----------
+        displayWorkmatesNumbers(restaurant);
+
+
 
     }
 
@@ -106,7 +107,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
 
     // set distance of the place
     public void displayDistance(Restaurant restaurant) {
-        Globals globals = (Globals) getApplicationContext();
+        App globals = (App) getApplicationContext();
         String lat = globals.getLat();
         String lng = globals.getLng();
         Location currentLocation = new Location("locationA");
@@ -118,7 +119,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         double distance = currentLocation.distanceTo(destination);
         double distanceF = distance / 1000;
         String rounded = String.format("%.0f", distanceF);
-        mTvMetters.setText(rounded + " KMS");
+        mTvMeters.setText(rounded + " KMS");
 
     }
 
@@ -151,8 +152,22 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         }
     }
 
+    private void displayWorkmatesNumbers(Restaurant restaurant) {
+        if (restaurant.getWorkmatesList() != null) {
+            numberWorkmates = restaurant.getWorkmatesList().size();
+            mTvNumbers.setText(String.valueOf(numberWorkmates));
+            mImageViewWorkmates.setVisibility(View.VISIBLE);
+        }else{
+            mImageViewWorkmates.setVisibility(View.INVISIBLE);
+
+        }
+
+    }
 
 }
+
+
+
 
 
 

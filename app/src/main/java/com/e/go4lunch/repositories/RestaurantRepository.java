@@ -2,7 +2,6 @@ package com.e.go4lunch.repositories;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.e.go4lunch.Retrofit.ApiRequest;
@@ -11,18 +10,12 @@ import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
-import com.e.go4lunch.models.placeDetail.ResultDetail;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -33,8 +26,8 @@ public class RestaurantRepository {
 
 
     private static RestaurantRepository instance;
-    private List<Restaurant> mRestaurantList ;
-    private MutableLiveData<Restaurant> mRestaurantMutableLiveData = new MutableLiveData<>();
+
+    // --- COLLECTION REFERENCE ---
 
     public CollectionReference getRestaurantCollection() {
         return FirebaseFirestore.getInstance().collection("restaurant");
@@ -94,17 +87,39 @@ public class RestaurantRepository {
         });
         return newData;
     }
+    // --- CREATE ---
 
-
-    public Task<Void> createRestaurant (String placeId,String name,String address,List<Workmates> workmatesList){
-        Restaurant restaurantToCreate = new Restaurant(placeId,name,address,workmatesList);
+    public Task<Void> createRestaurant(String placeId,String name,String address,String urlPhoto,List<Workmates>workmatesList){
+        Restaurant restaurantToCreate = new Restaurant(placeId,name,address,urlPhoto,workmatesList);
         return getRestaurantCollection().document(placeId).set(restaurantToCreate);
     }
 
-    public Task<Void> updateRestaurantListFavorites (String uid, List<Restaurant> restaurantList){
-        Log.e("work", "work2");
-        return getRestaurantCollection().document(uid).update("workmatesList",restaurantList);
+    // --- GET ---
+
+    public Task<DocumentSnapshot> getRestaurant(String placeId) {
+        return getRestaurantCollection().document(placeId).get();
     }
+
+    public Query getRestaurantList() {
+        return getRestaurantCollection().orderBy("name");
+    }
+
+    // --- UPDATE ---
+
+    public Task<Void> updateRestaurantWorkmateList(String placeId,List<Workmates> workmatesList){
+        return  getRestaurantCollection().document(placeId).update("workmatesList",workmatesList);
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

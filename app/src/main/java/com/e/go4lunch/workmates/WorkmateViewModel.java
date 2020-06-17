@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
@@ -30,7 +31,7 @@ public class WorkmateViewModel extends ViewModel {
         this.mWorkmatesRepository = workmatesRepository;
     }
 
-    public MutableLiveData<Workmates>getWorkmatesMutableLiveData(String uid){
+    public MutableLiveData<Workmates>getWorkmate(String uid){
         if (this.mWorkmatesMutableLiveData != null){
             this.setWorkmatesMutableLiveData(uid);
         }
@@ -72,11 +73,19 @@ public class WorkmateViewModel extends ViewModel {
 
     }
 
-
-
     public void createWorkmate (String uid,String email,String name, String urlPicture){
         mWorkmatesRepository.createWorkmates(uid, email, name, urlPicture);
     }
+
+    public void updateIsRestaurantFavorite(String uid, List<Restaurant>listRestaurantFavorite ){
+        mWorkmatesRepository.updateRestaurantFavorite(uid, listRestaurantFavorite);
+    }
+    public void updateRestaurantChoosen (String uid,Restaurant restaurantChoosen){
+        mWorkmatesRepository.updateRestaurantChoosen(uid, restaurantChoosen);
+    }
+
+
+
 
 
 }

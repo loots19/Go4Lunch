@@ -11,6 +11,7 @@ import com.e.go4lunch.models.myPlace.Result;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Restaurant {
 
@@ -21,23 +22,14 @@ public class Restaurant {
     private String phoneNumber;
     private String WebSite;
     private Boolean openNow;
-    private int distanceCurrentuser;
     private Location mLocation;
     private double rating;
     private List<Workmates> mWorkmatesList;
 
 
-    public Restaurant(String placeId, String name, String address, String urlPhoto, String phoneNumber, String webSite, Location location, double rating) {
-        this.placeId = placeId;
-        this.name = name;
-        this.address = address;
-        this.urlPhoto = urlPhoto;
-        this.phoneNumber = phoneNumber;
-        WebSite = webSite;
-        mLocation = location;
-        this.rating = rating;
-    }
+     public Restaurant(){
 
+     }
     // Constructor for my place
     public Restaurant(String placeId, String name, String address, String urlPhoto, Boolean openNow, Location location, double rating) {
         this.placeId = placeId;
@@ -48,15 +40,17 @@ public class Restaurant {
         mLocation = location;
         this.rating = rating;
     }
-    // Constructor for Firebase
-    public Restaurant(String placeId, String name, String address,List<Workmates> workmatesList) {
+    // Constructor for FireBase
+    public Restaurant(String placeId, String name, String address,String urlPhoto,List<Workmates> workmatesList) {
         this.placeId = placeId;
         this.name = name;
         this.address = address;
+        this.urlPhoto = urlPhoto;
         this.mWorkmatesList = workmatesList;
     }
 
-    //---------Getters---------
+
+    // ----------------- Getters -----------------
 
     public String getPlaceId() {
         return placeId;
@@ -86,10 +80,6 @@ public class Restaurant {
         return openNow;
     }
 
-    public int getDistanceCurrentuser() {
-        return distanceCurrentuser;
-    }
-
     public Location getLocation() {
         return mLocation;
     }
@@ -101,7 +91,8 @@ public class Restaurant {
     public List<Workmates> getWorkmatesList() {
         return mWorkmatesList;
     }
-    //---------Setters---------
+
+    // ----------------- Setters -----------------
 
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
@@ -131,10 +122,6 @@ public class Restaurant {
         this.openNow = openNow;
     }
 
-    public void setDistanceCurrentuser(int distanceCurrentuser) {
-        this.distanceCurrentuser = distanceCurrentuser;
-    }
-
     public void setLocation(Location location) {
         mLocation = location;
     }
@@ -145,5 +132,18 @@ public class Restaurant {
 
     public void setWorkmatesList(List<Workmates> workmatesList) {
         mWorkmatesList = workmatesList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Restaurant restaurant = (Restaurant) o;
+        return Objects.equals(placeId, restaurant.getPlaceId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getPlaceId());
     }
 }

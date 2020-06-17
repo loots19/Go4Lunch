@@ -2,11 +2,14 @@ package com.e.go4lunch.injection;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.util.Log;
+
 
 import static com.e.go4lunch.restaurant.MapsFragment.MY_PREF;
 
-public class Globals extends Application {
+public class App extends Application {
+
+    private static App instance;
+
 
     private String lat;
     private String lng;
@@ -15,15 +18,18 @@ public class Globals extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        instance = this;
         SharedPreferences mSharedPreferences = getSharedPreferences(MY_PREF, MODE_PRIVATE);
         lat = mSharedPreferences.getString("LAT", "");
         lng = mSharedPreferences.getString("LNG", "");
 
-
     }
 
-    public String getLat() {
+    public static App getInstance() {
+        return instance;
+    }
+
+    public  String getLat() {
         return lat;
     }
 
@@ -31,6 +37,12 @@ public class Globals extends Application {
         return lng;
     }
 
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
 
+    public void setLng(String lng) {
+        this.lng = lng;
+    }
 }
 

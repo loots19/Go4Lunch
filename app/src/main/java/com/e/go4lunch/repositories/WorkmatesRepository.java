@@ -20,8 +20,7 @@ import java.util.List;
 public class WorkmatesRepository {
 
     private static final String COLLECTION_NAME = "workmates";
-    private List<Workmates> mWorkmatesList;
-
+    private Workmates mWorkmates;
 
     // --- COLLECTION REFERENCE ---
 
@@ -33,7 +32,9 @@ public class WorkmatesRepository {
 
     public Task<Void> createWorkmates(String uid, String workmateName, String workmateMail, String urlPicture) {
         Workmates workmatesToCreate = new Workmates(workmateName, workmateMail, urlPicture);
+
         return getWorkmatesCollection().document(uid).set(workmatesToCreate);
+        //todo verifier si user deja présent.
     }
 
     // --- GET ---
@@ -43,21 +44,17 @@ public class WorkmatesRepository {
     }
 
     public Query getAllWorkmates() {
-        Log.e("work", "work");
         return getWorkmatesCollection().orderBy("workmateName");
     }
 
     // --- UPDATE ---
 
-    public Task<Void> updateRestaurantSelected(String uid, Boolean restaurantSelected) {
-
-        return getWorkmatesCollection().document(uid).update("isSelected", restaurantSelected);
+    public Task<Void> updateRestaurantFavorite(String uid,List<Restaurant>listRestaurantFavorite){
+        return  getWorkmatesCollection().document(uid).update("listRestaurantFavorite",listRestaurantFavorite);
     }
-
-    public Task<Void> updateListRestaurantSelected(String uid, List<Restaurant> restaurantListSelected) {
-        return getWorkmatesCollection().document(uid).update("restaurantListSelected", restaurantListSelected);
+    public Task<Void> updateRestaurantChoosen(String uid, Restaurant restaurantChoosen){
+        return getWorkmatesCollection().document(uid).update("restaurantChoosen",restaurantChoosen);
     }
-
 
 
 }

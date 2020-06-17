@@ -69,12 +69,14 @@ public class AuthActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initTwitter();
+
         setContentView(R.layout.auth_main);
         ButterKnife.bind(this); //Configure Butterknife
 
+
         configureViewModel();
         alreadySigned();
+        initTwitter();
 
 
     }
@@ -127,6 +129,7 @@ public class AuthActivity extends BaseActivity {
     private void startMapsActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     @Override

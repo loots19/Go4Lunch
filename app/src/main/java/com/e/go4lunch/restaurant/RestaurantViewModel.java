@@ -21,7 +21,7 @@ public class RestaurantViewModel extends ViewModel {
     private MutableLiveData<GetPlace> getPlace = new MutableLiveData<>();
     private LiveData<MyPlace> myPlace;
     private MutableLiveData<List<Restaurant>> mRestaurantList = new MutableLiveData<>();
-    private MutableLiveData<Restaurant>mRestaurantMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<Restaurant> mRestaurantMutableLiveData = new MutableLiveData<>();
 
 
     public RestaurantViewModel(RestaurantRepository restaurantRepository) {
@@ -60,20 +60,64 @@ public class RestaurantViewModel extends ViewModel {
 
     }
 
-    public void createRestaurant(String placeId,String name,String address,List<Workmates> workmatesList){
-        this.mRestaurantRepository.createRestaurant(placeId, name, address, workmatesList);
-    }
-
-    public void updateRestaurantListFavorite (String uid, List<Restaurant> restaurantList){
-        this.mRestaurantRepository.updateRestaurantListFavorites(uid, restaurantList);
+    public void createRestaurant(String placeId,String name,String address,String urlPhoto,List<Workmates>workmatesList) {
+        this.mRestaurantRepository.createRestaurant(placeId,name,address,urlPhoto,workmatesList);
     }
 
 
 
+    public MutableLiveData<Restaurant>getRestaurant(String placeId){
+        if (this.mRestaurantMutableLiveData != null){
+            this.setRestaurantMutableLiveData(placeId);
+        }
+        return this.mRestaurantMutableLiveData;
+    }
+    private void setRestaurantMutableLiveData(String placeId){
+        this.mRestaurantRepository.getRestaurant(placeId).addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()){
+                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
+                mRestaurantMutableLiveData.setValue(restaurant);
+            }
+        });
+    }
 
+
+    public MutableLiveData<List<Restaurant>> getRestaurantList() {
+
+        if (mRestaurantList != null) {
+
+            loadRestaurantList();
+        }
+        return mRestaurantList;
+    }
+
+    private void loadRestaurantList() {
+        mRestaurantRepository.getRestaurantList().addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (queryDocumentSnapshots != null) {
+                List<DocumentSnapshot> restaurantList = queryDocumentSnapshots.getDocuments();
+                List<Restaurant> restaurants = new ArrayList<>();
+                int size = restaurantList.size();
+                for (int i = 0; i < size; i++) {
+                    Restaurant restaurant = restaurantList.get(i).toObject(Restaurant.class);
+                    restaurants.add(restaurant);
+                }
+                mRestaurantList.setValue(restaurants);
+            }
+        });
 
 
     }
+
+
+    public void updateRestaurantWorkmateList(String uid, List<Workmates>workmatesList){
+        this.mRestaurantRepository.updateRestaurantWorkmateList(uid,workmatesList);
+    }
+
+
+
+
+
+}
 
 
 

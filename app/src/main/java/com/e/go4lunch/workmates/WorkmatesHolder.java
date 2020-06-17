@@ -1,5 +1,7 @@
 package com.e.go4lunch.workmates;
 
+import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,7 +13,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Workmates;
+import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
 import com.e.go4lunch.util.Constants;
+import com.google.gson.Gson;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,8 +49,19 @@ public class WorkmatesHolder extends RecyclerView.ViewHolder implements View.OnC
                     .into(mImageView);
 
         }
-        String text = (workmates.getWorkmateName() + " " + itemView.getContext().getResources().getString(R.string.is_eating));
-        mTextView.setText(text);
+        getNameOfRestaurant(workmates);
+
+
+    }
+    private void getNameOfRestaurant(Workmates workmates){
+        if(workmates.getRestaurantChoosen()!= null){
+            String name = workmates.getRestaurantChoosen().getName();
+            String text = (workmates.getWorkmateName() + " " + itemView.getContext().getResources().getString(R.string.is_eating) + " " + name);
+            mTextView.setText(text);
+        }else {
+            mTextView.setText(workmates.getWorkmateName());
+        }
+
 
     }
 
@@ -55,4 +70,5 @@ public class WorkmatesHolder extends RecyclerView.ViewHolder implements View.OnC
     public void onClick(View v) {
         OnNoteListener.onNoteClick(getAdapterPosition());
     }
+
 }

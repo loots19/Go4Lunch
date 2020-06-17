@@ -2,34 +2,37 @@ package com.e.go4lunch.models;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class Workmates {
 
 
     private String workmateName;
     private String workmateEmail;
-    private boolean restaurantLiked;
     private String urlPicture;
-    private List<Restaurant> restaurantListFav;
+    private List<Restaurant> listRestaurantFavorite;
+    private Restaurant restaurantChoosen;
 
 
-    public Workmates(){
+    public Workmates() {
 
     }
 
 
-    public Workmates(  String workmateEmail,String workmateName, String urlPicture) {
+
+
+    public Workmates(String workmateEmail, String workmateName, String urlPicture) {
         this.workmateEmail = workmateEmail;
         this.workmateName = workmateName;
-        this.restaurantLiked = false;
         this.urlPicture = urlPicture;
-        this.restaurantListFav = new ArrayList<>();
+        this.listRestaurantFavorite = new ArrayList<>();
+
+
+
     }
 
 
-    //---------Getters---------
+    // ----------------- Getters -----------------
 
     public String getWorkmateName() {
         return workmateName;
@@ -39,23 +42,21 @@ public class Workmates {
         return workmateEmail;
     }
 
-    public boolean isRestaurantSelected() {
-        return restaurantLiked;
-    }
+
 
     public String getUrlPicture() {
         return urlPicture;
     }
 
-    public boolean isRestaurantLiked() {
-        return restaurantLiked;
+    public List<Restaurant> getListRestaurantFavorite() {
+        return listRestaurantFavorite;
     }
 
-    public List<Restaurant> getRestaurantListFav() {
-        return restaurantListFav;
+    public Restaurant getRestaurantChoosen() {
+        return restaurantChoosen;
     }
 
-    //---------Setters---------
+    // ----------------- Setters -----------------
 
     public void setWorkmateName(String workmateName) {
         this.workmateName = workmateName;
@@ -65,19 +66,27 @@ public class Workmates {
         this.workmateEmail = workmateEmail;
     }
 
-    public void setRestaurantSelected(boolean restaurantSelected) {
-        this.restaurantLiked = restaurantSelected;
+    public void setListRestaurantFavorite(List<Restaurant> listRestaurantFavorite) {
+        this.listRestaurantFavorite = listRestaurantFavorite;
     }
 
     public void setUrlPicture(String urlPicture) {
         this.urlPicture = urlPicture;
     }
 
-    public void setRestaurantLiked(boolean restaurantLiked) {
-        this.restaurantLiked = restaurantLiked;
+    public void setRestaurantChoosen(Restaurant restaurantChoosen) {
+        this.restaurantChoosen = restaurantChoosen;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Workmates workmates = (Workmates) o;
+        return Objects.equals(workmateEmail, workmates.getWorkmateEmail());
     }
 
-    public void setRestaurantListFav(List<Restaurant> restaurantListFav) {
-        this.restaurantListFav = restaurantListFav;
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getWorkmateEmail());
     }
 }
