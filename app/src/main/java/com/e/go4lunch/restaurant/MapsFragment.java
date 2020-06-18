@@ -36,6 +36,7 @@ import com.e.go4lunch.injection.Injection;
 import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
+import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.util.Constants;
 import com.e.go4lunch.workmates.WorkmateViewModel;
@@ -96,12 +97,14 @@ public class MapsFragment extends Fragment implements
     private Marker currentUserLocationMarker;
     private RestaurantViewModel mRestaurantViewModel;
     private WorkmateViewModel mWorkmateViewModel;
-
-    private String placeId;
-    private Workmates currentWorkmate;
-    private List<Restaurant> mRestaurants = new ArrayList<>();
-    private List<String> placeIdList = new ArrayList<>();
+    private List<Restaurant> mRestaurants;
     private String TAG = "test auto";
+    private LatLng mLatLng;
+    private Location mLocation;
+    private Double lat;
+    private Double lng;
+
+
 
     // ----------------- Required empty public constructor // -----------------
     public MapsFragment() {
@@ -118,6 +121,7 @@ public class MapsFragment extends Fragment implements
 
         configureViewModel();
         configureWorkmateViewModel();
+
 
 
         //Request Runtime permission
@@ -239,9 +243,8 @@ public class MapsFragment extends Fragment implements
         if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             buildGoogleApiClient();
-
-
             subscribeObservers();
+            //getListWithWorkmate();
 
             mMap.setMyLocationEnabled(false);
 
@@ -273,7 +276,7 @@ public class MapsFragment extends Fragment implements
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
             } else {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
-                subscribeObservers();
+                //subscribeObservers();
             }
             return false;
         } else {
@@ -291,6 +294,8 @@ public class MapsFragment extends Fragment implements
         String lng = App.getInstance().getLng();
         mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
 
+
+
     }
 
     private void configureWorkmateViewModel() {
@@ -300,57 +305,55 @@ public class MapsFragment extends Fragment implements
     // ----------------- Configuring Observers -----------------
 
     private void subscribeObservers() {
-        mRestaurantViewModel.getMyPlace().observe(this, myPlace -> {
-            mRestaurants = new ArrayList<>();
-            List<Result> results = myPlace.getResults();
-            if (mMap != null) {
-                // This loop will go through all the results and add marker on each location.
-                for (int i = 0; i < results.size(); i++) {
 
-                    Double lat = results.get(i).getGeometry().getLocation().getLat();
-                    Double lng = results.get(i).getGeometry().getLocation().getLng();
-                    String placeName = results.get(i).getName();
-                    String vicinity = results.get(i).getVicinity();
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    LatLng latLng = new LatLng(lat, lng);
-                    //Position of Marker on Map
-                    markerOptions.position(latLng);
-                    // Adding Title to the Marker
-                    markerOptions.title(placeName + " : " + vicinity);
-                    // Adding Marker to the Camera.
-                    // Adding colour to the marker
+        mRestaurantViewModel.getMyPlace().observe(this, new Observer<MyPlace>() {
+            @Override
+            public void onChanged(MyPlace myPlace) {
+                mRestaurants = new ArrayList<>();
+                List<Result> results = myPlace.getResults();
+                if (mMap != null) {
+                    // This loop will go through all the results and add marker on each location.
+                    for (int i = 0; i < results.size(); i++) {
+                        lat = results.get(i).getGeometry().getLocation().getLat();
+                        lng = results.get(i).getGeometry().getLocation().getLng();
+                        LatLng latLng = new LatLng(lat, lng);
+                        //Position of Marker on Map
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(latLng);
 
-                    markerOptions.icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_restaurant_black_24dp));
-                    // move map camera
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+                        // Adding colour to the marker
+                        markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
+                        // move map camera
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
-                    String placeId = results.get(i).getPlaceId();
-                    String name = results.get(i).getName();
-                    String address = results.get(i).getVicinity();
-                    String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
-                    double rating = results.get(i).getRating();
-                    Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
+                        String placeId = results.get(i).getPlaceId();
+                        String name = results.get(i).getName();
+                        String address = results.get(i).getVicinity();
+                        String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
+                        double rating = results.get(i).getRating();
+                        Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
 
-                    if (results.get(i).getGeometry().getLocation() != null) {
-                        com.e.go4lunch.models.myPlace.Location location = results.get(i).getGeometry().getLocation();
-                        Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
+                        if (results.get(i).getGeometry().getLocation() != null) {
+                            com.e.go4lunch.models.myPlace.Location location = results.get(i).getGeometry().getLocation();
+                            Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
 
-                        mRestaurants.add(restaurant);
+                            mRestaurants.add(restaurant);
 
-                        Marker marker = mMap.addMarker(markerOptions);
-                        Gson gson = new Gson();
-                        String jsonSelectedRestaurant = gson.toJson(mRestaurants.get(i));
-                        marker.setTag(jsonSelectedRestaurant);
-                        getListWithWorkmate();
+                            Marker marker = mMap.addMarker(markerOptions);
+                            Gson gson = new Gson();
+                            String jsonSelectedRestaurant = gson.toJson(mRestaurants.get(i));
+                            marker.setTag(jsonSelectedRestaurant);
+
+
+
+                        }
 
 
                     }
-
-
                 }
-            }
 
+            }
         });
 
     }
@@ -359,45 +362,33 @@ public class MapsFragment extends Fragment implements
         mRestaurantViewModel.getRestaurantList().observe(this, new Observer<List<Restaurant>>() {
             @Override
             public void onChanged(List<Restaurant> restaurants) {
+
+                mRestaurants = restaurants;
                 int size = restaurants.size();
                 for (int i = 0; i < size; i++) {
-                    Restaurant restaurant = restaurants.get(i);
-                    if (restaurant.getWorkmatesList().size() > 0) {
-                        if (restaurants.contains(restaurant)) {
-                            int in = restaurants.indexOf(restaurant);
-                            restaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
-                            workmateMarker();
-                        }
+                    Restaurant restaurant = mRestaurants.get(i);
 
-                    }
+               //   if (restaurant.getWorkmatesList().size() > 0) {
+               //       if (mRestaurants.contains(restaurant)) {
+               //           int in = mRestaurants.indexOf(restaurant);
+               //           mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
+               //           Log.e("testListWorkmate", String.valueOf(mRestaurants.get(in).getWorkmatesList().size()));
+               //           Toast.makeText(getContext(), "testtest", Toast.LENGTH_SHORT).show();
+               //           LatLng latLng = new LatLng(mRestaurants.get(in).getLocation().getLat(),mRestaurants.get(in).getLocation().getLng());
+               //           MarkerOptions markerOptions = new MarkerOptions().position(latLng);
+               //           markerOptions.icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_location1));
+               //       } else {
+                            subscribeObservers();
+
+
+                        //}
+                  // }
 
                 }
 
             }
 
         });
-    }
-
-    private void workmateMarker() {
-        int size = mRestaurants.size();
-        for (int i = 0; i < size; i++) {
-
-            Restaurant restaurantTemp = mRestaurants.get(i);
-            LatLng latLng = new LatLng(restaurantTemp.getLocation().getLat(), restaurantTemp.getLocation().getLng());
-            MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(restaurantTemp.getName());
-            if (restaurantTemp.getWorkmatesList() != null && restaurantTemp.getWorkmatesList().size() > 0) {
-
-                markerOptions.icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_location1));
-
-            } else {
-                markerOptions.icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_location));
-
-            }
-            Marker marker = mMap.addMarker(markerOptions);
-            marker.setTag(restaurantTemp.getPlaceId());
-
-        }
-
     }
 
 

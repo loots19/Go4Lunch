@@ -82,11 +82,11 @@ public class Workmates {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Workmates workmates = (Workmates) o;
-        return Objects.equals(workmateEmail, workmates.getWorkmateEmail());
+        return Objects.equals(workmateName, workmates.getWorkmateName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getWorkmateEmail());
+        return Objects.hash(this.getWorkmateName());
     }
 }

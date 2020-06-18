@@ -1,21 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    >
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
     android:layout_marginTop="10dp"
-    android:layout_marginBottom="10dp">
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="10dp" >
 
 
     <TextView
         android:id="@+id/tv_name_restaurant_item"
-        android:layout_width="230dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:textSize="16sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/tv_meters_restaurant_item"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,6 +56,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_address_restaurant_item" />
 
@@ -67,24 +76,23 @@
         android:id="@+id/tv_numbers_restaurant_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="5dp"
         app:layout_constraintEnd_toStartOf="@+id/iv_photo_restaurant_item"
         app:layout_constraintStart_toEndOf="@+id/tv_address_restaurant_item"
         app:layout_constraintTop_toBottomOf="@+id/tv_meters_restaurant_item" />
 
     <RatingBar
         android:id="@+id/iv_RatingBar_item"
-        android:scaleX="0.4"
-        android:scaleY="0.4"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:progressTint="@color/quantum_yellow"
-        android:numStars="3"
-        android:stepSize="1.0"
+        android:layout_height="wrap_content"
 
+        android:numStars="3"
+        android:progressTint="@color/quantum_yellow"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/iv_photo_restaurant_item"
         app:layout_constraintTop_toBottomOf="@+id/tv_numbers_restaurant_item" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

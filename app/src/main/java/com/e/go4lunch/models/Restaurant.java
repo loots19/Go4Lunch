@@ -41,12 +41,13 @@ public class Restaurant {
         this.rating = rating;
     }
     // Constructor for FireBase
-    public Restaurant(String placeId, String name, String address,String urlPhoto,List<Workmates> workmatesList) {
+    public Restaurant(String placeId, String name, String address, String urlPhoto, List<Workmates> workmatesList) {
         this.placeId = placeId;
         this.name = name;
         this.address = address;
         this.urlPhoto = urlPhoto;
         this.mWorkmatesList = workmatesList;
+
     }
 
 

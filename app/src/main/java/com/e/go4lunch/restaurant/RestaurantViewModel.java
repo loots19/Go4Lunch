@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
+import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.util.AbsentLiveData;
@@ -60,7 +61,7 @@ public class RestaurantViewModel extends ViewModel {
 
     }
 
-    public void createRestaurant(String placeId,String name,String address,String urlPhoto,List<Workmates>workmatesList) {
+    public void createRestaurant(String placeId, String name, String address, String urlPhoto, List<Workmates>workmatesList) {
         this.mRestaurantRepository.createRestaurant(placeId,name,address,urlPhoto,workmatesList);
     }
 

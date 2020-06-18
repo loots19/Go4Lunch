@@ -107,7 +107,7 @@ public class RegisterActivity extends BaseActivity {
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        createUserInFirestore();
+                        createUser();
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registered_Successfully), Toast.LENGTH_LONG).show();
                         mProgressBar.setVisibility(View.GONE);
                         startMapsActivity();
@@ -125,7 +125,7 @@ public class RegisterActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    //  Http request that create user in firestore
+
 
     // Configuring ViewModel
     private void configureViewModel() {
@@ -134,7 +134,7 @@ public class RegisterActivity extends BaseActivity {
 
     }
 
-    private void createUserInFirestore() {
+    private void createUser() {
         String uid = FirebaseAuth.getInstance().getUid();
         String email = mEmailRegister.getText().toString();
         String name = mNameRegister.getText().toString();

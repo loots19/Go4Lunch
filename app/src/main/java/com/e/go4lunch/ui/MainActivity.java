@@ -131,7 +131,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         updateUIWhenCreating();
         getCurrentWorkmate();
 
-        scheduleWork(14, 45);
+        scheduleWork(17, 20);
 
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), getString(R.string.google_api_key));

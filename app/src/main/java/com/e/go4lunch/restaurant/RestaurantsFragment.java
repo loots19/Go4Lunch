@@ -3,7 +3,6 @@ package com.e.go4lunch.restaurant;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +54,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         getListFromPlace();
         initialization();
 
+
         return view;
 
     }
@@ -79,6 +79,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
                         Location location = results.get(i).getGeometry().getLocation();
                         Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
                         mRestaurants.add(restaurant);
+                        mAdapter.notifyDataSetChanged();
                         mAdapter.setRestaurants(mRestaurants);
                         getListWithWorkmate();
 
@@ -106,12 +107,13 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
                             int in = mRestaurants.indexOf(restaurant);
                             mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
                             mAdapter.setRestaurants(mRestaurants);
+                            mAdapter.notifyDataSetChanged();
+
 
                         }
 
 
                     }
-
 
                 }
             }
@@ -128,6 +130,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
         mAdapter = new RestaurantAdapter(this.getActivity(), this);
         mRecyclerViewRestaurant.setAdapter(mAdapter);
+
 
     }
 

@@ -8,6 +8,7 @@ import com.e.go4lunch.Retrofit.ApiRequest;
 import com.e.go4lunch.Retrofit.RetrofitRequest;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
+import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
 import com.google.android.gms.tasks.Task;
@@ -89,7 +90,7 @@ public class RestaurantRepository {
     }
     // --- CREATE ---
 
-    public Task<Void> createRestaurant(String placeId,String name,String address,String urlPhoto,List<Workmates>workmatesList){
+    public Task<Void> createRestaurant(String placeId, String name, String address, String urlPhoto, List<Workmates>workmatesList){
         Restaurant restaurantToCreate = new Restaurant(placeId,name,address,urlPhoto,workmatesList);
         return getRestaurantCollection().document(placeId).set(restaurantToCreate);
     }
