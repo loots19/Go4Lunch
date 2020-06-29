@@ -1,7 +1,5 @@
 package com.e.go4lunch.repositories;
 
-import android.util.Log;
-
 import androidx.lifecycle.MutableLiveData;
 
 import com.e.go4lunch.Retrofit.ApiRequest;
@@ -17,6 +15,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -30,7 +30,7 @@ public class RestaurantRepository {
 
     // --- COLLECTION REFERENCE ---
 
-    public CollectionReference getRestaurantCollection() {
+    private CollectionReference getRestaurantCollection() {
         return FirebaseFirestore.getInstance().collection("restaurant");
     }
 
@@ -52,14 +52,33 @@ public class RestaurantRepository {
         MutableLiveData<MyPlace> newData = new MutableLiveData<>();
         mApiRequest.getNearbyPlaces(type, location, radius).enqueue(new Callback<MyPlace>() {
             @Override
-            public void onResponse(Call<MyPlace> call, Response<MyPlace> response) {
+            public void onResponse(@NotNull Call<MyPlace> call, Response<MyPlace> response) {
                 if (response.isSuccessful()) {
                     newData.setValue(response.body());
                 }
             }
 
             @Override
-            public void onFailure(Call<MyPlace> call, Throwable t) {
+            public void onFailure(@NotNull Call<MyPlace> call, Throwable t) {
+
+                newData.setValue(null);
+
+            }
+        });
+        return newData;
+    }
+    public MutableLiveData<MyPlace> getAutocompletePlace(String type, String location, int radius) {
+        MutableLiveData<MyPlace> newData = new MutableLiveData<>();
+        mApiRequest.getAutocomplete(type, location, radius).enqueue(new Callback<MyPlace>() {
+            @Override
+            public void onResponse(@NotNull Call<MyPlace> call, Response<MyPlace> response) {
+                if (response.isSuccessful()) {
+                    newData.setValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<MyPlace> call, Throwable t) {
 
                 newData.setValue(null);
 
@@ -72,7 +91,7 @@ public class RestaurantRepository {
         MutableLiveData<PlaceDetail> newData = new MutableLiveData<>();
         mApiRequest.getDetailsRestaurant(placeId).enqueue(new Callback<PlaceDetail>() {
             @Override
-            public void onResponse(Call<PlaceDetail> call, Response<PlaceDetail> response) {
+            public void onResponse(@NotNull Call<PlaceDetail> call, Response<PlaceDetail> response) {
                 if (response.isSuccessful()) {
                     newData.setValue(response.body());
 
@@ -80,7 +99,7 @@ public class RestaurantRepository {
             }
 
             @Override
-            public void onFailure(Call<PlaceDetail> call, Throwable t) {
+            public void onFailure(@NotNull Call<PlaceDetail> call, Throwable t) {
 
                 newData.setValue(null);
 
@@ -90,8 +109,8 @@ public class RestaurantRepository {
     }
     // --- CREATE ---
 
-    public Task<Void> createRestaurant(String placeId, String name, String address, String urlPhoto, List<Workmates>workmatesList){
-        Restaurant restaurantToCreate = new Restaurant(placeId,name,address,urlPhoto,workmatesList);
+    public Task<Void> createRestaurant(String placeId, String name, String address, String urlPhoto,  Boolean openNow,Location location, double rating, List<Workmates>workmatesList){
+        Restaurant restaurantToCreate = new Restaurant(placeId,name,address,urlPhoto,openNow,location,rating,workmatesList);
         return getRestaurantCollection().document(placeId).set(restaurantToCreate);
     }
 
@@ -109,6 +128,10 @@ public class RestaurantRepository {
 
     public Task<Void> updateRestaurantWorkmateList(String placeId,List<Workmates> workmatesList){
         return  getRestaurantCollection().document(placeId).update("workmatesList",workmatesList);
+    }
+
+    public Task<Void> clearDocument(String placeId){
+        return getRestaurantCollection().document(placeId).delete();
     }
 
 

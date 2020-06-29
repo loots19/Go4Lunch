@@ -2,7 +2,6 @@ package com.e.go4lunch.ui;
 
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,12 +29,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     // ERROR HANDLER
     // --------------------
     protected OnFailureListener onFailureListener() {
-        return new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), "unknown_error", Toast.LENGTH_LONG).show();
-            }
-        };
+        return e -> Toast.makeText(getApplicationContext(), "unknown_error", Toast.LENGTH_LONG).show();
 
 
     }

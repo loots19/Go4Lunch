@@ -1,4 +1,4 @@
-package com.e.go4lunch.notifications;
+package com.e.go4lunch.service;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -24,15 +23,16 @@ import com.google.gson.Gson;
 
 import java.util.Objects;
 
-public class MyWorker extends Worker {
+public class MyNotificationWorker extends Worker {
 
     private RestaurantRepository mRestaurantRepository;
     private WorkmatesRepository mWorkmatesRepository;
     private Workmates currentWorkmate;
     private Restaurant mRestaurant;
+    private String nameRestaurant;
 
 
-    public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+    public MyNotificationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.mRestaurantRepository = new RestaurantRepository();
         this.mWorkmatesRepository = new WorkmatesRepository();
@@ -44,8 +44,10 @@ public class MyWorker extends Worker {
         String workmateUid = FirebaseAuth.getInstance().getUid();
         this.mWorkmatesRepository.getWorkmate(workmateUid).addOnSuccessListener(documentSnapshot -> {
             currentWorkmate = documentSnapshot.toObject(Workmates.class);
-            if (Objects.requireNonNull(currentWorkmate).getRestaurantChoosen() != null) {
+            if (Objects.requireNonNull(currentWorkmate).getRestaurantChoosen()!= null) {
                 getRestaurant(currentWorkmate.getRestaurantChoosen().getPlaceId());
+                nameRestaurant = currentWorkmate.getRestaurantChoosen().getName();
+
             }
         });
     }
@@ -66,6 +68,7 @@ public class MyWorker extends Worker {
         return Result.success();
     }
 
+
     private void displayNotification() {
 
         // Create an Intent that will be shown when user will click on the Notification
@@ -80,7 +83,7 @@ public class MyWorker extends Worker {
 
         // Create a channel (Android 8)
         String channelId = "task_channel";
-        String channelName = "task8name";
+        String channelName = "GO4Lunch";
 
         // Support Version >= Android 8
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -91,7 +94,7 @@ public class MyWorker extends Worker {
         // Build a Notification object
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId)
                 .setContentTitle(getApplicationContext().getResources().getString(R.string.notification_title))
-                .setContentText(getApplicationContext().getResources().getString(R.string.notification_message))
+                .setContentText(getApplicationContext().getResources().getString (R.string.notification_message) + " " + nameRestaurant)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setAutoCancel(true)

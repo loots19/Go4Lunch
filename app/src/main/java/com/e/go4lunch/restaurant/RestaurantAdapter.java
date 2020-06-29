@@ -55,8 +55,8 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
         void onNoteClick(int position);
     }
 
-    public void setRestaurants(List<Restaurant> results) {
-        mRestaurants = results;
+    public void setRestaurants(List<Restaurant> restaurant) {
+        mRestaurants = restaurant;
         notifyDataSetChanged();
     }
 

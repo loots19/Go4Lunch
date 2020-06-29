@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="API_KEY">CLEF_API</string>
+    <string name="app_name">Go4Lunch</string>
+
+    <!-- FIRST SCREEN-->
+    <string name="button_facebook_sign">Connecté avec Facebook</string>
+    <string name="button_google_sign">Connecté avec Google</string>
+    <string name="button_twitter_sign">Connecté avec Twitter</string>
+    <string name="title_activity_maps">Carte</string>
+    <string name="tittle_name_first_screen">Go4Lunch</string>
+    <string name="tittle_sentence_name_first_screen">Trouvé un bon restaurant et invité vos collègue pour le déjeuné</string>
+    <string name="error_unknown_error">Une erreur inconnue s\'est produite</string>
+    <string name="button_email_password">Email et mot de passe</string>
+
+    <!-- BOTTOM NAVIGATION VIEW -->
+    <string name="bottom_navigation_menu_Workmates">Collègues</string>
+    <string name="bottom_navigation_menu_listView">Liste</string>
+    <string name="bottom_navigation_menu_mapView">Carte</string>
+
+    <!-- Used in NavigationDrawer -->
+    <string name="item_logout">DECONNEXION</string>
+    <string name="item_setting">PARAMETRES</string>
+    <string name="item_yourLunch">VOTRE DEJEUNE</string>
+    <string name="navigation_drawer_close">Ferme navigation drawer</string>
+    <string name="navigation_drawer_open">Ouvre navigation drawer</string>
+
+    <!--DETAIL ACTIVITY-->
+    <string name="add_to_favorites">Restaurant ajouté à la list de vos favoris</string>
+    <string name="button_call">Téléphone</string>
+    <string name="button_like">AIME</string>
+    <string name="button_webSite">SITE WEB</string>
+    <string name="no_phone">Numéro de téléphone inconnu</string>
+    <string name="no_web_site">Site Web inconnu</string>
+    <string name="remove_to_favorites">Restaurant supprimé de votre list de favoris</string>
+
+    <!--FRAGMENT HOLDER-->
+    <string name="Close">fermé</string>
+    <string name="Open">ouvert</string>
+    <string name="opening_hour_not_available">Horaire indisponible</string>
+    <string name="list_unit_distance">%1$sm</string>
+
+    <!-- NOTIFICATION WORKMANAGER -->
+    <string name="notification_message">Vous avez un déjeuné plannifié à:</string>
+    <string name="notification_title">Go4Lunch</string>
+
+    <!-- REGISTER -->
+    <string name="input_error_email_invalid">Renseigner un email valide</string>
+    <string name="Please_enter_email">Renseigner un email s\'il vous plait</string>
+    <string name="Please_enter_name">Renseigner un prénom s\'il vous plait</string>
+    <string name="Registered_Successfully">" Enregistré avec succès"</string>
+    <string name="email">Email</string>
+    <string name="name">Nom</string>
+    <string name="password">Mot de passe</string>
+    <string name="sign_in">Se connecter</string>
+    <string name="error">érreur_autentification_annulée</string>
+    <string name="no_network">pas de connexion</string>
+    <string name="unknown_error">érreur_inconnu</string>
+
+    <!-- AUTOCOMPLETE -->
+    <string name="autocomplete_hint">Restaurant</string>
+
+    <!-- HOLDER WORKMATES -->
+    <string name="is_eating">mange à</string>
+
+    <!-- HOLDER WORKMATESDETAIL -->
+    <string name="is_joining">se joint</string>
+
+    <!-- ALERT DIALOG -->
+    <string name="no">Non</string>
+    <string name="titlle_alert">Etes vous sur de vouloir vous déconnecter</string>
+    <string name="yes">Oui</string>
+    <string name="tittle_alert_Lunch">Vous n\'avez pas encore fait votre choix</string>
+
+</resources>

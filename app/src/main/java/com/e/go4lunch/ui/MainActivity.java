@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -27,8 +28,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
@@ -44,11 +43,12 @@ import com.e.go4lunch.injection.Injection;
 import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.notifications.MyWorker;
 import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
 import com.e.go4lunch.restaurant.MapsFragment;
 import com.e.go4lunch.restaurant.RestaurantViewModel;
 import com.e.go4lunch.restaurant.RestaurantsFragment;
+import com.e.go4lunch.service.DeleteMyWorker;
+import com.e.go4lunch.service.MyNotificationWorker;
 import com.e.go4lunch.workmates.ListFragment;
 import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.firebase.ui.auth.AuthUI;
@@ -66,6 +66,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -88,10 +90,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.nav_view)
     NavigationView mNavigationView;
     @BindView(R.id.toolbar_editText)
-    EditText mEditTextToolbar;
+    EditText mEditText;
+
 
     //FOR DATA
-    private ImageView mImageViewProfil;
+    private ImageView mImageViewProfile;
     private TextView mTextViewName;
     private TextView mTextViewEmail;
     private WorkmateViewModel mWorkmateViewModel;
@@ -103,11 +106,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private static final String WORK_TAG = "WORK_REQUEST_TAG_Go4Lunch";
     private static final int SIGN_OUT_TASK = 10;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 11;
-    public static final String EXTRA_AUTOCOMPLETE = "restaurantId";
-    private static final String TAG = "FROM_AUTOCOMPLETE";
-    // Creating identifier to identify REST REQUEST (Update username)
-    private static final int UPDATE_USERNAME = 30;
-
+    private static final String TAG = "Test PlaceId";
+    private List<Restaurant> mRestaurantListFromFirebase;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -116,10 +116,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+
         NavigationView navigationView = findViewById(R.id.nav_view);
         mTextViewName = navigationView.getHeaderView(0).findViewById(R.id.tv_name_header);
         mTextViewEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_mail_header);
-        mImageViewProfil = navigationView.getHeaderView(0).findViewById(R.id.imageProfile_header);
+        mImageViewProfile = navigationView.getHeaderView(0).findViewById(R.id.imageProfile_header);
 
 
         configureDrawerLayout();
@@ -131,63 +132,50 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         updateUIWhenCreating();
         getCurrentWorkmate();
 
-        scheduleWork(17, 20);
 
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
-        }
+        scheduleWork(13, 55);
+        deleteWork(14, 40);
+
 
         //I added this if statement to keep the selected fragment when rotating the device
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new MapsFragment()).commit();
         }
-
-
-        //      this.mEditTextToolbar.addTextChangedListener(new TextWatcher() {
-        //          @Override
-        //          public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        //          @Override
-        //          public void onTextChanged(CharSequence s, int start, int before, int count) {}
-        //          @Override
-        //          public void afterTextChanged(Editable s)
-        //          {
-        //              String input = s.toString();
-        //              mMapsFragment = new MapsFragment();
-        //             mMapsFragment.autocompleteSearch(input);
-        //          }
-        //      });
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
+        }
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setQueryHint("Search restaurants");
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(Objects.requireNonNull(searchManager).getSearchableInfo(getComponentName()));
-
         return true;
+
 
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
+
             case R.id.search:
                 onSearchCalled();
                 return true;
+
             default:
-                return false;
+                return true;
         }
+
 
     }
 
@@ -199,17 +187,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 switch (item.getItemId()) {
                     case R.id.action_map:
                         selectedFragment = new MapsFragment();
-                        this.mEditTextToolbar.setVisibility(View.VISIBLE);
+
                         break;
 
                     case R.id.action_list:
                         selectedFragment = new RestaurantsFragment();
-                        this.mEditTextToolbar.setVisibility(View.VISIBLE);
+
                         break;
 
                     case R.id.action_workmates:
                         selectedFragment = new ListFragment();
-                        this.mEditTextToolbar.setVisibility(View.INVISIBLE);
+
                         break;
                 }
 
@@ -228,7 +216,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NotNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
@@ -237,19 +225,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+        String channelId = "task_channel";
         switch (id) {
             case R.id.lunch_drawer:
-               // getCurrentWorkmate();
                 showLunch();
                 break;
 
             case R.id.setting_drawer:
+                updateNotificationSettings(channelId);
                 break;
 
             case R.id.logout_drawer:
                 alertLogOut();
-
                 break;
+
             default:
                 break;
 
@@ -257,6 +246,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
     //  Configure Drawer Layout
     private void configureDrawerLayout() {
@@ -312,12 +302,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public void alertLogOut() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are your sure you want to logout.");
-        builder.setPositiveButton("YES", (dialog, which) -> {
+        builder.setMessage(R.string.titlle_alert);
+        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
             logout();
             FirebaseAuth.getInstance().signOut();
         });
-        builder.setNegativeButton("NO", (dialog, which) -> dialog.cancel());
+        builder.setNegativeButton(R.string.no, (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
@@ -360,13 +350,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
 
                 Status status = Autocomplete.getStatusFromIntent(data);
-
                 Log.i(TAG, status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
             }
         }
     }
+
     // --------------------
     // UI
     // --------------------
@@ -379,12 +369,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Glide.with(this)
                         .load(this.getCurrentUser().getPhotoUrl())
                         .apply(RequestOptions.circleCropTransform())
-                        .into(mImageViewProfil);
+                        .into(mImageViewProfile);
             } else {
                 Glide.with(this)
                         .load(R.drawable.ic_hot_food_in_a_bowl2)
                         .apply(RequestOptions.circleCropTransform())
-                        .into(mImageViewProfil);
+                        .into(mImageViewProfile);
 
             }
             if (this.getCurrentUser().getDisplayName() == null) {
@@ -422,13 +412,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             currentWorkmate = workmates;
             if (currentWorkmate.getRestaurantChoosen() != null) {
                 placeId = currentWorkmate.getRestaurantChoosen().getPlaceId();
+                if (currentWorkmate.getRestaurantChoosen().equals(mRestaurant))
                 getRestaurant();
 
             }
 
+
         });
 
     }
+
 
     private void getRestaurant() {
         mRestaurantViewModel.getRestaurant(placeId).observe(this, restaurant -> {
@@ -438,28 +431,59 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
+
+    private void getRestaurantList() {
+        mRestaurantViewModel.getRestaurantList().observe(this, restaurants -> {
+            mRestaurantListFromFirebase = restaurants;
+
+        });
+    }
+
     private void showLunch() {
         getCurrentWorkmate();
-        if (currentWorkmate.getRestaurantChoosen() != null) {
-            Intent intent = new Intent(this, DetailsRestaurantActivity.class);
-            Gson gson = new Gson();
-            String jsonSelectedRestaurant = gson.toJson(mRestaurant);
-            intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
-            startActivity((intent));
-        } else {
-            alertDisplayChoice();
+        if (this.currentWorkmate.getRestaurantChoosen() != null) {
+
+                Intent intent = new Intent(this, DetailsRestaurantActivity.class);
+                Gson gson = new Gson();
+                String jsonSelectedRestaurant = gson.toJson(mRestaurant);
+                intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
+                // startActivity(intent);
+                Toast.makeText(this, "replaceDetail", Toast.LENGTH_LONG).show();
+            } else {
+
+                alertDisplayChoice();
+
+            }
         }
-    }
+
 
     public void alertDisplayChoice() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("You haven't made your choice yet ");
-        builder.setPositiveButton("Go4Lunch", (dialog, which) -> {
+        builder.setMessage(R.string.tittle_alert_Lunch);
+        builder.setPositiveButton(R.string.app_name, (dialog, which) -> {
 
         });
 
         builder.show();
     }
+
+
+    // open settings for notifications
+    private void updateNotificationSettings(String channel_id) {
+        Intent intent = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+            Log.e("test", channel_id);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.putExtra(Settings.EXTRA_CHANNEL_ID, channel_id);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+        }
+        startActivity(intent);
+    }
+
 
     public static void scheduleWork(int hour, int minute) {
         Calendar calendar = Calendar.getInstance();
@@ -482,7 +506,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
         mWorkManager.cancelAllWorkByTag(WORK_TAG);
-        OneTimeWorkRequest mRequest = new OneTimeWorkRequest.Builder(MyWorker.class)
+        OneTimeWorkRequest mRequest = new OneTimeWorkRequest.Builder(MyNotificationWorker.class)
                 .setConstraints(constraints)
                 .setInitialDelay(diff, TimeUnit.MILLISECONDS)
                 .addTag(WORK_TAG)
@@ -491,5 +515,38 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
+    public static void deleteWork(int hour, int minute) {
+        Calendar calendar = Calendar.getInstance();
+        long nowMillis = calendar.getTimeInMillis();
+
+        if (calendar.get(Calendar.HOUR_OF_DAY) > hour ||
+                (calendar.get(Calendar.HOUR_OF_DAY) == hour && calendar.get(Calendar.MINUTE) + 1 >= minute)) {
+            calendar.add(Calendar.DAY_OF_MONTH, 0);
+        }
+
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        long diff = calendar.getTimeInMillis() - nowMillis;
+
+        WorkManager workManager = WorkManager.getInstance();
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+        workManager.cancelAllWorkByTag(WORK_TAG);
+        OneTimeWorkRequest mRequest = new OneTimeWorkRequest.Builder(DeleteMyWorker.class)
+                .setConstraints(constraints)
+                .setInitialDelay(diff, TimeUnit.MILLISECONDS)
+                .addTag(WORK_TAG)
+                .build();
+        workManager.enqueue(mRequest);
+    }
+
 
 }
+
+
+
+

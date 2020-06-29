@@ -10,6 +10,7 @@
     <string name="button_google_sign">Sign in with Google</string>
     <string name="button_twitter_sign">Sign in with Twitter</string>
     <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
+    <string name="button_email_password">Email and Password</string>
 
     <!-- FACEBOOK PURPOSE -->
     <string name="facebook_application_id" translatable="false">515858332701600</string>
@@ -20,8 +21,6 @@
     <string name="bottom_navigation_menu_listView">ListView</string>
     <string name="bottom_navigation_menu_Workmates">Workmates</string>
 
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Used in NavigationDrawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -49,7 +48,7 @@
     <!-- NOTIFICATION WORKMANAGER -->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="notification_title">"Go4Lunch"</string>
-    <string name="notification_message">you have a planned lunch</string>
+    <string name="notification_message">you have a planned lunch at:  </string>
 
     <!-- TWITTER -->
     <string name="twitter_api_key" translatable="false">R1247489415326371840-8cwSQGaAyKQ0isKOOCC6WfMF2Ohp1C</string>
@@ -60,6 +59,13 @@
     <string name="Registered_Successfully">Registered Successfully</string>
     <string name="Please_enter_name">Please enter name!</string>
     <string name="Please_enter_email">Please enter email…</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="error">error_authentication_canceled</string>
+    <string name="no_network">no_network</string>
+    <string name="unknown_error">unknown_error</string>
 
 
     <!-- HOLDER WORKMATES -->
@@ -71,7 +77,11 @@
     <!-- HOLDER WORKMATESDETAIL -->
     <string name="is_joining">is joining</string>
 
-
+    <!-- ALERT DIALOG -->
+    <string name="titlle_alert">Are your sure you want to logout.</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="tittle_alert_Lunch">You haven\'t made your choice yet</string>
 
 
 

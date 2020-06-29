@@ -10,11 +10,11 @@ import com.e.go4lunch.restaurant.MapsFragment;
 
 public class Injection {
 
-    public static RestaurantRepository provideRestaurantRepository(Context context) {
+    private static RestaurantRepository provideRestaurantRepository(Context context) {
         return RestaurantRepository.getInstance();
     }
 
-    public static WorkmatesRepository provideWorkmatesRepository(Context context) {
+    private static WorkmatesRepository provideWorkmatesRepository(Context context) {
         return new WorkmatesRepository();
     }
 

@@ -1,7 +1,6 @@
 package com.e.go4lunch.restaurant;
 
 import android.location.Location;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -45,9 +44,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     ImageView mImageViewWorkmates;
 
 
-    RestaurantAdapter.OnNoteListener OnNoteListener;
-    private int numberWorkmates;
-
+    private RestaurantAdapter.OnNoteListener OnNoteListener;
 
 
     public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
@@ -106,7 +103,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     }
 
     // set distance of the place
-    public void displayDistance(Restaurant restaurant) {
+    private void displayDistance(Restaurant restaurant) {
         App globals = (App) getApplicationContext();
         String lat = globals.getLat();
         String lng = globals.getLng();
@@ -124,7 +121,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     }
 
     // set opening hours of the place
-    public void displayOpeningHours(Restaurant restaurant) {
+    private void displayOpeningHours(Restaurant restaurant) {
         if (restaurant.getOpenNow() != null) {
             if (restaurant.getOpenNow()) {
                 mTvTime.setText(R.string.Open);
@@ -140,8 +137,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         }
     }
 
+
     //set photo of the place
-    public void displayPhotoOfRestaurant(Restaurant restaurant) {
+    private void displayPhotoOfRestaurant(Restaurant restaurant) {
         if (restaurant.getUrlPhoto() != null) {
             Glide.with(itemView)
                     .load(Constants.BASE_URL_PHOTO
@@ -153,8 +151,8 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     }
 
     private void displayWorkmatesNumbers(Restaurant restaurant) {
-        if (restaurant.getWorkmatesList() != null) {
-            numberWorkmates = restaurant.getWorkmatesList().size();
+        if (restaurant.getWorkmatesList() != null && restaurant.getWorkmatesList().size()>0) {
+            int numberWorkmates = restaurant.getWorkmatesList().size();
             mTvNumbers.setText(String.valueOf(numberWorkmates));
             mImageViewWorkmates.setVisibility(View.VISIBLE);
         }else{

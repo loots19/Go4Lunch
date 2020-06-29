@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
+import com.e.go4lunch.restaurant.RestaurantAutocompleteViewModel;
 import com.e.go4lunch.restaurant.RestaurantDetailViewModel;
 import com.e.go4lunch.restaurant.RestaurantViewModel;
 import com.e.go4lunch.workmates.WorkmateViewModel;
@@ -29,11 +30,15 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         if (modelClass.isAssignableFrom(RestaurantViewModel.class)) {
             return (T) new RestaurantViewModel(mRestaurantRepository);
         }
+
         if (modelClass.isAssignableFrom(RestaurantDetailViewModel.class)) {
             return (T) new RestaurantDetailViewModel(mRestaurantRepository);
         }
         if (modelClass.isAssignableFrom(WorkmateViewModel.class)) {
             return (T) new WorkmateViewModel(mRestaurantRepository, mWorkmatesRepository);
+        }
+        if (modelClass.isAssignableFrom(RestaurantAutocompleteViewModel.class)) {
+            return (T) new RestaurantAutocompleteViewModel(mRestaurantRepository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

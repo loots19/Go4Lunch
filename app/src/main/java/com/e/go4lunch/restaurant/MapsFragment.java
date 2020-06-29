@@ -35,7 +35,6 @@ import com.e.go4lunch.injection.App;
 import com.e.go4lunch.injection.Injection;
 import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
-import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.util.Constants;
@@ -86,24 +85,25 @@ public class MapsFragment extends Fragment implements
     @BindView(R.id.fab)
     FloatingActionButton mFab;
 
+
     // ----------------- FOR DATA // -----------------
 
     private static final int REQUEST_USER_LOCATION_CODE = 99;
     public static final String MY_PREF = "MY_PREF";
-    public static final String LAT = "LAT";
-    public static final String LNG = "LNG";
+    private static final String LAT = "LAT";
+    private static final String LNG = "LNG";
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private Marker currentUserLocationMarker;
     private RestaurantViewModel mRestaurantViewModel;
     private WorkmateViewModel mWorkmateViewModel;
-    private List<Restaurant> mRestaurants;
+    private List<Restaurant> mRestaurants = new ArrayList<>();
     private String TAG = "test auto";
     private LatLng mLatLng;
     private Location mLocation;
     private Double lat;
     private Double lng;
-
+    private Context mContext;
 
 
     // ----------------- Required empty public constructor // -----------------
@@ -121,7 +121,6 @@ public class MapsFragment extends Fragment implements
 
         configureViewModel();
         configureWorkmateViewModel();
-
 
 
         //Request Runtime permission
@@ -233,35 +232,27 @@ public class MapsFragment extends Fragment implements
         }
 
 
+
     }
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
+        getListOfRestaurantFromPlace();
         mMap = googleMap;
         if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             buildGoogleApiClient();
-            subscribeObservers();
-            //getListWithWorkmate();
+            mMap.setMyLocationEnabled(true);
 
-            mMap.setMyLocationEnabled(false);
 
-            mFab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    subscribeObservers();
-                }
-            });
+            mFab.setOnClickListener(v -> getListOfRestaurantFromPlace());
 
 
         }
         // make event click on marker
         mMap.setOnMarkerClickListener(marker -> {
-
             lunchDetailActivity(marker);
-
             return false;
         });
 
@@ -269,18 +260,18 @@ public class MapsFragment extends Fragment implements
     }
 
 
-    public boolean checkUserLocationPermission() {
+    private void checkUserLocationPermission() {
 
         if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
+
             } else {
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
-                //subscribeObservers();
+                getListOfRestaurantFromPlace();
             }
-            return false;
         } else {
-            return true;
+            getListOfRestaurantFromPlace();
         }
 
     }
@@ -295,21 +286,21 @@ public class MapsFragment extends Fragment implements
         mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
 
 
-
     }
 
     private void configureWorkmateViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
         this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
+
+
     }
     // ----------------- Configuring Observers -----------------
 
-    private void subscribeObservers() {
-
+    private void getListOfRestaurantFromPlace() {
         mRestaurantViewModel.getMyPlace().observe(this, new Observer<MyPlace>() {
             @Override
             public void onChanged(MyPlace myPlace) {
-                mRestaurants = new ArrayList<>();
+
                 List<Result> results = myPlace.getResults();
                 if (mMap != null) {
                     // This loop will go through all the results and add marker on each location.
@@ -320,8 +311,6 @@ public class MapsFragment extends Fragment implements
                         //Position of Marker on Map
                         MarkerOptions markerOptions = new MarkerOptions();
                         markerOptions.position(latLng);
-
-                        // Adding colour to the marker
                         markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
                         // move map camera
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -337,7 +326,6 @@ public class MapsFragment extends Fragment implements
                         if (results.get(i).getGeometry().getLocation() != null) {
                             com.e.go4lunch.models.myPlace.Location location = results.get(i).getGeometry().getLocation();
                             Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
-
                             mRestaurants.add(restaurant);
 
                             Marker marker = mMap.addMarker(markerOptions);
@@ -345,13 +333,11 @@ public class MapsFragment extends Fragment implements
                             String jsonSelectedRestaurant = gson.toJson(mRestaurants.get(i));
                             marker.setTag(jsonSelectedRestaurant);
 
-
-
                         }
-
 
                     }
                 }
+                getListWithWorkmate();
 
             }
         });
@@ -363,27 +349,28 @@ public class MapsFragment extends Fragment implements
             @Override
             public void onChanged(List<Restaurant> restaurants) {
 
-                mRestaurants = restaurants;
                 int size = restaurants.size();
                 for (int i = 0; i < size; i++) {
-                    Restaurant restaurant = mRestaurants.get(i);
+                    Restaurant restaurant = restaurants.get(i);
+                    int in = mRestaurants.indexOf(restaurant);
+                    mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
+                    //Log.e("testListWorkmate", String.valueOf(mRestaurants.get(in).getWorkmatesList().size()));
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    lat = mRestaurants.get(in).getLocation().getLat();
+                    lng = mRestaurants.get(in).getLocation().getLng();
+                    LatLng latLng = new LatLng(lat, lng);
+                    markerOptions.position(latLng);
+                    if (restaurant.getWorkmatesList().size() > 0 && restaurant.getWorkmatesList() != null) {
+                        if (mRestaurants.contains(restaurant)) {
+                            markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector1(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
+                        } else {
+                            markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
+                        }
 
-               //   if (restaurant.getWorkmatesList().size() > 0) {
-               //       if (mRestaurants.contains(restaurant)) {
-               //           int in = mRestaurants.indexOf(restaurant);
-               //           mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
-               //           Log.e("testListWorkmate", String.valueOf(mRestaurants.get(in).getWorkmatesList().size()));
-               //           Toast.makeText(getContext(), "testtest", Toast.LENGTH_SHORT).show();
-               //           LatLng latLng = new LatLng(mRestaurants.get(in).getLocation().getLat(),mRestaurants.get(in).getLocation().getLng());
-               //           MarkerOptions markerOptions = new MarkerOptions().position(latLng);
-               //           markerOptions.icon(bitmapDescriptorFromVector(getContext(), R.drawable.ic_location1));
-               //       } else {
-                            subscribeObservers();
-
-
-                        //}
-                  // }
-
+                    } else {
+                        markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
+                    }
+                    mMap.addMarker(markerOptions);
                 }
 
             }
@@ -394,6 +381,18 @@ public class MapsFragment extends Fragment implements
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
         Drawable background = ContextCompat.getDrawable(context, R.drawable.ic_location);
+        Objects.requireNonNull(background).setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId);
+        Objects.requireNonNull(vectorDrawable).setBounds(20, 20, vectorDrawable.getIntrinsicWidth() + 20, vectorDrawable.getIntrinsicHeight() + 20);
+        Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        background.draw(canvas);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector1(Context context, @DrawableRes int vectorDrawableResourceId) {
+        Drawable background = ContextCompat.getDrawable(context, R.drawable.ic_location1);
         Objects.requireNonNull(background).setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId);
         Objects.requireNonNull(vectorDrawable).setBounds(20, 20, vectorDrawable.getIntrinsicWidth() + 20, vectorDrawable.getIntrinsicHeight() + 20);
@@ -415,12 +414,11 @@ public class MapsFragment extends Fragment implements
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
         }
-        PlacesClient placesClient = Places.createClient(Objects.requireNonNull(getContext()));
+        PlacesClient placesClient = Places.createClient(mContext);
         AutocompleteSessionToken sessionToken = AutocompleteSessionToken.newInstance();
-        App globals = (App) getApplicationContext();
-        double lat = Double.parseDouble(globals.getLat());
-        double lng = Double.parseDouble(globals.getLng());
 
+        double lat = Double.parseDouble(App.getInstance().getLat());
+        double lng = Double.parseDouble(App.getInstance().getLng());
 
         RectangularBounds bounds = RectangularBounds.newInstance(
                 new LatLng(lat, lng), //dummy lat/lng
@@ -446,6 +444,7 @@ public class MapsFragment extends Fragment implements
             }
         });
 
-
     }
+
+
 }

@@ -1,6 +1,5 @@
 package com.e.go4lunch.auth;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,7 +28,7 @@ import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterConfig;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,7 +40,7 @@ public class AuthActivity extends BaseActivity {
 
     //FOR DESIGN
     @BindView(R.id.btnGG)
-    Button buttonloginGg;
+    Button buttonLoginGg;
     @BindView(R.id.btnFb)
     Button buttonFb;
     @BindView(R.id.btnTw)
@@ -53,7 +52,6 @@ public class AuthActivity extends BaseActivity {
     //FOR DATA
     private static final int RC_SIGN_IN = 123;
     private WorkmateViewModel mWorkmateViewModel;
-    private Context mContext;
     private List<Workmates> mWorkmatesList;
     private Boolean workmatesExists = false;
 
@@ -63,12 +61,12 @@ public class AuthActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.auth_main);
-        ButterKnife.bind(this); //Configure Butterknife
+        ButterKnife.bind(this);
 
 
         configureViewModel();
         subscribeObservers();
-        alreadySigned();
+        //alreadySigned();
         initTwitter();
 
 
@@ -132,19 +130,18 @@ public class AuthActivity extends BaseActivity {
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                createUser();
-
+                subscribeObservers();
 
                 if (user != null) {
                     Toast.makeText(this, "" + user.getEmail(), Toast.LENGTH_SHORT).show();
                 }
             } else { // ERRORS
                 if (response == null) {
-                    Toast.makeText(this, "error_authentication_canceled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
                 } else if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    Toast.makeText(this, "no_network", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.no_network, Toast.LENGTH_SHORT).show();
                 } else if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    Toast.makeText(this, "unknown_error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_SHORT).show();
 
 
                 }
@@ -161,7 +158,7 @@ public class AuthActivity extends BaseActivity {
                         .createSignInIntentBuilder()
                         .setTheme(R.style.AppTheme)
                         .setAvailableProviders(
-                                Arrays.asList(new AuthUI.IdpConfig.GoogleBuilder().build()))//GOOGLE
+                                Collections.singletonList(new AuthUI.IdpConfig.GoogleBuilder().build()))//GOOGLE
                         .build(),
                 RC_SIGN_IN);
 
@@ -174,7 +171,7 @@ public class AuthActivity extends BaseActivity {
                         .createSignInIntentBuilder()
                         .setTheme(R.style.AppTheme)
                         .setAvailableProviders(
-                                Arrays.asList(
+                                Collections.singletonList(
                                         new AuthUI.IdpConfig.FacebookBuilder().build())) //FACEBOOK
                         .build(),
                 RC_SIGN_IN);
@@ -186,7 +183,7 @@ public class AuthActivity extends BaseActivity {
                         .createSignInIntentBuilder()
                         .setTheme(R.style.AppTheme)
                         .setAvailableProviders(
-                                Arrays.asList(
+                                Collections.singletonList(
                                         new AuthUI.IdpConfig.TwitterBuilder().build())) //FACEBOOK
                         .build(),
                 RC_SIGN_IN);
@@ -229,14 +226,15 @@ public class AuthActivity extends BaseActivity {
             @Override
             public void onChanged(List<Workmates> workmates) {
                 mWorkmatesList = workmates;
-
-
+                createUser();
             }
         });
+
     }
 
 
     private void createUser() {
+
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             if (mWorkmatesList != null) {
@@ -252,9 +250,9 @@ public class AuthActivity extends BaseActivity {
                 } else {
                     String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
                     String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-                    String urlPicture = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()).toString();
+                    String urlPicture = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
                     mWorkmateViewModel.createWorkmate(uid, email, name, urlPicture);
-                    this.startMapsActivity();
+                    startMapsActivity();
                 }
             }
         }

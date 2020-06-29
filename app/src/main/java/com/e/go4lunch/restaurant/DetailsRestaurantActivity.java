@@ -69,7 +69,6 @@ public class DetailsRestaurantActivity extends BaseActivity {
     private WorkmateViewModel mWorkmateViewModel;
     private ResultDetail mResultDetail;
     private String placeId;
-    private String placeId2;
     private String workmateUid;
     private Restaurant mRestaurant;
     private Workmates currentWorkmate;
@@ -218,7 +217,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
             mRestaurantListFromFirebase = restaurants;
             if (!mRestaurantListFromFirebase.contains(mRestaurant)) {
                 mWorkmatesList = new ArrayList<>();
-                mRestaurantViewModel.createRestaurant(mRestaurant.getPlaceId(), mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mWorkmatesList);
+                mRestaurantViewModel.createRestaurant(mRestaurant.getPlaceId(), mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(),mRestaurant.getOpenNow(),mRestaurant.getLocation(),mRestaurant.getRating(), mWorkmatesList);
             }
             getCurrentWorkmate();
 
@@ -284,14 +283,12 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
         if (currentWorkmate.getRestaurantChoosen() == null) {
             this.mfab.setImageResource(R.drawable.ic_check_circle_black_24dp);
-            this.mRestaurantViewModel.createRestaurant(placeId, mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mWorkmatesList);
+            this.mRestaurantViewModel.createRestaurant(placeId, mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(),mRestaurant.getOpenNow(),mRestaurant.getLocation(),mRestaurant.getRating(), mWorkmatesList);
             this.mWorkmatesList.add(workmatesChoice);
             this.currentWorkmate.setRestaurantChoosen(mRestaurant);
             this.mWorkmateViewModel.updateRestaurantChoosen(workmateUid, currentWorkmate.getRestaurantChoosen());
             this.mRestaurantViewModel.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
             this.mRestaurantDetailAdapter.notifyDataSetChanged();
-
-
 
         } else {
             updateSelectedRestaurant(currentWorkmate.getRestaurantChoosen());
@@ -301,7 +298,6 @@ public class DetailsRestaurantActivity extends BaseActivity {
             this.currentWorkmate.setRestaurantChoosen(null);
             this.mWorkmateViewModel.updateRestaurantChoosen(workmateUid, currentWorkmate.getRestaurantChoosen());
             this.mRestaurantDetailAdapter.notifyDataSetChanged();
-
             Toast.makeText(this, "YOU CHANGED YOUR CHOICE", Toast.LENGTH_SHORT).show();
 
 
@@ -360,7 +356,6 @@ public class DetailsRestaurantActivity extends BaseActivity {
                 .into(mIvPhotoRestaurant);
         updateIVLike();
         updateFab();
-        //updateSelectedRestaurant(mRestaurant);
 
 
     }

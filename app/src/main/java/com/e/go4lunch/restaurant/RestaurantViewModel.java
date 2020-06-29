@@ -11,6 +11,7 @@ import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.util.AbsentLiveData;
+import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
@@ -61,8 +62,8 @@ public class RestaurantViewModel extends ViewModel {
 
     }
 
-    public void createRestaurant(String placeId, String name, String address, String urlPhoto, List<Workmates>workmatesList) {
-        this.mRestaurantRepository.createRestaurant(placeId,name,address,urlPhoto,workmatesList);
+    public void createRestaurant(String placeId, String name, String address, String urlPhoto,Boolean openNow,Location location,double rating, List<Workmates>workmatesList) {
+        this.mRestaurantRepository.createRestaurant(placeId,name,address,urlPhoto,openNow,location,rating,workmatesList);
     }
 
 
@@ -112,6 +113,11 @@ public class RestaurantViewModel extends ViewModel {
 
     public void updateRestaurantWorkmateList(String uid, List<Workmates>workmatesList){
         this.mRestaurantRepository.updateRestaurantWorkmateList(uid,workmatesList);
+    }
+
+    public void deleteTaskEveryDay(String placeId){
+        mRestaurantRepository.clearDocument(placeId);
+
     }
 
 

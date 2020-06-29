@@ -55,7 +55,6 @@ public class RegisterActivity extends BaseActivity {
 
     FirebaseAuth mFirebaseAuth;
     private WorkmateViewModel mWorkmateViewModel;
-    private List<Workmates> mWorkmatesList;
 
 
     @Override
@@ -68,12 +67,7 @@ public class RegisterActivity extends BaseActivity {
         configureViewModel();
 
 
-        mButtonRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                registerNewWorkmate();
-            }
-        });
+        mButtonRegister.setOnClickListener(v -> registerNewWorkmate());
     }
 
     private void registerNewWorkmate() {
@@ -81,7 +75,6 @@ public class RegisterActivity extends BaseActivity {
 
         String name, email, password;
         name = mNameRegister.getText().toString().trim();
-        Log.e("testname", name);
         email = mEmailRegister.getText().toString();
         password = mPasswordRegister.getText().toString();
 
@@ -112,7 +105,7 @@ public class RegisterActivity extends BaseActivity {
                         mProgressBar.setVisibility(View.GONE);
                         startMapsActivity();
                     } else {
-                        Toast.makeText(getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_LONG).show();
                         mProgressBar.setVisibility(View.GONE);
                     }
                 });
@@ -138,8 +131,7 @@ public class RegisterActivity extends BaseActivity {
         String uid = FirebaseAuth.getInstance().getUid();
         String email = mEmailRegister.getText().toString();
         String name = mNameRegister.getText().toString();
-        String urlPicture = null;
-        mWorkmateViewModel.createWorkmate(uid, email, name, urlPicture);
+        mWorkmateViewModel.createWorkmate(uid, email, name, null);
     }
 
 }
