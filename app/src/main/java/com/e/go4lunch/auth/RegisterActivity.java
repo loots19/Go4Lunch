@@ -53,8 +53,11 @@ public class RegisterActivity extends BaseActivity {
     @BindView(R.id.progressBar)
     ProgressBar mProgressBar;
 
-    FirebaseAuth mFirebaseAuth;
+    FirebaseAuth mFireBaseAuth;
     private WorkmateViewModel mWorkmateViewModel;
+    private List<Workmates> mWorkmatesList;
+    private Boolean workmatesExists = false;
+
 
 
     @Override
@@ -63,7 +66,7 @@ public class RegisterActivity extends BaseActivity {
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
 
-        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFireBaseAuth = FirebaseAuth.getInstance();
         configureViewModel();
 
 
@@ -97,10 +100,10 @@ public class RegisterActivity extends BaseActivity {
             return;
         }
 
-        mFirebaseAuth.createUserWithEmailAndPassword(email, password)
+        mFireBaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        createUser();
+                        subscribeObservers();
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registered_Successfully), Toast.LENGTH_LONG).show();
                         mProgressBar.setVisibility(View.GONE);
                         startMapsActivity();
@@ -119,20 +122,44 @@ public class RegisterActivity extends BaseActivity {
     }
 
 
-
     // Configuring ViewModel
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
 
     }
+    private void subscribeObservers() {
+        mWorkmateViewModel.getWorkmatesList().observe(this, workmates -> {
+            mWorkmatesList = workmates;
+            createUser();
+        });
 
-    private void createUser() {
-        String uid = FirebaseAuth.getInstance().getUid();
-        String email = mEmailRegister.getText().toString();
-        String name = mNameRegister.getText().toString();
-        mWorkmateViewModel.createWorkmate(uid, email, name, null);
     }
+
+   private void createUser() {
+
+       if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+           String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+           String name = mNameRegister.getText().toString().trim();
+           if (mWorkmatesList != null) {
+               int size = mWorkmatesList.size();
+               for (int i = 0; i < size; i++) {
+                   if (mWorkmatesList.get(i).getWorkmateEmail().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+                       workmatesExists = true;
+                       break;
+                   }
+               }
+               if (workmatesExists) {
+                   startMapsActivity();
+               } else {
+                   String email = mEmailRegister.getText().toString();
+                   mWorkmateViewModel.createWorkmate(uid, email, name, null);
+                   startMapsActivity();
+               }
+           }
+       }
+
+   }
 
 }
 

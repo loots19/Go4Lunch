@@ -51,10 +51,16 @@ dependencies {
     implementation 'com.google.maps.android:android-maps-utils:0.5'
 
     //TEST
-    implementation 'com.google.firebase:firebase-auth:19.3.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
+    testImplementation 'org.mockito:mockito-core:2.19.0'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+    androidTestImplementation "android.arch.core:core-testing:1.1.1"
+    testImplementation "android.arch.core:core-testing:1.1.1"
 
     // ADD LIBRARY
     implementation 'com.shaishavgandhi:login-buttons:0.1.1'
@@ -63,6 +69,7 @@ dependencies {
     // FIRESBASE
     apply plugin: 'com.android.application'
     apply plugin: 'com.google.gms.google-services'
+    implementation 'com.google.firebase:firebase-auth:19.3.0'
     implementation 'com.google.firebase:firebase-messaging:20.1.5'
     implementation 'com.google.firebase:firebase-database:19.3.0'
 
@@ -89,9 +96,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
-    //VIEW MODEL & LIVE DATA
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-
     //GSON
     implementation 'com.google.code.gson:gson:2.8.5'
 
@@ -100,15 +104,16 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.7.0'
     implementation "com.squareup.okhttp3:logging-interceptor:4.5.0"
 
+
+    //WORKMANAGER
+    implementation "android.arch.work:work-runtime:1.0.1"
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+
     // RX java
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
 
-    //WORKMANAGER
-    implementation "android.arch.work:work-runtime:1.0.1"
-
-    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
 
 

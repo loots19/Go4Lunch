@@ -7,8 +7,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,7 +19,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,10 +29,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.work.Constraints;
-import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -47,12 +43,10 @@ import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
 import com.e.go4lunch.restaurant.MapsFragment;
 import com.e.go4lunch.restaurant.RestaurantViewModel;
 import com.e.go4lunch.restaurant.RestaurantsFragment;
-import com.e.go4lunch.service.DeleteMyWorker;
-import com.e.go4lunch.service.MyNotificationWorker;
+import com.e.go4lunch.service.ControllerWorkerManager;
 import com.e.go4lunch.workmates.ListFragment;
 import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
@@ -60,7 +54,6 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -70,13 +63,13 @@ import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -103,11 +96,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Restaurant mRestaurant;
     private String placeId;
     private ActionBarDrawerToggle mDrawerToggle;
-    private static final String WORK_TAG = "WORK_REQUEST_TAG_Go4Lunch";
     private static final int SIGN_OUT_TASK = 10;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 11;
     private static final String TAG = "Test PlaceId";
     private List<Restaurant> mRestaurantListFromFirebase;
+    private MapsFragment mMapsFragment;
+    private RestaurantsFragment mRestaurantsFragment;
+    Fragment currentFragment;
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -123,18 +119,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mImageViewProfile = navigationView.getHeaderView(0).findViewById(R.id.imageProfile_header);
 
 
-        configureDrawerLayout();
         configureNavigationView();
         configureBottomNavigationView();
         configureToolbar();
         configureViewModel();
         configureRestaurantViewModel();
-        updateUIWhenCreating();
         getCurrentWorkmate();
+        configureDrawerLayout();
+        updateUIWhenCreating();
+        getRestaurantList();
 
-
-        scheduleWork(13, 55);
-        deleteWork(14, 40);
+        // set time for notification and clear everyday the selected restaurant
+        ControllerWorkerManager.scheduleWork(12, 0);
+        ControllerWorkerManager.deleteWork(0, 0);
 
 
         //I added this if statement to keep the selected fragment when rotating the device
@@ -145,6 +142,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
         }
+
+
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String input = s.toString();
+                new MapsFragment().autocompleteSearch(input);
+            }
+        });
     }
 
 
@@ -187,17 +203,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 switch (item.getItemId()) {
                     case R.id.action_map:
                         selectedFragment = new MapsFragment();
-
+                        this.mToolbar.getMenu().findItem(R.id.search).setVisible(true);
+                        this.mEditText.setVisibility(View.VISIBLE);
                         break;
 
                     case R.id.action_list:
                         selectedFragment = new RestaurantsFragment();
-
+                        this.mToolbar.getMenu().findItem(R.id.search).setVisible(true);
+                        this.mEditText.setVisibility(View.VISIBLE);
                         break;
 
                     case R.id.action_workmates:
                         selectedFragment = new ListFragment();
-
+                        this.mToolbar.getMenu().findItem(R.id.search).setVisible(false);
+                        this.mEditText.setVisibility(View.INVISIBLE);
                         break;
                 }
 
@@ -232,7 +251,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.setting_drawer:
-                updateNotificationSettings(channelId);
+                ControllerWorkerManager.goToNotificationSettings(channelId, getApplicationContext());
                 break;
 
             case R.id.logout_drawer:
@@ -281,7 +300,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mBottomNavigationView.setOnNavigationItemSelectedListener(navListener);
     }
 
-    // logout from Firebase in drawerMenu create a request
+    // logout from FireBase in drawerMenu create a request
     private void logout() {
         AuthUI.getInstance()
                 .signOut(this)
@@ -292,7 +311,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return aVoid -> {
             if (origin == SIGN_OUT_TASK) {
                 Intent intent = new Intent(this, AuthActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
             }
@@ -322,12 +341,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         RectangularBounds bounds = RectangularBounds.newInstance(
                 new LatLng(lat, lng), //dummy lat/lng
-                new LatLng(49.092363, 2.229925));
+                new LatLng(49.102363, 2.239925));
 
         // Start the autocomplete intent.
         Intent intent = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.FULLSCREEN, fields)
-                .setCountry("FR")
+
                 .setTypeFilter(TypeFilter.ESTABLISHMENT)
                 .setLocationBias(bounds)
                 .build(this);
@@ -339,24 +358,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    if (currentFragment != null) {
+                        currentFragment.onActivityResult(requestCode, resultCode, data);
 
-
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                String placeId = place.getId();
-                Log.e(TAG, "Place: " + placeId);
-                Toast.makeText(MainActivity.this, "Name: " + place.getName(), Toast.LENGTH_LONG).show();
-
-
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.i(TAG, status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
+                    }
+                }
             }
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
-
     // --------------------
     // UI
     // --------------------
@@ -375,62 +386,53 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         .load(R.drawable.ic_hot_food_in_a_bowl2)
                         .apply(RequestOptions.circleCropTransform())
                         .into(mImageViewProfile);
+            }
 
-            }
-            if (this.getCurrentUser().getDisplayName() == null) {
-                String name = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getString(Integer.parseInt("info_no_username_found")) : this.getCurrentUser().getDisplayName();
-                this.mTextViewName.setText(name);
-            } else {
-                getCurrentWorkmate();
-            }
             String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(Integer.parseInt("info_no_email_found")) : this.getCurrentUser().getEmail();
-
             this.mTextViewEmail.setText(email);
-
 
         }
 
     }
 
-    // Get additional data from Firestore (Username)
-    // Configuring ViewModel
+    // ----------------- Configuring ViewModel -----------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
+
     }
 
     private void configureRestaurantViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         this.mRestaurantViewModel = ViewModelProviders.of(this, viewModelFactory).get(RestaurantViewModel.class);
+
     }
 
+
+    // ----------------- Configuring Observers -----------------
     private void getCurrentWorkmate() {
         String workmateUid = FirebaseAuth.getInstance().getUid();
         mWorkmateViewModel.getWorkmate(workmateUid).observe(this, workmates -> {
-            String name = workmates.getWorkmateName();
-            mTextViewName.setText(name);
             currentWorkmate = workmates;
-            if (currentWorkmate.getRestaurantChoosen() != null) {
-                placeId = currentWorkmate.getRestaurantChoosen().getPlaceId();
-                if (currentWorkmate.getRestaurantChoosen().equals(mRestaurant))
+            String name = currentWorkmate.getWorkmateName();
+            mTextViewName.setText(name);
+            if (currentWorkmate.getRestaurantChosen() != null) {
+                placeId = currentWorkmate.getRestaurantChosen().getPlaceId();
                 getRestaurant();
 
             }
 
-
         });
 
-    }
 
+    }
 
     private void getRestaurant() {
         mRestaurantViewModel.getRestaurant(placeId).observe(this, restaurant -> {
             mRestaurant = restaurant;
 
-
         });
     }
-
 
     private void getRestaurantList() {
         mRestaurantViewModel.getRestaurantList().observe(this, restaurants -> {
@@ -439,23 +441,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
+    // open detail activity when user click on menuDrawer "My lunch"
     private void showLunch() {
         getCurrentWorkmate();
-        if (this.currentWorkmate.getRestaurantChoosen() != null) {
 
-                Intent intent = new Intent(this, DetailsRestaurantActivity.class);
-                Gson gson = new Gson();
-                String jsonSelectedRestaurant = gson.toJson(mRestaurant);
-                intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
-                // startActivity(intent);
-                Toast.makeText(this, "replaceDetail", Toast.LENGTH_LONG).show();
-            } else {
+        if (this.currentWorkmate.getRestaurantChosen() == null) {
+            alertDisplayChoice();
 
-                alertDisplayChoice();
-
-            }
+        } else {
+            Intent intent = new Intent(this, DetailsRestaurantActivity.class);
+            Gson gson = new Gson();
+            String jsonSelectedRestaurant = gson.toJson(mRestaurant);
+            intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
+            startActivity(intent);
+            
         }
 
+    }
+
+    private void showRestaurantChoice() {
+
+    }
 
     public void alertDisplayChoice() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -468,84 +474,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
 
-    // open settings for notifications
-    private void updateNotificationSettings(String channel_id) {
-        Intent intent = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
-            Log.e("test", channel_id);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            intent.putExtra(Settings.EXTRA_CHANNEL_ID, channel_id);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
-        }
-        startActivity(intent);
-    }
-
-
-    public static void scheduleWork(int hour, int minute) {
-        Calendar calendar = Calendar.getInstance();
-        long nowMillis = calendar.getTimeInMillis();
-
-        if (calendar.get(Calendar.HOUR_OF_DAY) > hour ||
-                (calendar.get(Calendar.HOUR_OF_DAY) == hour && calendar.get(Calendar.MINUTE) + 1 >= minute)) {
-            calendar.add(Calendar.DAY_OF_MONTH, 0);
-        }
-
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        long diff = calendar.getTimeInMillis() - nowMillis;
-
-        WorkManager mWorkManager = WorkManager.getInstance();
-        Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build();
-        mWorkManager.cancelAllWorkByTag(WORK_TAG);
-        OneTimeWorkRequest mRequest = new OneTimeWorkRequest.Builder(MyNotificationWorker.class)
-                .setConstraints(constraints)
-                .setInitialDelay(diff, TimeUnit.MILLISECONDS)
-                .addTag(WORK_TAG)
-                .build();
-        mWorkManager.enqueue(mRequest);
-
-    }
-
-    public static void deleteWork(int hour, int minute) {
-        Calendar calendar = Calendar.getInstance();
-        long nowMillis = calendar.getTimeInMillis();
-
-        if (calendar.get(Calendar.HOUR_OF_DAY) > hour ||
-                (calendar.get(Calendar.HOUR_OF_DAY) == hour && calendar.get(Calendar.MINUTE) + 1 >= minute)) {
-            calendar.add(Calendar.DAY_OF_MONTH, 0);
-        }
-
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        long diff = calendar.getTimeInMillis() - nowMillis;
-
-        WorkManager workManager = WorkManager.getInstance();
-        Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build();
-        workManager.cancelAllWorkByTag(WORK_TAG);
-        OneTimeWorkRequest mRequest = new OneTimeWorkRequest.Builder(DeleteMyWorker.class)
-                .setConstraints(constraints)
-                .setInitialDelay(diff, TimeUnit.MILLISECONDS)
-                .addTag(WORK_TAG)
-                .build();
-        workManager.enqueue(mRequest);
-    }
-
-
 }
+
 
 
 

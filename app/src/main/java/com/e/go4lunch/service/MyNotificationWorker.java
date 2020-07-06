@@ -44,9 +44,9 @@ public class MyNotificationWorker extends Worker {
         String workmateUid = FirebaseAuth.getInstance().getUid();
         this.mWorkmatesRepository.getWorkmate(workmateUid).addOnSuccessListener(documentSnapshot -> {
             currentWorkmate = documentSnapshot.toObject(Workmates.class);
-            if (Objects.requireNonNull(currentWorkmate).getRestaurantChoosen()!= null) {
-                getRestaurant(currentWorkmate.getRestaurantChoosen().getPlaceId());
-                nameRestaurant = currentWorkmate.getRestaurantChoosen().getName();
+            if (Objects.requireNonNull(currentWorkmate).getRestaurantChosen()!= null) {
+                getRestaurant(currentWorkmate.getRestaurantChosen().getPlaceId());
+                nameRestaurant = currentWorkmate.getRestaurantChosen().getName();
 
             }
         });

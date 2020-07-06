@@ -1,11 +1,17 @@
 package com.e.go4lunch.restaurant;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -93,7 +99,6 @@ public class DetailsRestaurantActivity extends BaseActivity {
         getCurrentWorkmate();
         getDetailOfPlace();
         userActionClick();
-        //getRestaurantListWithWorkmate();
         getRestaurant();
         getRestaurantList();
 
@@ -123,7 +128,6 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
         }
     }
-
 
     // ----------------- call phone number of the place -----------------
     public void callRestaurant() {
@@ -281,34 +285,34 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
         Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
 
-        if (currentWorkmate.getRestaurantChoosen() == null) {
+        if (currentWorkmate.getRestaurantChosen() == null) {
             this.mfab.setImageResource(R.drawable.ic_check_circle_black_24dp);
             this.mRestaurantViewModel.createRestaurant(placeId, mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(),mRestaurant.getOpenNow(),mRestaurant.getLocation(),mRestaurant.getRating(), mWorkmatesList);
             this.mWorkmatesList.add(workmatesChoice);
-            this.currentWorkmate.setRestaurantChoosen(mRestaurant);
-            this.mWorkmateViewModel.updateRestaurantChoosen(workmateUid, currentWorkmate.getRestaurantChoosen());
+            this.currentWorkmate.setRestaurantChosen(mRestaurant);
+            this.mWorkmateViewModel.updateRestaurantChosen(workmateUid, currentWorkmate.getRestaurantChosen());
             this.mRestaurantViewModel.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
             this.mRestaurantDetailAdapter.notifyDataSetChanged();
 
         } else {
-            updateSelectedRestaurant(currentWorkmate.getRestaurantChoosen());
+            updateSelectedRestaurant(currentWorkmate.getRestaurantChosen());
             this.mfab.setImageResource(R.drawable.ic_check_black_24dp);
             this.mWorkmatesList.remove(workmatesChoice);
             this.mRestaurantViewModel.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
-            this.currentWorkmate.setRestaurantChoosen(null);
-            this.mWorkmateViewModel.updateRestaurantChoosen(workmateUid, currentWorkmate.getRestaurantChoosen());
+            this.currentWorkmate.setRestaurantChosen(null);
+            this.mWorkmateViewModel.updateRestaurantChosen(workmateUid, currentWorkmate.getRestaurantChosen());
             this.mRestaurantDetailAdapter.notifyDataSetChanged();
-            Toast.makeText(this, "YOU CHANGED YOUR CHOICE", Toast.LENGTH_SHORT).show();
-
+            Toast.makeText(this, R.string.you_changed_your_choice, Toast.LENGTH_SHORT).show();
 
         }
 
 
     }
 
+
     private void updateFab() {
-        if (this.currentWorkmate.getRestaurantChoosen() != null) {
-            if (currentWorkmate.getRestaurantChoosen().equals(mRestaurant))
+        if (this.currentWorkmate.getRestaurantChosen() != null) {
+            if (currentWorkmate.getRestaurantChosen().equals(mRestaurant))
                 this.mfab.setImageResource(R.drawable.ic_check_circle_black_24dp);
 
         } else {

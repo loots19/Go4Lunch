@@ -81,10 +81,10 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
 
     @Override
     public void onNoteClick(int position) {
-        if (mWorkmatesList.get(position).getRestaurantChoosen() != null) {
+        if (mWorkmatesList.get(position).getRestaurantChosen() != null) {
             Intent intent = new Intent(getContext(), DetailsRestaurantActivity.class);
             Gson gson = new Gson();
-            String jsonSelectedRestaurant = gson.toJson(mWorkmatesList.get(position).getRestaurantChoosen());
+            String jsonSelectedRestaurant = gson.toJson(mWorkmatesList.get(position).getRestaurantChosen());
             intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
             startActivity((intent));
         }

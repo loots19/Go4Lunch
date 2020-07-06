@@ -33,6 +33,7 @@
     <string name="no_phone">Numéro de téléphone inconnu</string>
     <string name="no_web_site">Site Web inconnu</string>
     <string name="remove_to_favorites">Restaurant supprimé de votre list de favoris</string>
+    <string name="you_changed_your_choice">"Vous avez changé d'avis"</string>
 
     <!--FRAGMENT HOLDER-->
     <string name="Close">fermé</string>

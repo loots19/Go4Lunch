@@ -30,7 +30,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class WorkmatesRepository {
 
     private static final String COLLECTION_NAME = "workmates";
-    private FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
+    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
 
     // --- COLLECTION REFERENCE ---
@@ -47,28 +47,7 @@ public class WorkmatesRepository {
 
    }
 
- // MutableLiveData<Workmates> createWorkmates(AuthCredential authCredential){
- //     MutableLiveData<Workmates> newData = new MutableLiveData<>();
- //     mFirebaseAuth.signInWithCredential(authCredential).addOnCompleteListener(task -> {
- //         if(task.isSuccessful()){
- //             FirebaseUser firebaseUser = mFirebaseAuth.getCurrentUser();
- //             if(firebaseUser != null){
- //                 String name = firebaseUser.getDisplayName();
- //                 String email = firebaseUser.getEmail();
- //                 String urlPhoto = String.valueOf(firebaseUser.getPhotoUrl());
- //                 Workmates workmates = new Workmates(name,email,urlPhoto);
- //                 newData.setValue(workmates);
- //             }
- //         }else{
- //             Toast.makeText(getApplicationContext(), Objects.requireNonNull(task.getException()).getMessage(), android.widget.Toast.LENGTH_LONG).show();
-
- //         }
- //     });
- //     return newData;
- // }
-
-
-    // --- GET ---
+   // --- GET ---
 
     public Task<DocumentSnapshot> getWorkmate(String uid) {
         return getWorkmatesCollection().document(uid).get();
@@ -84,8 +63,8 @@ public class WorkmatesRepository {
         return getWorkmatesCollection().document(uid).update("listRestaurantFavorite", listRestaurantFavorite);
     }
 
-    public Task<Void> updateRestaurantChoosen(String uid, Restaurant restaurantChoosen) {
-        return getWorkmatesCollection().document(uid).update("restaurantChoosen", restaurantChoosen);
+    public Task<Void> updateRestaurantChosen(String uid, Restaurant restaurantChoosen) {
+        return getWorkmatesCollection().document(uid).update("restaurantChosen", restaurantChoosen);
     }
 
 

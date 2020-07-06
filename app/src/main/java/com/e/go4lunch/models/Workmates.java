@@ -11,7 +11,7 @@ public class Workmates {
     private String workmateEmail;
     private String urlPicture;
     private List<Restaurant> listRestaurantFavorite;
-    private Restaurant restaurantChoosen;
+    private Restaurant restaurantChosen;
 
 
     public Workmates() {
@@ -52,8 +52,8 @@ public class Workmates {
         return listRestaurantFavorite;
     }
 
-    public Restaurant getRestaurantChoosen() {
-        return restaurantChoosen;
+    public Restaurant getRestaurantChosen() {
+        return restaurantChosen;
     }
 
     // ----------------- Setters -----------------
@@ -74,19 +74,19 @@ public class Workmates {
         this.urlPicture = urlPicture;
     }
 
-    public void setRestaurantChoosen(Restaurant restaurantChoosen) {
-        this.restaurantChoosen = restaurantChoosen;
+    public void setRestaurantChosen(Restaurant restaurantChoosen) {
+        this.restaurantChosen = restaurantChoosen;
     }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Workmates workmates = (Workmates) o;
-        return Objects.equals(workmateName, workmates.getWorkmateName());
+        return Objects.equals(workmateEmail, workmates.getWorkmateEmail());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getWorkmateName());
+        return Objects.hash(this.getWorkmateEmail());
     }
 }

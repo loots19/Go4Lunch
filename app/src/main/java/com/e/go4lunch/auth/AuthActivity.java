@@ -66,7 +66,6 @@ public class AuthActivity extends BaseActivity {
 
         configureViewModel();
         subscribeObservers();
-        //alreadySigned();
         initTwitter();
 
 
@@ -195,12 +194,7 @@ public class AuthActivity extends BaseActivity {
     }
 
 
-    public void alreadySigned() {
-        if (this.isCurrentUserLogged()) {
-            this.startMapsActivity();
-        }
 
-    }
 
     //init twitter
     public void initTwitter() {
@@ -222,25 +216,21 @@ public class AuthActivity extends BaseActivity {
     }
 
     private void subscribeObservers() {
-        mWorkmateViewModel.getWorkmatesList().observe(this, new Observer<List<Workmates>>() {
-            @Override
-            public void onChanged(List<Workmates> workmates) {
-                mWorkmatesList = workmates;
-                createUser();
-            }
+        mWorkmateViewModel.getWorkmatesList().observe(this, workmates -> {
+            mWorkmatesList = workmates;
+            createUser();
         });
 
     }
 
 
     private void createUser() {
-
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             if (mWorkmatesList != null) {
                 int size = mWorkmatesList.size();
                 for (int i = 0; i < size; i++) {
-                    if (mWorkmatesList.get(i).getWorkmateName().equals(FirebaseAuth.getInstance().getCurrentUser().getDisplayName())) {
+                    if (mWorkmatesList.get(i).getWorkmateEmail().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
                         workmatesExists = true;
                         break;
                     }
@@ -250,7 +240,8 @@ public class AuthActivity extends BaseActivity {
                 } else {
                     String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
                     String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-                    String urlPicture = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString();
+                    String urlPicture = String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl());
+
                     mWorkmateViewModel.createWorkmate(uid, email, name, urlPicture);
                     startMapsActivity();
                 }

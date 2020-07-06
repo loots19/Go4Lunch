@@ -80,8 +80,8 @@ public class WorkmateViewModel extends ViewModel {
     public void updateIsRestaurantFavorite(String uid, List<Restaurant>listRestaurantFavorite ){
         mWorkmatesRepository.updateRestaurantFavorite(uid, listRestaurantFavorite);
     }
-    public void updateRestaurantChoosen (String uid,Restaurant restaurantChoosen){
-        mWorkmatesRepository.updateRestaurantChoosen(uid, restaurantChoosen);
+    public void updateRestaurantChosen (String uid,Restaurant restaurantChoosen){
+        mWorkmatesRepository.updateRestaurantChosen(uid, restaurantChoosen);
     }
 
 

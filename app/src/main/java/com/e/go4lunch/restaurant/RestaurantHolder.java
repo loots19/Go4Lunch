@@ -47,6 +47,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     private RestaurantAdapter.OnNoteListener OnNoteListener;
 
 
+
     public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
         super(itemView);
         ButterKnife.bind(this, itemView);
@@ -137,7 +138,6 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         }
     }
 
-
     //set photo of the place
     private void displayPhotoOfRestaurant(Restaurant restaurant) {
         if (restaurant.getUrlPhoto() != null) {
@@ -156,6 +156,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
             mTvNumbers.setText(String.valueOf(numberWorkmates));
             mImageViewWorkmates.setVisibility(View.VISIBLE);
         }else{
+            mTvNumbers.setText("");
             mImageViewWorkmates.setVisibility(View.INVISIBLE);
 
         }

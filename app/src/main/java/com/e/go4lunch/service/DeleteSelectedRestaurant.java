@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class DeleteMyWorker extends Worker {
+public class DeleteSelectedRestaurant extends Worker {
 
     private RestaurantRepository mRestaurantRepository;
     private WorkmatesRepository mWorkmatesRepository;
@@ -26,7 +26,7 @@ public class DeleteMyWorker extends Worker {
     private String workmateUid;
 
 
-    public DeleteMyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+    public DeleteSelectedRestaurant(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.mRestaurantRepository = new RestaurantRepository();
         this.mWorkmatesRepository = new WorkmatesRepository();
@@ -36,8 +36,8 @@ public class DeleteMyWorker extends Worker {
         workmateUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         this.mWorkmatesRepository.getWorkmate(workmateUid).addOnSuccessListener(documentSnapshot -> {
             currentWorkmate = documentSnapshot.toObject(Workmates.class);
-            if (Objects.requireNonNull(currentWorkmate).getRestaurantChoosen() != null) {
-                getRestaurant(currentWorkmate.getRestaurantChoosen().getPlaceId());
+            if (Objects.requireNonNull(currentWorkmate).getRestaurantChosen() != null) {
+                getRestaurant(currentWorkmate.getRestaurantChosen().getPlaceId());
 
 
             }
@@ -60,16 +60,16 @@ public class DeleteMyWorker extends Worker {
         return Result.success();
     }
 
-    public void deleteTask() {
+    private void deleteTask() {
         Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
 
-        if (this.currentWorkmate.getRestaurantChoosen() != null) {
-            if (currentWorkmate.getRestaurantChoosen().equals(mRestaurant))
+        if (this.currentWorkmate.getRestaurantChosen() != null) {
+            if (currentWorkmate.getRestaurantChosen().equals(mRestaurant))
 
                 this.mWorkmatesList.remove(workmatesChoice);
             this.mRestaurantRepository.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
-            this.currentWorkmate.setRestaurantChoosen(null);
-            this.mWorkmatesRepository.updateRestaurantChoosen(workmateUid, currentWorkmate.getRestaurantChoosen());
+            this.currentWorkmate.setRestaurantChosen(null);
+            this.mWorkmatesRepository.updateRestaurantChosen(workmateUid, currentWorkmate.getRestaurantChosen());
         }
     }
 }

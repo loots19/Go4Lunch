@@ -37,6 +37,7 @@
     <string name="no_web_site">Web site not found</string>
     <string name="add_to_favorites">Restaurant add to your favorite list</string>
     <string name="remove_to_favorites">Restaurant remove to your favorite list</string>
+    <string name="you_changed_your_choice">"YOU CHANGED YOUR CHOICE"</string>
 
 
     <!--FRAGMENT HOLDER-->

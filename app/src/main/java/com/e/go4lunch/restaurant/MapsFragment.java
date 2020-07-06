@@ -97,6 +97,7 @@ public class MapsFragment extends Fragment implements
     private Marker currentUserLocationMarker;
     private RestaurantViewModel mRestaurantViewModel;
     private WorkmateViewModel mWorkmateViewModel;
+    private RestaurantAutocompleteViewModel mRestaurantAutocompleteViewModel;
     private List<Restaurant> mRestaurants = new ArrayList<>();
     private String TAG = "test auto";
     private LatLng mLatLng;
@@ -121,6 +122,7 @@ public class MapsFragment extends Fragment implements
 
         configureViewModel();
         configureWorkmateViewModel();
+        configureAutocomplteViewModel();
 
 
         //Request Runtime permission
@@ -243,7 +245,7 @@ public class MapsFragment extends Fragment implements
         if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             buildGoogleApiClient();
-            mMap.setMyLocationEnabled(true);
+            mMap.setMyLocationEnabled(false);
 
 
             mFab.setOnClickListener(v -> getListOfRestaurantFromPlace());
@@ -287,6 +289,17 @@ public class MapsFragment extends Fragment implements
 
 
     }
+    private void configureAutocomplteViewModel() {
+        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
+        this.mRestaurantAutocompleteViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantAutocompleteViewModel.class);
+        String lat = App.getInstance().getLat();
+        String lng = App.getInstance().getLng();
+        mRestaurantAutocompleteViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
+
+
+    }
+
+
 
     private void configureWorkmateViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
@@ -296,7 +309,7 @@ public class MapsFragment extends Fragment implements
     }
     // ----------------- Configuring Observers -----------------
 
-    private void getListOfRestaurantFromPlace() {
+    public void getListOfRestaurantFromPlace() {
         mRestaurantViewModel.getMyPlace().observe(this, new Observer<MyPlace>() {
             @Override
             public void onChanged(MyPlace myPlace) {
@@ -354,7 +367,6 @@ public class MapsFragment extends Fragment implements
                     Restaurant restaurant = restaurants.get(i);
                     int in = mRestaurants.indexOf(restaurant);
                     mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
-                    //Log.e("testListWorkmate", String.valueOf(mRestaurants.get(in).getWorkmatesList().size()));
                     MarkerOptions markerOptions = new MarkerOptions();
                     lat = mRestaurants.get(in).getLocation().getLat();
                     lng = mRestaurants.get(in).getLocation().getLng();
@@ -410,11 +422,9 @@ public class MapsFragment extends Fragment implements
         startActivity(intent);
     }
 
-    public void autocompleteSearch(String input) {
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
-        }
-        PlacesClient placesClient = Places.createClient(mContext);
+
+    public void autocompleteSearch(String input){
+        PlacesClient placesClient = Places.createClient(getApplicationContext());
         AutocompleteSessionToken sessionToken = AutocompleteSessionToken.newInstance();
 
         double lat = Double.parseDouble(App.getInstance().getLat());
@@ -422,21 +432,27 @@ public class MapsFragment extends Fragment implements
 
         RectangularBounds bounds = RectangularBounds.newInstance(
                 new LatLng(lat, lng), //dummy lat/lng
-                new LatLng(49.040238, 2.334685));
+                new LatLng(49.102363, 2.239925));
 
         FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                .setLocationRestriction(bounds)
+                .setLocationBias(bounds)
                 .setOrigin(new LatLng(lat, lng))
                 .setTypeFilter(TypeFilter.ESTABLISHMENT)
                 .setSessionToken(sessionToken)
                 .setQuery(input)
                 .build();
 
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener((response) -> {
-            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
-                Log.i(TAG, prediction.getPlaceId());
-                Log.i(TAG, prediction.getPrimaryText(null).toString());
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener(findAutocompletePredictionsResponse ->
+        {
+            int size = findAutocompletePredictionsResponse.getAutocompletePredictions().size();
+            for (int i = 0; i < size; i++) {
+                String placeId = findAutocompletePredictionsResponse.getAutocompletePredictions().get(i).getPlaceId();
+                Log.e("Place found: ", placeId);
+
+
+
             }
+
         }).addOnFailureListener((exception) -> {
             if (exception instanceof ApiException) {
                 ApiException apiException = (ApiException) exception;
@@ -445,6 +461,12 @@ public class MapsFragment extends Fragment implements
         });
 
     }
+
+    public void testAutocomplete(Context context){
+
+
+    }
+
 
 
 }

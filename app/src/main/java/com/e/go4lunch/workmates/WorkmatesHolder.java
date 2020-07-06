@@ -54,8 +54,8 @@ public class WorkmatesHolder extends RecyclerView.ViewHolder implements View.OnC
 
     }
     private void getNameOfRestaurant(Workmates workmates){
-        if(workmates.getRestaurantChoosen()!= null){
-            String name = workmates.getRestaurantChoosen().getName();
+        if(workmates.getRestaurantChosen()!= null){
+            String name = workmates.getRestaurantChosen().getName();
             String text = (workmates.getWorkmateName() + " " + itemView.getContext().getResources().getString(R.string.is_eating) + " " + name);
             mTextView.setText(text);
         }else {
