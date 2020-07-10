@@ -5,143 +5,150 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_details"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".restaurant.DetailsRestaurantActivity"
-    tools:layout_editor_absoluteY="25dp">
 
-
-    <ImageView
-        android:id="@+id/iv_photo_restaurant_detail_activity"
-        android:layout_width="match_parent"
-        android:layout_height="270dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_detail_activity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_check_black_24dp"
-        android:layout_marginEnd="28dp"
-        android:focusable="true"
-        app:backgroundTint="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/frameLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.704" />
-
-    <LinearLayout
-        android:id="@+id/linear_1"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/colorPrimary"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
-
-    <TextView
-        android:id="@+id/tv_name_restaurant_detail_activity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:textColor="@android:color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
-
-    <TextView
-        android:id="@+id/tv_address_restaurant_detail_activity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:textColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/linear_1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
-
-    <ImageView
-        android:id="@+id/Im_Star_detail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ic_star_border_black_24dp"
-        app:layout_constraintBottom_toBottomOf="@+id/linear_1"
-        app:layout_constraintEnd_toStartOf="@+id/fab_detail_activity"
-        app:layout_constraintHorizontal_bias="0.08"
-        app:layout_constraintStart_toEndOf="@+id/tv_name_restaurant_detail_activity"
-        app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity"
-        app:layout_constraintVertical_bias="0.13" />
-
-    <LinearLayout
-        android:id="@+id/line"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/activity_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linear_1">
-
-        <Button
-            android:id="@+id/buttonCall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="50dp"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/ic_call_black_24dp"
-            android:text="@string/button_call"
-            android:textColor="@color/colorPrimary" />
-
-        <Button
-            android:id="@+id/buttonLike"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="50dp"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/ic_star_black_24dp"
-            android:text="@string/button_like"
-            android:textColor="@color/colorPrimary" />
-
-        <Button
-            android:id="@+id/buttonWeb"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/ic_public_black_24dp"
-            android:text="@string/button_webSite"
-            android:textColor="@color/colorPrimary" />
+        tools:context=".restaurant.DetailsRestaurantActivity">
 
 
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/frameLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/line">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_detail"
+        <ImageView
+            android:id="@+id/iv_photo_restaurant_detail_activity"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            tools:listitem="@layout/item_workmates_fragment"/>
+            android:layout_height="@dimen/detail_activity_height_image_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
-    </FrameLayout>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_detail_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/detail_activity_margin_top_fab"
+            android:layout_marginEnd="@dimen/detail_activity_margin_end_fab"
+            android:focusable="true"
+            android:src="@drawable/ic_check_black_24dp"
+            app:backgroundTint="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/line"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linear_1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/detail_activity_height_linearLayout"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
+
+        <TextView
+            android:id="@+id/tv_name_restaurant_detail_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/detail_activity_margin_start"
+            android:layout_marginBottom="@dimen/detail_activity_margin_bottom"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/linear_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
+
+        <TextView
+            android:id="@+id/tv_address_restaurant_detail_activity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/detail_activity_margin_start"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/linear_1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity" />
+
+        <ImageView
+            android:id="@+id/Im_Star_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/detail_activity_margin_start"
+            android:layout_marginBottom="@dimen/detail_activity_margin_bottom"
+            android:background="@drawable/ic_star_border_black_24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/linear_1"
+            app:layout_constraintStart_toEndOf="@+id/tv_name_restaurant_detail_activity"
+            app:layout_constraintTop_toBottomOf="@+id/iv_photo_restaurant_detail_activity"
+            tools:ignore="ContentDescription" />
+
+        <LinearLayout
+            android:id="@+id/line"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/detail_activity_margin_top_linearLayout"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linear_1">
+
+            <Button
+                android:id="@+id/buttonCall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/detail_activity_margin_end_button"
+                android:background="@android:color/transparent"
+                android:drawableTop="@drawable/ic_call_black_24dp"
+                android:text="@string/button_call"
+                android:textColor="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/buttonLike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/detail_activity_margin_end_button"
+                android:background="@android:color/transparent"
+                android:drawableTop="@drawable/ic_star_black_24dp"
+                android:text="@string/button_like"
+                android:textColor="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/buttonWeb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:drawableTop="@drawable/ic_public_black_24dp"
+                android:text="@string/button_webSite"
+                android:textColor="@color/colorPrimary" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+        <FrameLayout
+
+            android:id="@+id/frameLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/detail_activity_height_frameLayout"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/line">
+
+            <View
+                android:id="@+id/view_firstName"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/detail_activity_height_view"
+                android:background="@android:color/darker_gray"
+
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_detail"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/detail_activity_height_RecyclerView"
+                tools:listitem="@layout/item_workmates_fragment" />
+
+        </FrameLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>

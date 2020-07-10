@@ -3,17 +3,14 @@ package com.e.go4lunch.injection;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-
 import static com.e.go4lunch.restaurant.MapsFragment.MY_PREF;
 
 public class App extends Application {
 
     private static App instance;
 
-
     private String lat;
     private String lng;
-
 
     @Override
     public void onCreate() {
@@ -29,7 +26,7 @@ public class App extends Application {
         return instance;
     }
 
-    public  String getLat() {
+    public String getLat() {
         return lat;
     }
 

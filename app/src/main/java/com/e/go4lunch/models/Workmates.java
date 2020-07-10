@@ -1,5 +1,7 @@
 package com.e.go4lunch.models;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,15 +21,11 @@ public class Workmates {
     }
 
 
-
-
     public Workmates(String workmateEmail, String workmateName, String urlPicture) {
         this.workmateEmail = workmateEmail;
         this.workmateName = workmateName;
         this.urlPicture = urlPicture;
         this.listRestaurantFavorite = new ArrayList<>();
-
-
 
     }
 
@@ -41,8 +39,6 @@ public class Workmates {
     public String getWorkmateEmail() {
         return workmateEmail;
     }
-
-
 
     public String getUrlPicture() {
         return urlPicture;

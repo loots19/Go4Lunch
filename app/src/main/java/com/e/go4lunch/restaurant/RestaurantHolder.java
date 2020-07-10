@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.e.go4lunch.BuildConfig;
 import com.e.go4lunch.R;
 import com.e.go4lunch.injection.App;
 import com.e.go4lunch.models.Restaurant;
@@ -43,9 +44,8 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     @BindView(R.id.imageView2)
     ImageView mImageViewWorkmates;
 
-
+    // ----------------- FOR DATA -----------------
     private RestaurantAdapter.OnNoteListener OnNoteListener;
-
 
 
     public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
@@ -67,7 +67,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
 
     public void update(Restaurant restaurant) {
         //---------- Opening ----------
-        displayOpeningHours(restaurant);
+        this.displayOpeningHours(restaurant);
 
         //---------- Name ----------
         this.mTvName.setText(restaurant.getName());
@@ -88,10 +88,10 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         displayWorkmatesNumbers(restaurant);
 
 
-
     }
-
+    // -----------------------
     // set rating of the place
+    // -----------------------
     private void displayRating(Restaurant restaurant) {
         if (restaurant.getRating() != 0) {
             double googleRating = restaurant.getRating();
@@ -102,8 +102,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
             this.mRatingBar.setVisibility(View.GONE);
         }
     }
-
+    // -------------------------
     // set distance of the place
+    // -------------------------
     private void displayDistance(Restaurant restaurant) {
         App globals = (App) getApplicationContext();
         String lat = globals.getLat();
@@ -120,8 +121,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         mTvMeters.setText(rounded + " KMS");
 
     }
-
+    // ------------------------------
     // set opening hours of the place
+    // ------------------------------
     private void displayOpeningHours(Restaurant restaurant) {
         if (restaurant.getOpenNow() != null) {
             if (restaurant.getOpenNow()) {
@@ -137,25 +139,28 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
             mTvTime.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.quantum_black_100));
         }
     }
-
-    //set photo of the place
+    // ----------------------
+    // set photo of the place
+    // ----------------------
     private void displayPhotoOfRestaurant(Restaurant restaurant) {
         if (restaurant.getUrlPhoto() != null) {
             Glide.with(itemView)
                     .load(Constants.BASE_URL_PHOTO
                             + restaurant.getUrlPhoto()
                             + "&key=" + Constants.API_KEY)
-                    .apply(RequestOptions.circleCropTransform())
+                    .apply(RequestOptions.centerCropTransform())
                     .into(mImageRestaurant);
         }
     }
-
+    // -----------------------
+    // set number of workmates
+    // -----------------------
     private void displayWorkmatesNumbers(Restaurant restaurant) {
-        if (restaurant.getWorkmatesList() != null && restaurant.getWorkmatesList().size()>0) {
+        if (restaurant.getWorkmatesList() != null && restaurant.getWorkmatesList().size() > 0) {
             int numberWorkmates = restaurant.getWorkmatesList().size();
-            mTvNumbers.setText(String.valueOf(numberWorkmates));
+            mTvNumbers.setText("("+String.valueOf(numberWorkmates)+")");
             mImageViewWorkmates.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             mTvNumbers.setText("");
             mImageViewWorkmates.setVisibility(View.INVISIBLE);
 

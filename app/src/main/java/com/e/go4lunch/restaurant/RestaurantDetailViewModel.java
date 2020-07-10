@@ -1,7 +1,5 @@
 package com.e.go4lunch.restaurant;
 
-import android.app.Application;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
@@ -18,11 +16,10 @@ public class RestaurantDetailViewModel extends ViewModel {
     private LiveData<PlaceDetail> placeDetail;
 
 
-
     public RestaurantDetailViewModel(RestaurantRepository repository) {
         this.mRestaurantRepository = repository;
-        placeDetail = Transformations.switchMap(place_id,input -> {
-            if(input.isEmpty()){
+        placeDetail = Transformations.switchMap(place_id, input -> {
+            if (input.isEmpty()) {
                 return AbsentLiveData.create();
             }
             return mRestaurantRepository.getRestaurantDetail(input);
@@ -30,11 +27,12 @@ public class RestaurantDetailViewModel extends ViewModel {
 
 
     }
-    public void setInput(String input){
+
+    public void setInput(String input) {
         place_id.setValue(input);
     }
 
-    public LiveData<PlaceDetail>getPlaceDetail(){
+    public LiveData<PlaceDetail> getPlaceDetail() {
         return placeDetail;
     }
 

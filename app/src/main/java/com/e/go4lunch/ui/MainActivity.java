@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -73,7 +71,7 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
-    //FOR DESIGN
+    // ----------------- FOR DESIGN -----------------
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
     @BindView(R.id.bottom_navigation)
@@ -85,8 +83,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.toolbar_editText)
     EditText mEditText;
 
-
-    //FOR DATA
+    // ----------------- FOR DATA -----------------
     private ImageView mImageViewProfile;
     private TextView mTextViewName;
     private TextView mTextViewEmail;
@@ -118,19 +115,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mTextViewEmail = navigationView.getHeaderView(0).findViewById(R.id.tv_mail_header);
         mImageViewProfile = navigationView.getHeaderView(0).findViewById(R.id.imageProfile_header);
 
-
         configureNavigationView();
         configureBottomNavigationView();
         configureToolbar();
         configureViewModel();
         configureRestaurantViewModel();
-        getCurrentWorkmate();
+        //getCurrentWorkmate();
         configureDrawerLayout();
         updateUIWhenCreating();
-        getRestaurantList();
+        setupOpenDetailRestaurant();
 
+
+        // --------------------------------------------------------------------
         // set time for notification and clear everyday the selected restaurant
-        ControllerWorkerManager.scheduleWork(12, 0);
+        // --------------------------------------------------------------------
+        ControllerWorkerManager.scheduleWork(13, 45);
         ControllerWorkerManager.deleteWork(0, 0);
 
 
@@ -142,25 +141,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
         }
-
-
-        mEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String input = s.toString();
-                new MapsFragment().autocompleteSearch(input);
-            }
-        });
     }
 
 
@@ -183,11 +163,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
-
             case R.id.search:
                 onSearchCalled();
                 return true;
-
             default:
                 return true;
         }
@@ -247,7 +225,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         String channelId = "task_channel";
         switch (id) {
             case R.id.lunch_drawer:
-                showLunch();
+                mRestaurantViewModel.showUserRestaurant(placeId);
                 break;
 
             case R.id.setting_drawer:
@@ -266,8 +244,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return true;
     }
 
-
-    //  Configure Drawer Layout
+    // -----------------------
+    // Configure Drawer Layout
+    // -----------------------
     private void configureDrawerLayout() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
@@ -283,24 +262,31 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mDrawerLayout.addDrawerListener(mDrawerToggle);
     }
 
-
-    //  Configure NavigationView
+    // -------------------------
+    // Configure NavigationView
+    // -------------------------
     private void configureNavigationView() {
         mNavigationView.setNavigationItemSelectedListener(this);
     }
 
-    //  Configure Toolbar
+    // ------------------
+    // Configure Toolbar
+    // ------------------
     private void configureToolbar() {
         setSupportActionBar(mToolbar);
 
     }
 
-    //  Configure BottomNavigationView
+    // ------------------------------
+    // Configure BottomNavigationView
+    // ------------------------------
     private void configureBottomNavigationView() {
         mBottomNavigationView.setOnNavigationItemSelectedListener(navListener);
     }
 
+    // ---------------------------------------------------
     // logout from FireBase in drawerMenu create a request
+    // ---------------------------------------------------
     private void logout() {
         AuthUI.getInstance()
                 .signOut(this)
@@ -318,7 +304,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
     }
 
-
+    // ---------------------------------------------
+    // Alert Dialog when workmates want disconnected
+    // ---------------------------------------------
     public void alertLogOut() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.titlle_alert);
@@ -334,19 +322,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onSearchCalled() {
         // Set the fields to specify which types of place data to return.
         List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ID);
-
         // Create a RectangularBounds object.
         double lat = Double.parseDouble(App.getInstance().getLat());
         double lng = Double.parseDouble(App.getInstance().getLng());
-
         RectangularBounds bounds = RectangularBounds.newInstance(
                 new LatLng(lat, lng), //dummy lat/lng
                 new LatLng(49.102363, 2.239925));
-
         // Start the autocomplete intent.
         Intent intent = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.FULLSCREEN, fields)
-
                 .setTypeFilter(TypeFilter.ESTABLISHMENT)
                 .setLocationBias(bounds)
                 .build(this);
@@ -355,25 +339,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                if (data != null) {
-                    if (currentFragment != null) {
-                        currentFragment.onActivityResult(requestCode, resultCode, data);
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                placeId = place.getId();
+                getRestaurant();
+                showRestaurant();
+                Log.e(TAG, "Place: " + place.getName() + ", " + placeId);
 
-                    }
-                }
+
             }
+            return;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-    // --------------------
-    // UI
-    // --------------------
 
-    //  Arranging method that updating UI with Firestore data
+    // -----------------------------------------------------
+    // Arranging method that updating UI with FireStore data
+    // -----------------------------------------------------
     private void updateUIWhenCreating() {
+        getCurrentWorkmate();
         if (this.getCurrentUser() != null) {
 
             if (this.getCurrentUser().getPhotoUrl() != null) {
@@ -388,14 +374,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         .into(mImageViewProfile);
             }
 
-            String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(Integer.parseInt("info_no_email_found")) : this.getCurrentUser().getEmail();
-            this.mTextViewEmail.setText(email);
-
         }
+
+        if (Objects.requireNonNull(this.getCurrentUser()).getDisplayName() != null) {
+            String name = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(Integer.parseInt("info_no_email_found")) : this.getCurrentUser().getDisplayName();
+            this.mTextViewName.setText(name);
+        } else {
+            getCurrentWorkmate();
+        }
+        String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(Integer.parseInt("info_no_email_found")) : this.getCurrentUser().getEmail();
+        this.mTextViewEmail.setText(email);
+
 
     }
 
-    // ----------------- Configuring ViewModel -----------------
+    // ---------------------
+    // Configuring ViewModel
+    // ---------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
@@ -408,8 +403,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-
-    // ----------------- Configuring Observers -----------------
+    // ---------------------
+    // Configuring Observers
+    // ---------------------
     private void getCurrentWorkmate() {
         String workmateUid = FirebaseAuth.getInstance().getUid();
         mWorkmateViewModel.getWorkmate(workmateUid).observe(this, workmates -> {
@@ -420,46 +416,53 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 placeId = currentWorkmate.getRestaurantChosen().getPlaceId();
                 getRestaurant();
 
+
             }
 
         });
 
-
     }
 
     private void getRestaurant() {
-        mRestaurantViewModel.getRestaurant(placeId).observe(this, restaurant -> {
-            mRestaurant = restaurant;
+        mRestaurantViewModel.getRestaurant(placeId).observe(this, restaurant -> mRestaurant = restaurant);
 
+    }
+
+    private void setupOpenDetailRestaurant() {
+        mRestaurantViewModel.getOpenDetailRestaurant().observe(this, objectEvent -> {
+            if (objectEvent.getContentIfNotHandled() != null) {
+                showLunch();
+            }
         });
     }
 
-    private void getRestaurantList() {
-        mRestaurantViewModel.getRestaurantList().observe(this, restaurants -> {
-            mRestaurantListFromFirebase = restaurants;
+    private void showRestaurant() {
+        if (mRestaurant != null) {
+            Intent intent = new Intent(this, DetailsRestaurantActivity.class);
+            Gson gson = new Gson();
+            String jsonSelectedRestaurant = gson.toJson(mRestaurant);
+            intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
+            startActivity(intent);
+            Log.e("test", String.valueOf(mRestaurant));
+        }
 
-        });
     }
 
+    // -------------------------------------------------------------
     // open detail activity when user click on menuDrawer "My lunch"
+    // -------------------------------------------------------------
     private void showLunch() {
         getCurrentWorkmate();
-
         if (this.currentWorkmate.getRestaurantChosen() == null) {
             alertDisplayChoice();
-
         } else {
             Intent intent = new Intent(this, DetailsRestaurantActivity.class);
             Gson gson = new Gson();
             String jsonSelectedRestaurant = gson.toJson(mRestaurant);
             intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
             startActivity(intent);
-            
+
         }
-
-    }
-
-    private void showRestaurantChoice() {
 
     }
 

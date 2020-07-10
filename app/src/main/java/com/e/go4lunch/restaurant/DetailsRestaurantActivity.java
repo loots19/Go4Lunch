@@ -1,17 +1,11 @@
 package com.e.go4lunch.restaurant;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -105,8 +99,9 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
     }
 
-
-    //----------------- get intent from recyclerView and map and show details -----------------
+    // -----------------------------------------------------
+    // get intent from recyclerView and map and show details
+    // -----------------------------------------------------
     private void getIncomingIntent() {
         if (getIntent().hasExtra(EXTRA_RESTAURANT)) {
             String jsonResult = getIntent().getStringExtra(EXTRA_RESTAURANT);
@@ -129,7 +124,9 @@ public class DetailsRestaurantActivity extends BaseActivity {
         }
     }
 
-    // ----------------- call phone number of the place -----------------
+    // ------------------------------
+    // call phone number of the place
+    // ------------------------------
     public void callRestaurant() {
         if (mResultDetail.getInternationalPhoneNumber() != null) {
             String phone = mResultDetail.getInternationalPhoneNumber();
@@ -146,8 +143,9 @@ public class DetailsRestaurantActivity extends BaseActivity {
         }
     }
 
-    // ----------------- show webSite of the place -----------------
-
+    // -------------------------
+    // show webSite of the place
+    // -------------------------
     public void openWebsitePage() {
         if (mResultDetail.getWebsite() != null) {
             Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
@@ -158,8 +156,9 @@ public class DetailsRestaurantActivity extends BaseActivity {
         }
     }
 
-    // ----------------- Action of user -----------------
-
+    // --------------
+    // Action of user
+    // --------------
     public void userActionClick() {
         mButtonCall.setOnClickListener(v -> callRestaurant());
 
@@ -172,9 +171,9 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
     }
 
-
-    // ----------------- Configuring ViewModel -----------------
-
+    // ---------------------
+    // Configuring ViewModel
+    // ---------------------
     private void configureViewModelDetail() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.mRestaurantDetailViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantDetailViewModel.class);
@@ -194,10 +193,11 @@ public class DetailsRestaurantActivity extends BaseActivity {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         this.mRestaurantViewModel = ViewModelProviders.of(this, viewModelFactory).get(RestaurantViewModel.class);
 
-
     }
-    // ----------------- Configuring Observers -----------------
 
+    // ---------------------
+    // Configuring Observers
+    // ---------------------
     private void getDetailOfPlace() {
         mRestaurantDetailViewModel.getPlaceDetail().observe(this, placeDetail -> mResultDetail = placeDetail.getResult());
 
@@ -221,7 +221,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
             mRestaurantListFromFirebase = restaurants;
             if (!mRestaurantListFromFirebase.contains(mRestaurant)) {
                 mWorkmatesList = new ArrayList<>();
-                mRestaurantViewModel.createRestaurant(mRestaurant.getPlaceId(), mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(),mRestaurant.getOpenNow(),mRestaurant.getLocation(),mRestaurant.getRating(), mWorkmatesList);
+                mRestaurantViewModel.createRestaurant(mRestaurant.getPlaceId(), mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mRestaurant.getOpenNow(), mRestaurant.getLocation(), mRestaurant.getRating(), mWorkmatesList);
             }
             getCurrentWorkmate();
 
@@ -238,8 +238,9 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
         });
     }
-
+    // ----------------------
     // Configuring LikeButton
+    // ----------------------
     private void actionOnLikeButton() {
 
         if (currentWorkmate.getListRestaurantFavorite() == null) {
@@ -261,8 +262,9 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
 
     }
-
+    // ------------------
     // updating like Star
+    // ------------------
     private void updateIVLike() {
 
         boolean fav = false;
@@ -279,15 +281,16 @@ public class DetailsRestaurantActivity extends BaseActivity {
             this.mImageViewStar.setImageResource(R.drawable.ic_star_border_black_24dp);
         }
     }
-
+    // ----------------------------
     // Configuring ChoiceButton FAB
+    // ----------------------------
     private void actionOnFab() {
 
         Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
 
         if (currentWorkmate.getRestaurantChosen() == null) {
             this.mfab.setImageResource(R.drawable.ic_check_circle_black_24dp);
-            this.mRestaurantViewModel.createRestaurant(placeId, mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(),mRestaurant.getOpenNow(),mRestaurant.getLocation(),mRestaurant.getRating(), mWorkmatesList);
+            this.mRestaurantViewModel.createRestaurant(placeId, mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mRestaurant.getOpenNow(), mRestaurant.getLocation(), mRestaurant.getRating(), mWorkmatesList);
             this.mWorkmatesList.add(workmatesChoice);
             this.currentWorkmate.setRestaurantChosen(mRestaurant);
             this.mWorkmateViewModel.updateRestaurantChosen(workmateUid, currentWorkmate.getRestaurantChosen());
@@ -303,6 +306,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
             this.mWorkmateViewModel.updateRestaurantChosen(workmateUid, currentWorkmate.getRestaurantChosen());
             this.mRestaurantDetailAdapter.notifyDataSetChanged();
             Toast.makeText(this, R.string.you_changed_your_choice, Toast.LENGTH_SHORT).show();
+
 
         }
 
@@ -333,8 +337,9 @@ public class DetailsRestaurantActivity extends BaseActivity {
         }
     }
 
-
+    // ------------------------
     // Configuring RecyclerView
+    // ------------------------
     private void configureRecyclerView() {
         mRecyclerViewDetail.setLayoutManager(new LinearLayoutManager(this));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerViewDetail.getContext(), DividerItemDecoration.VERTICAL);
@@ -345,7 +350,9 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
 
     }
-
+    // -----------------------------------
+    // Update View with data from FireBase
+    // -----------------------------------
     private void updateRestaurant(Restaurant restaurant) {
         String name = String.valueOf(restaurant.getName());
         String address = String.valueOf(restaurant.getAddress());

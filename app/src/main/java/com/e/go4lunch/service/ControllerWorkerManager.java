@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 
+import androidx.annotation.RequiresApi;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
@@ -18,7 +19,9 @@ public abstract class ControllerWorkerManager {
     private static final String WORK_TAG = "WORK_REQUEST_TAG_Go4Lunch";
     private static final String WORK_TAG_DELETE = "WORK_REQUEST_TAG_DELETE_Go4Lunch";
 
-
+    // --------------------------------------
+    // display notification everyday at 12.00
+    // --------------------------------------
     public static void scheduleWork(int hour, int minute) {
         Calendar calendar = Calendar.getInstance();
         long nowMillis = calendar.getTimeInMillis();
@@ -49,6 +52,9 @@ public abstract class ControllerWorkerManager {
 
     }
 
+    // --------------------------------------------
+    // delete selected restaurant everyday at 00.00
+    // --------------------------------------------
     public static void deleteWork(int hour, int minute) {
         Calendar calendar = Calendar.getInstance();
         long nowMillis = calendar.getTimeInMillis();
@@ -78,8 +84,11 @@ public abstract class ControllerWorkerManager {
         workManager.enqueue(mRequest);
     }
 
+    // -------------------------------
     // open settings for notifications
-    public  static void goToNotificationSettings(String channel, Context context) {
+    // -------------------------------
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void goToNotificationSettings(String channel, Context context) {
         Intent intent = new Intent();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK);

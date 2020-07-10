@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class DeleteSelectedRestaurant extends Worker {
-
+    // -----------------FOR DATA ------------------
     private RestaurantRepository mRestaurantRepository;
     private WorkmatesRepository mWorkmatesRepository;
     private Workmates currentWorkmate;
@@ -62,10 +62,8 @@ public class DeleteSelectedRestaurant extends Worker {
 
     private void deleteTask() {
         Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
-
         if (this.currentWorkmate.getRestaurantChosen() != null) {
             if (currentWorkmate.getRestaurantChosen().equals(mRestaurant))
-
                 this.mWorkmatesList.remove(workmatesChoice);
             this.mRestaurantRepository.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
             this.currentWorkmate.setRestaurantChosen(null);

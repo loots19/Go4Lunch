@@ -10,27 +10,27 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitRequest {
 
 
-
     private static Retrofit retrofit = buildRetrofit().build();
 
     private static ApiRequest mApiRequest = retrofit.create(ApiRequest.class);
 
-    public static ApiRequest getApiRequest(){
+    public static ApiRequest getApiRequest() {
         return mApiRequest;
     }
-    private static Retrofit.Builder buildRetrofit(){
+
+    private static Retrofit.Builder buildRetrofit() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(logging)
                 .build();
 
-       Retrofit.Builder retrofitBuilder =
+        Retrofit.Builder retrofitBuilder =
                 new Retrofit.Builder()
                         .baseUrl(Constants.BASE_URL)
                         .client(client)
                         .addConverterFactory(GsonConverterFactory.create());
-       return retrofitBuilder;
+        return retrofitBuilder;
     }
 
 

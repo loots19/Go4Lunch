@@ -1,5 +1,7 @@
 package com.e.go4lunch.restaurant;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
@@ -10,8 +12,9 @@ import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.repositories.RestaurantRepository;
+import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.util.AbsentLiveData;
-import com.firebase.ui.auth.AuthUI;
+import com.e.go4lunch.util.Event;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
@@ -20,14 +23,17 @@ import java.util.Objects;
 
 public class RestaurantViewModel extends ViewModel {
     private RestaurantRepository mRestaurantRepository;
+    private WorkmatesRepository mWorkmatesRepository;
     private MutableLiveData<GetPlace> getPlace = new MutableLiveData<>();
     private LiveData<MyPlace> myPlace;
     private MutableLiveData<List<Restaurant>> mRestaurantList = new MutableLiveData<>();
     private MutableLiveData<Restaurant> mRestaurantMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<com.e.go4lunch.util.Event<Object>> openDetailRestaurant = new MutableLiveData<>();
 
 
-    public RestaurantViewModel(RestaurantRepository restaurantRepository) {
+    public RestaurantViewModel(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
         this.mRestaurantRepository = restaurantRepository;
+        this.mWorkmatesRepository = workmatesRepository;
         myPlace = Transformations.switchMap(getPlace, input -> {
             if (input == null) {
                 return AbsentLiveData.create();
@@ -62,21 +68,33 @@ public class RestaurantViewModel extends ViewModel {
 
     }
 
-    public void createRestaurant(String placeId, String name, String address, String urlPhoto,Boolean openNow,Location location,double rating, List<Workmates>workmatesList) {
-        this.mRestaurantRepository.createRestaurant(placeId,name,address,urlPhoto,openNow,location,rating,workmatesList);
+    public void showUserRestaurant(String placeId) {
+        mRestaurantRepository.setRestaurantSelected(placeId);
+        openDetailRestaurant.setValue(new Event<>(new Object()));
+
     }
 
 
+    public LiveData<com.e.go4lunch.util.Event<Object>> getOpenDetailRestaurant() {
+        return openDetailRestaurant;
+    }
 
-    public MutableLiveData<Restaurant>getRestaurant(String placeId){
-        if (this.mRestaurantMutableLiveData != null){
+
+    public void createRestaurant(String placeId, String name, String address, String urlPhoto, Boolean openNow, Location location, double rating, List<Workmates> workmatesList) {
+        this.mRestaurantRepository.createRestaurant(placeId, name, address, urlPhoto, openNow, location, rating, workmatesList);
+    }
+
+
+    public MutableLiveData<Restaurant> getRestaurant(String placeId) {
+        if (this.mRestaurantMutableLiveData != null) {
             this.setRestaurantMutableLiveData(placeId);
         }
         return this.mRestaurantMutableLiveData;
     }
-    private void setRestaurantMutableLiveData(String placeId){
+
+    private void setRestaurantMutableLiveData(String placeId) {
         this.mRestaurantRepository.getRestaurant(placeId).addOnSuccessListener(documentSnapshot -> {
-            if(documentSnapshot.exists()){
+            if (documentSnapshot.exists()) {
                 Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
                 mRestaurantMutableLiveData.setValue(restaurant);
             }
@@ -111,20 +129,13 @@ public class RestaurantViewModel extends ViewModel {
     }
 
 
-    public void updateRestaurantWorkmateList(String uid, List<Workmates>workmatesList){
-        this.mRestaurantRepository.updateRestaurantWorkmateList(uid,workmatesList);
+    public void updateRestaurantWorkmateList(String uid, List<Workmates> workmatesList) {
+        this.mRestaurantRepository.updateRestaurantWorkmateList(uid, workmatesList);
     }
-
-    public void deleteTaskEveryDay(String placeId){
-        mRestaurantRepository.clearDocument(placeId);
-
-    }
-
-
-
 
 
 }
+
 
 
 

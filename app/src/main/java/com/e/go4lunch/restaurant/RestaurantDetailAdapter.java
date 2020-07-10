@@ -19,7 +19,7 @@ public class RestaurantDetailAdapter extends RecyclerView.Adapter<RestaurantDeta
     private Context mContext;
     private List<Workmates> mWorkmates;
 
-    public RestaurantDetailAdapter( Context context) {
+    public RestaurantDetailAdapter(Context context) {
         mContext = context;
         this.mWorkmates = new ArrayList<>();
     }
@@ -35,6 +35,7 @@ public class RestaurantDetailAdapter extends RecyclerView.Adapter<RestaurantDeta
     public void onBindViewHolder(@NonNull RestaurantDetailHolder holder, int position) {
         holder.update(this.mWorkmates.get(position));
     }
+
     public void setWorkmates(List<Workmates> workmatesList) {
         mWorkmates = workmatesList;
         notifyDataSetChanged();

@@ -3,14 +3,11 @@ package com.e.go4lunch.restaurant;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,13 +18,10 @@ import com.e.go4lunch.injection.App;
 import com.e.go4lunch.injection.Injection;
 import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
-import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.Location;
-import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.models.placeDetail.ResultDetail;
 import com.e.go4lunch.util.Constants;
-import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -35,8 +29,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class RestaurantsFragment extends Fragment implements RestaurantAdapter.OnNoteListener {
@@ -51,7 +43,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     private List<Restaurant> mRestaurants = new ArrayList<>();
     private RestaurantDetailViewModel mRestaurantDetailViewModel;
     private ResultDetail mResultDetail;
-
+    private String placeId;
 
 
     @Override
@@ -62,21 +54,22 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
         initialization();
         configureViewModel();
+        configureViewModelDetail();
         getListFromPlace();
-
-
 
         return view;
 
     }
 
-    // ----------------- Configuring Observers -----------------
+    // ---------------------
+    // Configuring Observers
+    // ---------------------
     private void getListFromPlace() {
         mRestaurantViewModel.getMyPlace().observe(this, myPlace -> {
             List<Result> results = myPlace.getResults();
             int size = results.size();
             for (int i = 0; i < size; i++) {
-                String placeId = results.get(i).getPlaceId();
+                placeId = results.get(i).getPlaceId();
                 String name = results.get(i).getName();
                 String address = results.get(i).getVicinity();
                 String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
@@ -84,15 +77,16 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
                 Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
                 if (results.get(i).getGeometry().getLocation() != null) {
                     Location location = results.get(i).getGeometry().getLocation();
+
                     Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
                     mRestaurants.add(restaurant);
                     mAdapter.setRestaurants(mRestaurants);
                     mAdapter.notifyDataSetChanged();
 
-
                 }
 
             }
+
             getListFromFireBase();
 
         });
@@ -124,7 +118,6 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     }
 
 
-
     // ----------------- Configuring RecyclerView -----------------
     private void initialization() {
         mRecyclerViewRestaurant.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -138,7 +131,9 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
     }
 
-    // ----------------- Configuring ViewModel -----------------
+    // ---------------------
+    // Configuring ViewModel
+    // ---------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
         this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
@@ -146,17 +141,17 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         String lng = App.getInstance().getLng();
         mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
 
-
-    }
-    private void getDetailOfPlace() {
-        mRestaurantDetailViewModel.getPlaceDetail().observe(this, placeDetail -> mResultDetail = placeDetail.getResult());
-
-
     }
 
+    private void configureViewModelDetail() {
+        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
+        this.mRestaurantDetailViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantDetailViewModel.class);
 
+    }
 
-    //display detail activity when the user click on item
+    // ---------------------------------------------------
+    // display detail activity when the user click on item
+    // ---------------------------------------------------
     @Override
     public void onNoteClick(int position) {
         Context context = getActivity();
@@ -167,10 +162,6 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         startActivity((intent));
 
 
-    }
-
-    public void testAutocompleteRest(Context context){
-        Toast.makeText(getApplicationContext(),"just a test",Toast.LENGTH_SHORT).show();
     }
 
 }

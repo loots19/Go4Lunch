@@ -1,7 +1,5 @@
 package com.e.go4lunch.workmates;
 
-import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,14 +11,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
-import com.e.go4lunch.util.Constants;
-import com.google.gson.Gson;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class WorkmatesHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+    // ----------------- FOR DESIGN -----------------
     @BindView(R.id.item_list_avatar)
     ImageView mImageView;
     @BindView(R.id.item_list_text)
@@ -53,12 +50,13 @@ public class WorkmatesHolder extends RecyclerView.ViewHolder implements View.OnC
 
 
     }
-    private void getNameOfRestaurant(Workmates workmates){
-        if(workmates.getRestaurantChosen()!= null){
+
+    private void getNameOfRestaurant(Workmates workmates) {
+        if (workmates.getRestaurantChosen() != null) {
             String name = workmates.getRestaurantChosen().getName();
             String text = (workmates.getWorkmateName() + " " + itemView.getContext().getResources().getString(R.string.is_eating) + " " + name);
             mTextView.setText(text);
-        }else {
+        } else {
             mTextView.setText(workmates.getWorkmateName());
         }
 

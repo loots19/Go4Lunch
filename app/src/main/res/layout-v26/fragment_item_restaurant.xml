@@ -13,9 +13,9 @@
 
     <TextView
         android:id="@+id/tv_name_restaurant_item"
-        android:layout_width="wrap_content"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="75dp"
+        android:layout_marginBottom="80dp"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -34,16 +34,16 @@
         android:id="@+id/tv_meters_restaurant_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_marginBottom="75dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginBottom="80dp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/iv_photo_restaurant_item"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_address_restaurant_item"
-        android:layout_width="wrap_content"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -63,8 +63,8 @@
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+
         android:background="@drawable/ic_person_outline_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tv_numbers_restaurant_item"
@@ -85,14 +85,16 @@
         android:id="@+id/iv_RatingBar_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:layout_marginEnd="80dp"
         android:numStars="3"
         android:progressTint="@color/quantum_yellow"
         android:scaleX="0.5"
         android:scaleY="0.5"
+
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/iv_photo_restaurant_item"
-        app:layout_constraintTop_toBottomOf="@+id/tv_numbers_restaurant_item"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintEnd_toEndOf="@+id/iv_photo_restaurant_item"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

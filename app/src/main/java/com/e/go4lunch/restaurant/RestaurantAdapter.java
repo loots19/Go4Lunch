@@ -10,9 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
-import com.e.go4lunch.models.myPlace.Location;
-import com.e.go4lunch.models.myPlace.Result;
-import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
@@ -26,7 +23,6 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     public RestaurantAdapter(Context context, OnNoteListener onNoteListener) {
         this.mContext = context;
         this.mOnNoteListener = onNoteListener;
-
 
     }
 

@@ -7,7 +7,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.e.go4lunch.R;
@@ -38,7 +37,7 @@ import butterknife.OnClick;
 
 public class AuthActivity extends BaseActivity {
 
-    //FOR DESIGN
+    // ----------------- FOR DESIGN -----------------
     @BindView(R.id.btnGG)
     Button buttonLoginGg;
     @BindView(R.id.btnFb)
@@ -49,8 +48,8 @@ public class AuthActivity extends BaseActivity {
     Button buttonLog;
 
 
-    //FOR DATA
-    private static final int RC_SIGN_IN = 123;
+    // ----------------- FOR DATA -----------------
+    public static final int RC_SIGN_IN = 123;
     private WorkmateViewModel mWorkmateViewModel;
     private List<Workmates> mWorkmatesList;
     private Boolean workmatesExists = false;
@@ -70,6 +69,7 @@ public class AuthActivity extends BaseActivity {
 
 
     }
+
 
     // --------------------
     // ACTIONS
@@ -114,39 +114,16 @@ public class AuthActivity extends BaseActivity {
         }
 
     }
-
-
+    // --------------------
+    //  Launch map activity
+    // --------------------
     private void startMapsActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
-            if (resultCode == RESULT_OK) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                subscribeObservers();
 
-                if (user != null) {
-                    Toast.makeText(this, "" + user.getEmail(), Toast.LENGTH_SHORT).show();
-                }
-            } else { // ERRORS
-                if (response == null) {
-                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
-                } else if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    Toast.makeText(this, R.string.no_network, Toast.LENGTH_SHORT).show();
-                } else if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    Toast.makeText(this, R.string.unknown_error, Toast.LENGTH_SHORT).show();
-
-
-                }
-            }
-        }
-    }
     // ------------------
     // NAVIGATION
     // ------------------
@@ -192,11 +169,9 @@ public class AuthActivity extends BaseActivity {
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
     }
-
-
-
-
+    //------------
     //init twitter
+    //------------
     public void initTwitter() {
         TwitterConfig config = new TwitterConfig.Builder(this)
                 .logger(new DefaultLogger(Log.DEBUG))
@@ -208,25 +183,29 @@ public class AuthActivity extends BaseActivity {
 
     }
 
+    // ---------------------
     // Configuring ViewModel
+    // ---------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
 
     }
-
+    // ---------------------
+    // Configuring Observers
+    // ---------------------
     private void subscribeObservers() {
         mWorkmateViewModel.getWorkmatesList().observe(this, workmates -> {
             mWorkmatesList = workmates;
-            createUser();
+            checkWorkmateExists();
         });
 
     }
-
-
-    private void createUser() {
+    // -------------------------
+    // Check if workmates exists
+    // -------------------------
+    private void checkWorkmateExists() {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             if (mWorkmatesList != null) {
                 int size = mWorkmatesList.size();
                 for (int i = 0; i < size; i++) {
@@ -238,16 +217,17 @@ public class AuthActivity extends BaseActivity {
                 if (workmatesExists) {
                     startMapsActivity();
                 } else {
-                    String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-                    String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-                    String urlPicture = String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl());
-
-                    mWorkmateViewModel.createWorkmate(uid, email, name, urlPicture);
                     startMapsActivity();
                 }
             }
         }
 
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mWorkmateViewModel.handleResponseAfterSignIn(requestCode, resultCode, data);
+        startMapsActivity();
     }
 
 

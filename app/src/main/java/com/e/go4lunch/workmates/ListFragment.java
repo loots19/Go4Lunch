@@ -17,7 +17,6 @@ import com.e.go4lunch.injection.Injection;
 import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
-import com.e.go4lunch.restaurant.RestaurantViewModel;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -28,12 +27,15 @@ import butterknife.ButterKnife;
 
 public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteListener {
 
+
+    // ----------------- FOR DESIGN -----------------
+    @BindView(R.id.recycler_view)
+    RecyclerView mRecyclerView;
+
+    // ----------------- FOR DATA -----------------
     private WorkmateViewModel mWorkmateViewModel;
     private WorkmatesAdapter mWorkmatesAdapter;
     private List<Workmates> mWorkmatesList;
-
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
 
 
     @Override
@@ -49,8 +51,9 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
 
     }
 
-    // ----------------- Configuring ViewModel -----------------
-
+    // ---------------------
+    // Configuring ViewModel
+    // ---------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
         this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
@@ -58,17 +61,18 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
     }
 
 
-    // ----------------- Configuring Observers -----------------
-
+    // ---------------------
+    // Configuring Observers
+    // ---------------------
     private void getWorkmateList() {
         mWorkmateViewModel.getWorkmatesList().observe(this, workmates -> {
             mWorkmatesList = workmates;
             mWorkmatesAdapter.setWorkmates(workmates);
         });
     }
-
-    // ----------------- Configuring RecyclerView -----------------
-
+    // ------------------------
+    // Configuring RecyclerView
+    // ------------------------
     private void configureRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
@@ -77,8 +81,9 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
         mRecyclerView.setAdapter(mWorkmatesAdapter);
 
     }
-
-
+    // -----------------------------------------------------
+    // OpenDetail Activity when workmate click on item of RV
+    // -----------------------------------------------------
     @Override
     public void onNoteClick(int position) {
         if (mWorkmatesList.get(position).getRestaurantChosen() != null) {

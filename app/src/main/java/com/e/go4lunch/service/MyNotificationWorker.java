@@ -44,7 +44,7 @@ public class MyNotificationWorker extends Worker {
         String workmateUid = FirebaseAuth.getInstance().getUid();
         this.mWorkmatesRepository.getWorkmate(workmateUid).addOnSuccessListener(documentSnapshot -> {
             currentWorkmate = documentSnapshot.toObject(Workmates.class);
-            if (Objects.requireNonNull(currentWorkmate).getRestaurantChosen()!= null) {
+            if (Objects.requireNonNull(currentWorkmate).getRestaurantChosen() != null) {
                 getRestaurant(currentWorkmate.getRestaurantChosen().getPlaceId());
                 nameRestaurant = currentWorkmate.getRestaurantChosen().getName();
 
@@ -70,7 +70,6 @@ public class MyNotificationWorker extends Worker {
 
 
     private void displayNotification() {
-
         // Create an Intent that will be shown when user will click on the Notification
         Intent intent = new Intent(getApplicationContext(), DetailsRestaurantActivity.class);
         Gson gson = new Gson();
@@ -94,7 +93,7 @@ public class MyNotificationWorker extends Worker {
         // Build a Notification object
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId)
                 .setContentTitle(getApplicationContext().getResources().getString(R.string.notification_title))
-                .setContentText(getApplicationContext().getResources().getString (R.string.notification_message) + " " + nameRestaurant)
+                .setContentText(getApplicationContext().getResources().getString(R.string.notification_message) + " " + nameRestaurant)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setAutoCancel(true)

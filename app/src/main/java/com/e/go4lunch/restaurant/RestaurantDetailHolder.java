@@ -5,7 +5,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -17,9 +16,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-
 public class RestaurantDetailHolder extends RecyclerView.ViewHolder {
 
+    // ----------------- FOR DESIGN -----------------
     @BindView(R.id.item_list_avatar)
     ImageView mImageView;
     @BindView(R.id.item_list_text)

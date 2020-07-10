@@ -3,4 +3,33 @@
     <dimen name="default_top_margin">20dip</dimen>
     <dimen name="default_tittle_size_first_screen">70sp</dimen>
     <dimen name="default_tittle_sentence_first_screen">12sp</dimen>
+
+    <!-- DETAILS ACTIVITY -->
+    <dimen name="detail_activity_height_image_view">270dp</dimen>
+    <dimen name="detail_activity_margin_top_fab">130dp</dimen>
+    <dimen name="detail_activity_margin_end_fab">16dp</dimen>
+    <dimen name="detail_activity_height_linearLayout">80dp</dimen>
+    <dimen name="detail_activity_margin_start">10dp</dimen>
+    <dimen name="detail_activity_margin_bottom">40dp</dimen>
+    <dimen name="detail_activity_margin_top_linearLayout">20dp</dimen>
+    <dimen name="detail_activity_margin_end_button">50dp</dimen>
+    <dimen name="detail_activity_height_frameLayout">250dp</dimen>
+    <dimen name="detail_activity_height_RecyclerView">250dp</dimen>
+    <dimen name="detail_activity_height_view">1dp</dimen>
+
+    <!-- DETAILS ACTIVITY MAIN -->
+    <dimen name="activity_main_margin_FrameLayout">55dp</dimen>
+
+
+
+
+
+
+
+
+
+
+
+
+
 </resources>

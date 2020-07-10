@@ -27,6 +27,7 @@ public class RestaurantRepository {
 
 
     private static RestaurantRepository instance;
+    private String restaurantSelected;
 
     // --- COLLECTION REFERENCE ---
 
@@ -67,25 +68,6 @@ public class RestaurantRepository {
         });
         return newData;
     }
-    public MutableLiveData<MyPlace> getAutocompletePlace(String type, String location, int radius) {
-        MutableLiveData<MyPlace> newData = new MutableLiveData<>();
-        mApiRequest.getAutocomplete(type, location, radius).enqueue(new Callback<MyPlace>() {
-            @Override
-            public void onResponse(@NotNull Call<MyPlace> call, Response<MyPlace> response) {
-                if (response.isSuccessful()) {
-                    newData.setValue(response.body());
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call<MyPlace> call, Throwable t) {
-
-                newData.setValue(null);
-
-            }
-        });
-        return newData;
-    }
 
     public MutableLiveData<PlaceDetail> getRestaurantDetail(String placeId) {
         MutableLiveData<PlaceDetail> newData = new MutableLiveData<>();
@@ -109,8 +91,8 @@ public class RestaurantRepository {
     }
     // --- CREATE ---
 
-    public Task<Void> createRestaurant(String placeId, String name, String address, String urlPhoto,  Boolean openNow,Location location, double rating, List<Workmates>workmatesList){
-        Restaurant restaurantToCreate = new Restaurant(placeId,name,address,urlPhoto,openNow,location,rating,workmatesList);
+    public Task<Void> createRestaurant(String placeId, String name, String address, String urlPhoto, Boolean openNow, Location location, double rating, List<Workmates> workmatesList) {
+        Restaurant restaurantToCreate = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating, workmatesList);
         return getRestaurantCollection().document(placeId).set(restaurantToCreate);
     }
 
@@ -126,27 +108,17 @@ public class RestaurantRepository {
 
     // --- UPDATE ---
 
-    public Task<Void> updateRestaurantWorkmateList(String placeId,List<Workmates> workmatesList){
-        return  getRestaurantCollection().document(placeId).update("workmatesList",workmatesList);
+    public Task<Void> updateRestaurantWorkmateList(String placeId, List<Workmates> workmatesList) {
+        return getRestaurantCollection().document(placeId).update("workmatesList", workmatesList);
     }
 
-    public Task<Void> clearDocument(String placeId){
-        return getRestaurantCollection().document(placeId).delete();
+    public void setRestaurantSelected(String restaurantUid) {
+        this.restaurantSelected = restaurantUid;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public String getRestaurantSelected() {
+        return restaurantSelected;
+    }
 }
 
 

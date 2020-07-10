@@ -2,11 +2,8 @@ package com.e.go4lunch.injection;
 
 import android.content.Context;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
-import com.e.go4lunch.restaurant.MapsFragment;
 
 public class Injection {
 
