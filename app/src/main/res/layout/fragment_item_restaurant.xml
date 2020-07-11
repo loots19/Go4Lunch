@@ -5,18 +5,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="5dp"
-    android:layout_marginTop="5dp"
-    android:layout_marginEnd="5dp"
-    android:layout_marginBottom="5dp">
+    android:layout_marginStart="@dimen/item_constraint_layout_margin"
+    android:layout_marginTop="@dimen/item_constraint_layout_margin"
+    android:layout_marginEnd="@dimen/item_constraint_layout_margin"
+    android:layout_marginBottom="@dimen/item_constraint_layout_margin">
 
 
     <TextView
         android:id="@+id/tv_name_restaurant_item"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/text_view_layout_width"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="75dp"
-        android:textSize="16sp"
+        android:layout_marginBottom="@dimen/text_view_name_margin_bottom"
+        android:textSize="@dimen/text_view_name_text_size"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -24,8 +24,8 @@
 
     <ImageView
         android:id="@+id/iv_photo_restaurant_item"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/image_view_photo"
+        android:layout_height="@dimen/image_view_photo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -34,18 +34,18 @@
         android:id="@+id/tv_meters_restaurant_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_marginBottom="75dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="@dimen/text_view_meter_margin_end"
+        android:layout_marginBottom="@dimen/text_view_meter_margin_bottom"
+        android:textSize="@dimen/text_view_meter_text_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/iv_photo_restaurant_item"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_address_restaurant_item"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/text_view_layout_width"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="@dimen/text_view_margin_bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -54,7 +54,7 @@
         android:id="@+id/tv_time_restaurant_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="@dimen/text_view_time_margin_top"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -63,8 +63,7 @@
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="@dimen/text_view_margin_bottom"
         android:background="@drawable/ic_person_outline_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tv_numbers_restaurant_item"
@@ -72,10 +71,10 @@
 
     <TextView
         android:id="@+id/tv_numbers_restaurant_item"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_width="@dimen/text_view_numbers_layout_width"
+        android:layout_height="@dimen/text_view_numbers_layout_height"
+        android:layout_marginEnd="@dimen/text_view_numbers_margin"
+        android:layout_marginBottom="@dimen/text_view_numbers_margin"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/iv_photo_restaurant_item"
@@ -85,14 +84,15 @@
         android:id="@+id/iv_RatingBar_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/rating_bar_margin_top"
+        android:layout_marginEnd="@dimen/rating_bar_margin_end"
         android:numStars="3"
         android:progressTint="@color/quantum_yellow"
         android:scaleX="0.5"
         android:scaleY="0.5"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/iv_photo_restaurant_item"
-        app:layout_constraintTop_toBottomOf="@+id/tv_numbers_restaurant_item"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintEnd_toEndOf="@+id/iv_photo_restaurant_item"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

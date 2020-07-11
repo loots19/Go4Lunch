@@ -8,8 +8,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".auth.RegisterActivity">
+
         <ImageView
             android:id="@+id/imageView4"
             android:layout_width="match_parent"
@@ -20,7 +21,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
 
         <TextView
@@ -30,8 +32,8 @@
             android:fontFamily="@font/aladin"
             android:text="@string/app_name"
             android:textColor="@android:color/white"
-            android:textSize="50sp"
-            android:layout_marginTop="50dp"
+            android:textSize="@dimen/TV_tittle_text_size"
+            android:layout_marginTop="@dimen/margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -40,25 +42,25 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/TV_sentence_margin_top_"
             android:fontFamily="@font/aladin"
             android:text="@string/tittle_sentence_name_first_screen"
             android:textColor="@android:color/white"
-            android:textSize="15sp"
+            android:textSize="@dimen/TV_sentence_text_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
 
         <EditText
             android:id="@+id/et_name_register"
-            android:layout_width="395dp"
+            android:layout_width="@dimen/layout_width"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="@dimen/margin_top"
             android:hint="@string/name"
-            android:padding="10dp"
+            android:padding="@dimen/padding"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white"
-            android:textSize="20sp"
+            android:textSize="@dimen/ET_text_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2"
@@ -66,14 +68,14 @@
 
         <EditText
             android:id="@+id/et_email_register"
-            android:layout_width="395dp"
+            android:layout_width="@dimen/layout_width"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="@dimen/ET_margin_top"
             android:hint="@string/email"
-            android:padding="10dp"
+            android:padding="@dimen/padding"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white"
-            android:textSize="20sp"
+            android:textSize="@dimen/ET_text_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_name_register"
@@ -81,14 +83,14 @@
 
         <EditText
             android:id="@+id/et_password_register"
-            android:layout_width="395dp"
+            android:layout_width="@dimen/layout_width"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="@dimen/ET_margin_top"
             android:hint="@string/password"
-            android:padding="10dp"
+            android:padding="@dimen/padding"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white"
-            android:textSize="20sp"
+            android:textSize="@dimen/ET_text_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_email_register"
@@ -96,12 +98,13 @@
 
         <Button
             android:id="@+id/button_register"
-            android:layout_width="390dp"
+            android:layout_width="@dimen/layout_width"
             android:layout_height="wrap_content"
-            android:layout_marginTop="130dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginTop="@dimen/button_margin_top"
+            android:layout_marginBottom="@dimen/button_margin_bottom"
             android:background="@android:color/black"
-            android:padding="10dp"
+            android:fontFamily="@font/aladin"
+            android:padding="@dimen/padding"
             android:text="@string/sign_in"
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="@+id/imageView4"

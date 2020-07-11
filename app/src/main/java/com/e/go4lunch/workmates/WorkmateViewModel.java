@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.auth.AuthActivity;
-import com.e.go4lunch.auth.RegisterActivity;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.RestaurantRepository;
@@ -41,7 +40,9 @@ public class WorkmateViewModel extends ViewModel {
         this.mRestaurantRepository = restaurantRepository;
         this.mWorkmatesRepository = workmatesRepository;
     }
-
+    // ---------------------------
+    // Get workmates from fireBase
+    // ---------------------------
     public MutableLiveData<Workmates> getWorkmate(String uid) {
         if (this.mWorkmatesMutableLiveData != null) {
             this.setWorkmatesMutableLiveData(uid);
@@ -57,8 +58,9 @@ public class WorkmateViewModel extends ViewModel {
             }
         });
     }
-
-
+    // -------------------------------------
+    // Get a list of Workmates from fireBase
+    // -------------------------------------
     public MutableLiveData<List<Workmates>> getWorkmatesList() {
 
         if (mWorkmatesList != null) {
@@ -84,27 +86,35 @@ public class WorkmateViewModel extends ViewModel {
 
 
     }
-
+    // -----------------------------
+    // Create a workmate in fireBase
+    // -----------------------------
     public void createWorkmate(String uid, String email, String name, String urlPicture) {
         mWorkmatesRepository.createWorkmates(uid, email, name, urlPicture);
     }
-
+    // ---------------------------------------------------------
+    // Update in fireBase if workmate have a favorite restaurant
+    // ---------------------------------------------------------
     public void updateIsRestaurantFavorite(String uid, List<Restaurant> listRestaurantFavorite) {
         mWorkmatesRepository.updateRestaurantFavorite(uid, listRestaurantFavorite);
     }
-
+    // ------------------------------------------------------------
+    // Update in fireBase if workmate choose a restaurant for lunch
+    // ------------------------------------------------------------
     public void updateRestaurantChosen(String uid, Restaurant restaurantChoosen) {
         mWorkmatesRepository.updateRestaurantChosen(uid, restaurantChoosen);
     }
 
-
+    // -----------------------------
+    // Create a workmate in fireBase
+    // -----------------------------
     public void handleResponseAfterSignIn(int requestCode, int resultCode, @Nullable Intent data) {
 
         if (requestCode == AuthActivity.RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                this.fetchCurrentUserFromFirestore();
+                this.fetchCurrentUserFromFiresTore();
 
                 if (user != null) {
                     Toast.makeText(getApplicationContext(), "" + user.getEmail(), Toast.LENGTH_SHORT).show();
@@ -123,14 +133,14 @@ public class WorkmateViewModel extends ViewModel {
         }
     }
 
-    private void fetchCurrentUserFromFirestore() {
+    private void fetchCurrentUserFromFiresTore() {
         if (isCurrentUserLogged()) {
             mWorkmatesRepository.getWorkmate(getCurrentUser().getUid())
                     .addOnFailureListener(this.onFailureListener())
                     .addOnSuccessListener(documentSnapshot -> {
                         Workmates workmates = documentSnapshot.toObject(Workmates.class);
                         if (workmates == null) {
-                            createUserInFirestore();
+                            createUserInFiresTore();
                         } else {
                             mWorkmatesRepository.updateUserRepository(workmates);
 
@@ -141,7 +151,7 @@ public class WorkmateViewModel extends ViewModel {
         }
     }
 
-    private void createUserInFirestore() {
+    private void createUserInFiresTore() {
         String urlPicture = (getCurrentUser().getPhotoUrl() != null) ?
                 this.getCurrentUser().getPhotoUrl().toString() : null;
         String email = getCurrentUser().getEmail();
@@ -149,7 +159,7 @@ public class WorkmateViewModel extends ViewModel {
         String uid = getCurrentUser().getUid();
         mWorkmatesRepository.createWorkmates(uid,email,username, urlPicture)
                 .addOnFailureListener(this.onFailureListener())
-                .addOnSuccessListener(aVoid -> fetchCurrentUserFromFirestore());
+                .addOnSuccessListener(aVoid -> fetchCurrentUserFromFiresTore());
 
 
     }

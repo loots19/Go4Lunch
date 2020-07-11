@@ -7,57 +7,48 @@
     tools:context=".auth.AuthActivity"
     android:fillViewport="true">
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <ImageView
-        android:id="@+id/imageView4"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:alpha="0.2"
-        android:scaleType="centerCrop"
-        android:src="@drawable/lunch"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="wrap_content">
 
 
-
-
-        <!--IMAGE ICON BOWL-->
         <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_hot_food_in_a_bowl"
-            android:layout_marginTop="10dp"
+            android:id="@+id/imageView4"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/image_view_auth_layout_height"
+            android:alpha="0.2"
+            android:scaleType="centerCrop"
+            android:src="@drawable/lunch"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            tools:ignore="ContentDescription" />
 
-        <!--TITTLE-->
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/image_view_3_auth_margin_top"
+            android:background="@drawable/ic_hot_food_in_a_bowl"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
-        <!--TITTLE_SENTENCE-->
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
-            android:layout_height="85dp"
+            android:layout_height="@dimen/text_view_auth_layout_height"
             android:fontFamily="@font/aladin"
             android:text="@string/tittle_name_first_screen"
-            android:textStyle="bold"
             android:textColor="@android:color/white"
             android:textSize="@dimen/default_tittle_size_first_screen"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView3"
-            app:layout_constraintVertical_bias="0.0" />
-
+            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
         <TextView
             android:id="@+id/textView5"
@@ -69,71 +60,69 @@
             android:textColor="@android:color/white"
             android:textSize="@dimen/default_tittle_sentence_first_screen"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView4"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
         <com.shaishavgandhi.loginbuttons.FacebookButton
             android:id="@+id/btnFb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/auth_button_margin_start"
+            android:layout_marginTop="@dimen/auth_button_margin_top"
+            android:layout_marginEnd="@dimen/auth_button_margin_end"
             android:text="@string/button_facebook_sign"
-            app:iconSize="30dp"
-            android:layout_marginTop="60dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
+            app:iconSize="@dimen/auth_button_icon_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView5"
             app:roundedCorner="true"
-            app:roundedCornerRadius="10dp" />
+            app:roundedCornerRadius="@dimen/auth_button_corner_radius" />
 
         <com.shaishavgandhi.loginbuttons.GooglePlusButton
             android:id="@+id/btnGG"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/auth_button_margin_start"
+            android:layout_marginTop="@dimen/auth_button_margin_top"
+            android:layout_marginEnd="@dimen/auth_button_margin_end"
             android:text="@string/button_google_sign"
-            app:iconSize="30dp"
-            android:layout_marginTop="22dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
+            app:iconSize="@dimen/auth_button_icon_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnFb"
             app:roundedCorner="true"
-            app:roundedCornerRadius="10dp" />
+            app:roundedCornerRadius="@dimen/auth_button_corner_radius" />
 
         <com.shaishavgandhi.loginbuttons.TwitterButton
             android:id="@+id/btnTw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
+            android:layout_marginStart="@dimen/auth_button_margin_start"
+            android:layout_marginTop="@dimen/auth_button_margin_top"
+            android:layout_marginEnd="@dimen/auth_button_margin_end"
             android:text="@string/button_twitter_sign"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnGG"
             app:roundedCorner="true"
-            app:roundedCornerRadius="10dp" />
+            app:roundedCornerRadius="@dimen/auth_button_corner_radius" />
 
         <com.shaishavgandhi.loginbuttons.BaseButton
             android:id="@+id/btnLog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="@dimen/auth_button_margin_start"
+            android:layout_marginTop="@dimen/auth_button_margin_top"
+            android:layout_marginEnd="@dimen/auth_button_margin_end"
             android:background="@drawable/button"
-            android:layout_marginTop="22dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
             android:backgroundTint="@android:color/holo_blue_bright"
             android:text="@string/button_email_password"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnTw" />
+            app:layout_constraintTop_toBottomOf="@+id/btnTw"
+            tools:ignore="UnusedAttribute" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

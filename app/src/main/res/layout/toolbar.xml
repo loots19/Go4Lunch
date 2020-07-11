@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
@@ -16,7 +17,8 @@
         android:autofillHints="TXT"
         android:hint="@string/autocomplete_hint"
         android:labelFor="@id/toolbar"
-        android:inputType="textNoSuggestions" />
+        android:inputType="textNoSuggestions"
+        tools:ignore="UnusedAttribute" />
 
 
 </androidx.appcompat.widget.Toolbar>

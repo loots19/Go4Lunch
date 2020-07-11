@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="210dp"
+    android:layout_height="@dimen/header_constraint_layout_layout_height"
     android:background="@android:color/white"
     android:orientation="vertical">
 
@@ -19,11 +19,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="@dimen/header_text_view_margin_top"
         android:text="@string/tittle_name_first_screen"
         android:fontFamily="@font/aladin"
         android:textColor="@android:color/black"
-        android:textSize="40sp"
+        android:textSize="@dimen/header_text_view_text_size"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,9 +31,9 @@
 
     <ImageView
         android:id="@+id/imageProfile_header"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginStart="10dp"
+        android:layout_width="@dimen/header_constraint_layout_image"
+        android:layout_height="@dimen/header_constraint_layout_image"
+        android:layout_marginStart="@dimen/header_margin_start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textColor="@android:color/black"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="@dimen/header_margin_start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageProfile_header"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
@@ -53,7 +53,7 @@
         android:id="@+id/tv_mail_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="@dimen/header_margin_start"
         android:textColor="@android:color/black"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/imageProfile_header"
