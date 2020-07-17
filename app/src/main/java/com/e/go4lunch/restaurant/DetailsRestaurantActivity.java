@@ -19,11 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.e.go4lunch.R;
-import com.e.go4lunch.injection.Injection;
-import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.placeDetail.ResultDetail;
+import com.e.go4lunch.repositories.injection.Injection;
+import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.util.Constants;
 import com.e.go4lunch.workmates.WorkmateViewModel;
@@ -206,11 +206,13 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
     private void getCurrentWorkmate() {
         workmateUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        mWorkmateViewModel.getWorkmate(workmateUid).observe(this, workmates -> {
-            currentWorkmate = workmates;
-            mRestaurantListFavFromFirebase = workmates.getListRestaurantFavorite();
-            updateRestaurant(mRestaurant);
-
+        mWorkmateViewModel.getWorkmate(workmateUid).observe(this, event -> {
+            Workmates workmates = event.getContentIfNotHandled();
+            if (workmates != null) {
+                currentWorkmate = workmates;
+                mRestaurantListFavFromFirebase = workmates.getListRestaurantFavorite();
+                updateRestaurant(mRestaurant);
+            }
 
         });
 
@@ -230,14 +232,18 @@ public class DetailsRestaurantActivity extends BaseActivity {
     }
 
     private void getRestaurant() {
-        mRestaurantViewModel.getRestaurant(placeId).observe(this, restaurant -> {
-            mWorkmatesList = restaurant.getWorkmatesList();
-            mRestaurant.setWorkmatesList(mWorkmatesList);
-            mRestaurantDetailAdapter.setWorkmates(mWorkmatesList);
+        mRestaurantViewModel.getRestaurant(placeId).observe(this, event -> {
+            Restaurant restaurant = event.getContentIfNotHandled();
+            if (restaurant != null) {
+                mWorkmatesList = restaurant.getWorkmatesList();
+                mRestaurant.setWorkmatesList(mWorkmatesList);
+                mRestaurantDetailAdapter.setWorkmates(mWorkmatesList);
+            }
 
 
         });
     }
+
     // ----------------------
     // Configuring LikeButton
     // ----------------------
@@ -262,6 +268,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
 
     }
+
     // ------------------
     // updating like Star
     // ------------------
@@ -281,6 +288,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
             this.mImageViewStar.setImageResource(R.drawable.ic_star_border_black_24dp);
         }
     }
+
     // ----------------------------
     // Configuring ChoiceButton FAB
     // ----------------------------
@@ -350,6 +358,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
 
     }
+
     // -----------------------------------
     // Update View with data from FireBase
     // -----------------------------------

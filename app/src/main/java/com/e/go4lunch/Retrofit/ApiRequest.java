@@ -17,8 +17,6 @@ public interface ApiRequest {
     @GET("api/place/details/json?key=" + Constants.API_KEY)
     Call<PlaceDetail> getDetailsRestaurant(@Query("place_id") String placeId);
 
-    @GET("api/place/autocomplete/json?key=" + Constants.API_KEY)
-    Call<MyPlace> getAutocomplete(@Query("type") String type, @Query("location") String location, @Query("radius") int radius);
 
 
 }

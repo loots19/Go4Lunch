@@ -1,5 +1,6 @@
 package com.e.go4lunch.restaurant;
 
+import android.annotation.SuppressLint;
 import android.location.Location;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,9 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.e.go4lunch.BuildConfig;
 import com.e.go4lunch.R;
-import com.e.go4lunch.injection.App;
+import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.util.Constants;
 
@@ -48,7 +48,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     private RestaurantAdapter.OnNoteListener OnNoteListener;
 
 
-    public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
+    RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         this.OnNoteListener = onNoteListener;
@@ -63,7 +63,6 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
 
 
     }
-
 
     public void update(Restaurant restaurant) {
         //---------- Opening ----------
@@ -105,6 +104,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     // -------------------------
     // set distance of the place
     // -------------------------
+    @SuppressLint("SetTextI18n")
     private void displayDistance(Restaurant restaurant) {
         App globals = (App) getApplicationContext();
         String lat = globals.getLat();
@@ -117,7 +117,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         destination.setLongitude(restaurant.getLocation().getLng());
         double distance = currentLocation.distanceTo(destination);
         double distanceF = distance / 1000;
-        String rounded = String.format("%.0f", distanceF);
+        @SuppressLint("DefaultLocale") String rounded = String.format("%.0f", distanceF);
         mTvMeters.setText(rounded + " KMS");
 
     }
@@ -155,10 +155,11 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     // -----------------------
     // set number of workmates
     // -----------------------
+    @SuppressLint("SetTextI18n")
     private void displayWorkmatesNumbers(Restaurant restaurant) {
         if (restaurant.getWorkmatesList() != null && restaurant.getWorkmatesList().size() > 0) {
             int numberWorkmates = restaurant.getWorkmatesList().size();
-            mTvNumbers.setText("("+String.valueOf(numberWorkmates)+")");
+            mTvNumbers.setText("("+(numberWorkmates)+")");
             mImageViewWorkmates.setVisibility(View.VISIBLE);
         } else {
             mTvNumbers.setText("");

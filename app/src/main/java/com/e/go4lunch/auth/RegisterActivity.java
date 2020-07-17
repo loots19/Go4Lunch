@@ -10,12 +10,11 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.e.go4lunch.R;
-import com.e.go4lunch.injection.Injection;
-import com.e.go4lunch.injection.ViewModelFactory;
+import com.e.go4lunch.repositories.injection.Injection;
+import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.ui.MainActivity;

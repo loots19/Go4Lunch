@@ -4,24 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.e.go4lunch.R;
-import com.e.go4lunch.injection.Injection;
-import com.e.go4lunch.injection.ViewModelFactory;
+import com.e.go4lunch.repositories.injection.Injection;
+import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.ui.MainActivity;
 import com.e.go4lunch.util.Constants;
 import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -29,7 +25,6 @@ import com.twitter.sdk.android.core.TwitterConfig;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -216,17 +211,17 @@ public class AuthActivity extends BaseActivity {
                 }
                 if (workmatesExists) {
                     startMapsActivity();
-                } else {
-                    startMapsActivity();
                 }
             }
         }
 
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    // -----------------------------------------
+    // if workmates is new create it in fireBase
+    // -----------------------------------------
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mWorkmateViewModel.handleResponseAfterSignIn(requestCode, resultCode, data);
+        mWorkmateViewModel.CreateWorkmateFireBase(requestCode, resultCode, data);
         startMapsActivity();
     }
 

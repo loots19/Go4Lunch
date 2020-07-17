@@ -14,13 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
-import com.e.go4lunch.injection.App;
-import com.e.go4lunch.injection.Injection;
-import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.Result;
-import com.e.go4lunch.models.placeDetail.ResultDetail;
+import com.e.go4lunch.repositories.injection.App;
+import com.e.go4lunch.repositories.injection.Injection;
+import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.util.Constants;
 import com.google.gson.Gson;
 
@@ -42,8 +41,8 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     private RestaurantAdapter mAdapter;
     private List<Restaurant> mRestaurants = new ArrayList<>();
     private RestaurantDetailViewModel mRestaurantDetailViewModel;
-    private ResultDetail mResultDetail;
     private String placeId;
+
 
 
     @Override
@@ -54,7 +53,6 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
         initialization();
         configureViewModel();
-        configureViewModelDetail();
         getListFromPlace();
 
         return view;
@@ -69,6 +67,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
             List<Result> results = myPlace.getResults();
             int size = results.size();
             for (int i = 0; i < size; i++) {
+
                 placeId = results.get(i).getPlaceId();
                 String name = results.get(i).getName();
                 String address = results.get(i).getVicinity();
@@ -86,7 +85,6 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
                 }
 
             }
-
             getListFromFireBase();
 
         });
@@ -140,12 +138,6 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         String lat = App.getInstance().getLat();
         String lng = App.getInstance().getLng();
         mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
-
-    }
-
-    private void configureViewModelDetail() {
-        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
-        this.mRestaurantDetailViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantDetailViewModel.class);
 
     }
 

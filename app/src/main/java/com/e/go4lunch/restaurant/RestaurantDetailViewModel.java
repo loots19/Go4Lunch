@@ -28,7 +28,7 @@ public class RestaurantDetailViewModel extends ViewModel {
 
     }
 
-    public void setInput(String input) {
+    void setInput(String input) {
         place_id.setValue(input);
     }
 

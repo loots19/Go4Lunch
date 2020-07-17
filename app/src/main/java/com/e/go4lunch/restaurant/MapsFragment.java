@@ -1,6 +1,5 @@
 package com.e.go4lunch.restaurant;
 
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -13,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,16 +25,14 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.e.go4lunch.R;
-import com.e.go4lunch.injection.App;
-import com.e.go4lunch.injection.Injection;
-import com.e.go4lunch.injection.ViewModelFactory;
 import com.e.go4lunch.models.Restaurant;
-import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
+import com.e.go4lunch.repositories.injection.App;
+import com.e.go4lunch.repositories.injection.Injection;
+import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.util.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -52,12 +48,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
-import com.google.android.libraries.places.api.model.RectangularBounds;
-import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
@@ -94,13 +84,8 @@ public class MapsFragment extends Fragment implements
     private Marker currentUserLocationMarker;
     private RestaurantViewModel mRestaurantViewModel;
     private List<Restaurant> mRestaurants = new ArrayList<>();
-    private String TAG = "test auto";
     private Double lat;
     private Double lng;
-    private List<Restaurant> restaurantListAutocomplete = new ArrayList<>();
-    private List<String> placeIdList = new ArrayList<>();
-    private String placeId;
-    private Restaurant mRestaurant;
 
 
     // ----------------- Required empty public constructor // -----------------
@@ -130,7 +115,7 @@ public class MapsFragment extends Fragment implements
                 .findFragmentById(R.id.map);
         if (mapFragment == null) {
             FragmentManager fm = getFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
+            FragmentTransaction ft = Objects.requireNonNull(fm).beginTransaction();
             mapFragment = SupportMapFragment.newInstance();
             ft.replace(R.id.map, mapFragment).commit();
         }
@@ -143,27 +128,21 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        switch (requestCode) {
-            case REQUEST_USER_LOCATION_CODE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                            mMap.setMyLocationEnabled(true);
-
-
-                        }
-
+        if (requestCode == REQUEST_USER_LOCATION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    if (mGoogleApiClient == null) {
+                        buildGoogleApiClient();
+                        mMap.setMyLocationEnabled(true);
                     }
-                } else {
-                    Toast.makeText(getActivity(), "Permission denied...", Toast.LENGTH_LONG).show();
                 }
-                break;
+            } else {
+                Toast.makeText(getActivity(), "Permission denied...", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
-    protected synchronized void buildGoogleApiClient() {
+    private synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(Objects.requireNonNull(getActivity()))
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -243,14 +222,12 @@ public class MapsFragment extends Fragment implements
 
             mFab.setOnClickListener(v -> getListOfRestaurantFromPlace());
 
-
         }
         // make event click on marker
         mMap.setOnMarkerClickListener(marker -> {
             lunchDetailActivity(marker);
             return false;
         });
-
 
     }
 
@@ -269,6 +246,7 @@ public class MapsFragment extends Fragment implements
         }
 
     }
+
     // ---------------------
     // Configuring ViewModel
     // ---------------------
@@ -281,89 +259,84 @@ public class MapsFragment extends Fragment implements
 
 
     }
+
     // ---------------------
     // Configuring Observers
     // ---------------------
-    public void getListOfRestaurantFromPlace() {
-        mRestaurantViewModel.getMyPlace().observe(this, new Observer<MyPlace>() {
-            @Override
-            public void onChanged(MyPlace myPlace) {
-                List<Result> results = myPlace.getResults();
-                if (mMap != null) {
-                    mMap.clear();
-                    // This loop will go through all the results and add marker on each location.
-                    for (int i = 0; i < results.size(); i++) {
-                        lat = results.get(i).getGeometry().getLocation().getLat();
-                        lng = results.get(i).getGeometry().getLocation().getLng();
-                        LatLng latLng = new LatLng(lat, lng);
-                        //Position of Marker on Map
-                        MarkerOptions markerOptions = new MarkerOptions();
-                        markerOptions.position(latLng);
-                        markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
-                        // move map camera
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+    private void getListOfRestaurantFromPlace() {
+        mRestaurantViewModel.getMyPlace().observe(this, myPlace -> {
+            List<Result> results = myPlace.getResults();
+            if (mMap != null) {
+                mMap.clear();
+                // This loop will go through all the results and add marker on each location.
+                for (int i = 0; i < results.size(); i++) {
+                    lat = results.get(i).getGeometry().getLocation().getLat();
+                    lng = results.get(i).getGeometry().getLocation().getLng();
+                    LatLng latLng = new LatLng(lat, lng);
+                    //Position of Marker on Map
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(latLng);
+                    markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
+                    // move map camera
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
-                        String placeId = results.get(i).getPlaceId();
-                        String name = results.get(i).getName();
-                        String address = results.get(i).getVicinity();
-                        String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
-                        double rating = results.get(i).getRating();
-                        Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
+                    String placeId = results.get(i).getPlaceId();
+                    String name = results.get(i).getName();
+                    String address = results.get(i).getVicinity();
+                    String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
+                    double rating = results.get(i).getRating();
+                    Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
 
-                        if (results.get(i).getGeometry().getLocation() != null) {
-                            com.e.go4lunch.models.myPlace.Location location = results.get(i).getGeometry().getLocation();
-                            Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
-                            mRestaurants.add(restaurant);
+                    if (results.get(i).getGeometry().getLocation() != null) {
+                        com.e.go4lunch.models.myPlace.Location location = results.get(i).getGeometry().getLocation();
+                        Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
+                        mRestaurants.add(restaurant);
 
 
-                            Marker marker = mMap.addMarker(markerOptions);
-                            Gson gson = new Gson();
-                            String jsonSelectedRestaurant = gson.toJson(mRestaurants.get(i));
-                            marker.setTag(jsonSelectedRestaurant);
-
-                        }
+                        Marker marker = mMap.addMarker(markerOptions);
+                        Gson gson = new Gson();
+                        String jsonSelectedRestaurant = gson.toJson(mRestaurants.get(i));
+                        marker.setTag(jsonSelectedRestaurant);
 
                     }
-                }
-                getListWithWorkmate();
 
+                }
             }
+            getListWithWorkmate();
+
         });
 
     }
 
     private void getListWithWorkmate() {
-        mRestaurantViewModel.getRestaurantList().observe(this, new Observer<List<Restaurant>>() {
-            @Override
-            public void onChanged(List<Restaurant> restaurants) {
-                int size = restaurants.size();
-                for (int i = 0; i < size; i++) {
-                    Restaurant restaurant = restaurants.get(i);
-                    int in = mRestaurants.indexOf(restaurant);
-                    mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    lat = mRestaurants.get(in).getLocation().getLat();
-                    lng = mRestaurants.get(in).getLocation().getLng();
-                    LatLng latLng = new LatLng(lat, lng);
-                    markerOptions.position(latLng);
-                    if (restaurant.getWorkmatesList().size() > 0 && restaurant.getWorkmatesList() != null) {
-                        if (mRestaurants.contains(restaurant)) {
-                            markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector1(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
-                        } else {
-                            markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
-                        }
-
+        mRestaurantViewModel.getRestaurantList().observe(this, restaurants -> {
+            int size = restaurants.size();
+            for (int i = 0; i < size; i++) {
+                Restaurant restaurant = restaurants.get(i);
+                int in = mRestaurants.indexOf(restaurant);
+                mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
+                MarkerOptions markerOptions = new MarkerOptions();
+                lat = mRestaurants.get(in).getLocation().getLat();
+                lng = mRestaurants.get(in).getLocation().getLng();
+                LatLng latLng = new LatLng(lat, lng);
+                markerOptions.position(latLng);
+                if (restaurant.getWorkmatesList().size() > 0 && restaurant.getWorkmatesList() != null) {
+                    if (mRestaurants.contains(restaurant)) {
+                        markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector1(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
                     } else {
                         markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
                     }
-                    mMap.addMarker(markerOptions);
-                }
 
+                } else {
+                    markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
+                }
+                mMap.addMarker(markerOptions);
             }
 
         });
     }
+
     // -----------
     // Draw marker
     // -----------
@@ -397,87 +370,5 @@ public class MapsFragment extends Fragment implements
         intent.putExtra(EXTRA_RESTAURANT, placeId);
         startActivity(intent);
     }
-
-
-    public void autocompleteSearch(String input) {
-        PlacesClient placesClient = Places.createClient(getApplicationContext());
-        AutocompleteSessionToken sessionToken = AutocompleteSessionToken.newInstance();
-
-        double lat = Double.parseDouble(App.getInstance().getLat());
-        double lng = Double.parseDouble(App.getInstance().getLng());
-
-        RectangularBounds bounds = RectangularBounds.newInstance(
-                new LatLng(lat, lng), //dummy lat/lng
-                new LatLng(49.102363, 2.239925));
-
-        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                .setLocationBias(bounds)
-                .setOrigin(new LatLng(lat, lng))
-                .setTypeFilter(TypeFilter.ESTABLISHMENT)
-                .setSessionToken(sessionToken)
-                .setQuery(input)
-                .build();
-
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener(findAutocompletePredictionsResponse ->
-        {
-            int size = findAutocompletePredictionsResponse.getAutocompletePredictions().size();
-            for (int i = 0; i < size; i++) {
-                placeId = findAutocompletePredictionsResponse.getAutocompletePredictions().get(i).getPlaceId();
-                // placeIdList.add(placeId);
-                Log.e("Place found: ", placeId);
-                Restaurant rest = new Restaurant();
-                rest.setPlaceId(placeId);
-
-                if (mRestaurants.contains(rest)) {
-                    int index = mRestaurants.indexOf(rest);
-                    restaurantListAutocomplete.add(mRestaurants.get(index));
-                }
-
-            }
-
-            if (restaurantListAutocomplete.size() > 0) {
-
-                mMap.clear();
-                mRestaurants = restaurantListAutocomplete;
-                setMarker(false);
-
-            }
-
-        });
-    }
-
-    private void setMarker(boolean isAutocomplete) {
-        int size = mRestaurants.size();
-        for (int i = 0; i < size; i++) {
-            Restaurant restaurantTemp = mRestaurants.get(i);
-            LatLng tempLatLng = new LatLng(restaurantTemp.getLocation().getLat(), restaurantTemp.getLocation().getLng());
-            MarkerOptions tempMarker = new MarkerOptions().position(tempLatLng).title(restaurantTemp.getName());
-
-            if (restaurantTemp.getWorkmatesList() != null && restaurantTemp.getWorkmatesList().size() > 0) {
-                tempMarker.icon(MapsFragment.this.bitmapDescriptorFromVector1(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
-            } else {
-                tempMarker.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext(), R.drawable.ic_restaurant_black_24dp));
-            }
-
-            Marker markerFinal = mMap.addMarker(tempMarker);
-            markerFinal.setTag(restaurantTemp.getPlaceId());
-            this.mMap.setOnInfoWindowClickListener(this::lunchDetailActivity);
-        }
-
-        if (!isAutocomplete) {
-            double lat = Double.parseDouble(App.getInstance().getLat());
-            double lng = Double.parseDouble(App.getInstance().getLng());
-            LatLng latLng = new LatLng(lat, lng);
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-
-        } else {
-            LatLng tempLatLng = new LatLng(mRestaurants.get(0).getLocation().getLat(), mRestaurants.get(0).getLocation().getLng());
-            this.mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(tempLatLng, 11));
-        }
-
-
-    }
-
 
 }

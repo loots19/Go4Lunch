@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.Gravity;
 
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.DrawerActions;
@@ -17,12 +18,15 @@ import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.ui.MainActivity;
 
+import junit.framework.AssertionFailedError;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.DrawerMatchers.isClosed;
 import static androidx.test.espresso.matcher.ViewMatchers.hasMinimumChildCount;
@@ -78,7 +82,14 @@ public class ExampleInstrumentedTest {
         onView(withId(R.id.drawer_layout)).check(matches(isClosed(Gravity.LEFT)))
                 .perform(DrawerActions.open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.lunch_drawer));
-        onView(withId(R.id.activity_details)).check(matches(isDisplayed()));
+        try{
+            onView(withText(R.string.tittle_alert_Lunch)).check(matches(isDisplayed()));
+
+        }catch (NoMatchingViewException e) {
+            onView(withId(R.id.activity_details)).check(matches(isDisplayed()));
+
+        }
+
     }
     @Test
     public void click_on_logOut(){

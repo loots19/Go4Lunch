@@ -1,6 +1,5 @@
 package com.e.go4lunch.workmates;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,18 +16,15 @@ import java.util.List;
 public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesHolder> {
 
 
-    private Context mContext;
     private List<Workmates> mWorkmates;
     private OnNoteListener mOnNoteListener;
 
 
-    WorkmatesAdapter(Context context, OnNoteListener onNoteListener) {
-        mContext = context;
+    WorkmatesAdapter(OnNoteListener onNoteListener) {
         this.mOnNoteListener = onNoteListener;
         this.mWorkmates = new ArrayList<>();
 
     }
-
 
     @NonNull
     @Override

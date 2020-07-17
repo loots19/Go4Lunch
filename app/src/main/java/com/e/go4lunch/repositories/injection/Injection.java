@@ -1,4 +1,4 @@
-package com.e.go4lunch.injection;
+package com.e.go4lunch.repositories.injection;
 
 import android.content.Context;
 

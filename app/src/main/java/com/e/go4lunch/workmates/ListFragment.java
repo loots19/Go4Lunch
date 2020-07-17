@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
-import com.e.go4lunch.injection.Injection;
-import com.e.go4lunch.injection.ViewModelFactory;
+import com.e.go4lunch.repositories.injection.Injection;
+import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
 import com.google.gson.Gson;
@@ -77,7 +77,7 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
         mRecyclerView.addItemDecoration(dividerItemDecoration);
-        mWorkmatesAdapter = new WorkmatesAdapter(getContext(), this);
+        mWorkmatesAdapter = new WorkmatesAdapter( this);
         mRecyclerView.setAdapter(mWorkmatesAdapter);
 
     }

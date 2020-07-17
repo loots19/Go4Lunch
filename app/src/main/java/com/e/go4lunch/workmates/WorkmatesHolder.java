@@ -25,7 +25,7 @@ public class WorkmatesHolder extends RecyclerView.ViewHolder implements View.OnC
 
     private WorkmatesAdapter.OnNoteListener OnNoteListener;
 
-    public WorkmatesHolder(@NonNull View itemView, WorkmatesAdapter.OnNoteListener onNoteListener) {
+    WorkmatesHolder(@NonNull View itemView, WorkmatesAdapter.OnNoteListener onNoteListener) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         this.OnNoteListener = onNoteListener;

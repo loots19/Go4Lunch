@@ -29,7 +29,9 @@ public class RestaurantRepository {
     private static RestaurantRepository instance;
     private String restaurantSelected;
 
+    // ----------------------------
     // --- COLLECTION REFERENCE ---
+    // ----------------------------
 
     private CollectionReference getRestaurantCollection() {
         return FirebaseFirestore.getInstance().collection("restaurant");
@@ -89,14 +91,17 @@ public class RestaurantRepository {
         });
         return newData;
     }
+    // --------------
     // --- CREATE ---
+    // --------------
 
     public Task<Void> createRestaurant(String placeId, String name, String address, String urlPhoto, Boolean openNow, Location location, double rating, List<Workmates> workmatesList) {
         Restaurant restaurantToCreate = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating, workmatesList);
         return getRestaurantCollection().document(placeId).set(restaurantToCreate);
     }
-
+    // -----------
     // --- GET ---
+    // -----------
 
     public Task<DocumentSnapshot> getRestaurant(String placeId) {
         return getRestaurantCollection().document(placeId).get();
@@ -106,7 +111,9 @@ public class RestaurantRepository {
         return getRestaurantCollection().orderBy("name");
     }
 
+    // --------------
     // --- UPDATE ---
+    // --------------
 
     public Task<Void> updateRestaurantWorkmateList(String placeId, List<Workmates> workmatesList) {
         return getRestaurantCollection().document(placeId).update("workmatesList", workmatesList);
@@ -116,9 +123,7 @@ public class RestaurantRepository {
         this.restaurantSelected = restaurantUid;
     }
 
-    public String getRestaurantSelected() {
-        return restaurantSelected;
-    }
+
 }
 
 

@@ -26,7 +26,4 @@ public class Event<T> {
         }
     }
 
-    public boolean hasBeenHandled() {
-        return hasBeenHandled;
-    }
 }

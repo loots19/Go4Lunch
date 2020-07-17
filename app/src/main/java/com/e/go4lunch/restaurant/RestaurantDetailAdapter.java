@@ -19,7 +19,7 @@ public class RestaurantDetailAdapter extends RecyclerView.Adapter<RestaurantDeta
     private Context mContext;
     private List<Workmates> mWorkmates;
 
-    public RestaurantDetailAdapter(Context context) {
+    RestaurantDetailAdapter(Context context) {
         mContext = context;
         this.mWorkmates = new ArrayList<>();
     }

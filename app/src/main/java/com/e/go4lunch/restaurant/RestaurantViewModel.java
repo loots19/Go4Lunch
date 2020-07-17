@@ -1,7 +1,5 @@
 package com.e.go4lunch.restaurant;
 
-import android.content.Context;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
@@ -27,8 +25,11 @@ public class RestaurantViewModel extends ViewModel {
     private MutableLiveData<GetPlace> getPlace = new MutableLiveData<>();
     private LiveData<MyPlace> myPlace;
     private MutableLiveData<List<Restaurant>> mRestaurantList = new MutableLiveData<>();
-    private MutableLiveData<Restaurant> mRestaurantMutableLiveData = new MutableLiveData<>();
-    private final MutableLiveData<com.e.go4lunch.util.Event<Object>> openDetailRestaurant = new MutableLiveData<>();
+    private MutableLiveData<Event<Restaurant>> mRestaurantMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Event<Object>> openDetailRestaurant = new MutableLiveData<>();
+    private MutableLiveData<Restaurant> mRestaurantAutoMutableLiveData = new MutableLiveData<>();
+
+
 
 
     public RestaurantViewModel(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
@@ -74,7 +75,6 @@ public class RestaurantViewModel extends ViewModel {
 
     }
 
-
     public LiveData<com.e.go4lunch.util.Event<Object>> getOpenDetailRestaurant() {
         return openDetailRestaurant;
     }
@@ -85,7 +85,7 @@ public class RestaurantViewModel extends ViewModel {
     }
 
 
-    public MutableLiveData<Restaurant> getRestaurant(String placeId) {
+    public MutableLiveData<Event<Restaurant>> getRestaurant(String placeId) {
         if (this.mRestaurantMutableLiveData != null) {
             this.setRestaurantMutableLiveData(placeId);
         }
@@ -96,7 +96,22 @@ public class RestaurantViewModel extends ViewModel {
         this.mRestaurantRepository.getRestaurant(placeId).addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
-                mRestaurantMutableLiveData.setValue(restaurant);
+                mRestaurantMutableLiveData.setValue(new Event<>(restaurant));
+            }
+        });
+    }
+    public MutableLiveData<Restaurant> getRestaurantAutocomplete(String placeId) {
+        if (this.mRestaurantAutoMutableLiveData != null) {
+            this.setRestaurantAutoMutableLiveData(placeId);
+        }
+        return this.mRestaurantAutoMutableLiveData;
+    }
+
+    private void setRestaurantAutoMutableLiveData(String placeId) {
+        this.mRestaurantRepository.getRestaurant(placeId).addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
+                mRestaurantAutoMutableLiveData.setValue(restaurant);
             }
         });
     }
@@ -132,6 +147,7 @@ public class RestaurantViewModel extends ViewModel {
     public void updateRestaurantWorkmateList(String uid, List<Workmates> workmatesList) {
         this.mRestaurantRepository.updateRestaurantWorkmateList(uid, workmatesList);
     }
+
 
 
 }
