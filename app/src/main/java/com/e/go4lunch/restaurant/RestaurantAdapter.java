@@ -10,14 +10,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
+import com.e.go4lunch.models.myPlace.Result;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
     private Context mContext;
     private OnNoteListener mOnNoteListener;
-    private List<Restaurant> mRestaurants;
+    private List<Restaurant> mRestaurants = new ArrayList<>();
 
 
     RestaurantAdapter(Context context, OnNoteListener onNoteListener) {

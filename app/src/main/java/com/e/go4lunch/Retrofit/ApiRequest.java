@@ -18,5 +18,4 @@ public interface ApiRequest {
     Call<PlaceDetail> getDetailsRestaurant(@Query("place_id") String placeId);
 
 
-
 }

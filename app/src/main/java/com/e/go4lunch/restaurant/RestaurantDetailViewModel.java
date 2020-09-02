@@ -5,9 +5,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
 import com.e.go4lunch.repositories.RestaurantRepository;
+import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.util.AbsentLiveData;
+
+import java.util.Objects;
 
 public class RestaurantDetailViewModel extends ViewModel {
 
@@ -35,6 +39,10 @@ public class RestaurantDetailViewModel extends ViewModel {
     public LiveData<PlaceDetail> getPlaceDetail() {
         return placeDetail;
     }
+
+
+
+
 
 }
 

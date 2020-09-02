@@ -11,8 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +25,6 @@ import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.placeDetail.ResultDetail;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
-import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.util.Constants;
 import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -38,7 +38,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DetailsRestaurantActivity extends BaseActivity {
+public class DetailsRestaurantActivity extends AppCompatActivity {
 
     // ----------------- FOR DESIGN -----------------
     @BindView(R.id.tv_name_restaurant_detail_activity)
@@ -132,7 +132,6 @@ public class DetailsRestaurantActivity extends BaseActivity {
             String phone = mResultDetail.getInternationalPhoneNumber();
             Uri uri = Uri.parse("tel:" + phone);
             Intent callIntent = new Intent(Intent.ACTION_CALL, uri);
-
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CODE_CALL);
             } else {
@@ -141,6 +140,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
         } else {
             Toast.makeText(this, getResources().getString(R.string.no_phone), Toast.LENGTH_LONG).show();
         }
+
     }
 
     // -------------------------
@@ -176,7 +176,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
     // ---------------------
     private void configureViewModelDetail() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
-        this.mRestaurantDetailViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantDetailViewModel.class);
+        this.mRestaurantDetailViewModel = new ViewModelProvider(this, mViewModelFactory).get(RestaurantDetailViewModel.class);
         mRestaurantDetailViewModel.setInput(placeId);
 
 
@@ -184,14 +184,14 @@ public class DetailsRestaurantActivity extends BaseActivity {
 
     private void configureViewModelWorkmate() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
-        this.mWorkmateViewModel = ViewModelProviders.of(this, viewModelFactory).get(WorkmateViewModel.class);
+        this.mWorkmateViewModel = new ViewModelProvider(this, viewModelFactory).get(WorkmateViewModel.class);
 
 
     }
 
     private void configureViewModelRestaurant() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
-        this.mRestaurantViewModel = ViewModelProviders.of(this, viewModelFactory).get(RestaurantViewModel.class);
+        this.mRestaurantViewModel = new ViewModelProvider(this, viewModelFactory).get(RestaurantViewModel.class);
 
     }
 
@@ -223,7 +223,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
             mRestaurantListFromFirebase = restaurants;
             if (!mRestaurantListFromFirebase.contains(mRestaurant)) {
                 mWorkmatesList = new ArrayList<>();
-                mRestaurantViewModel.createRestaurant(mRestaurant.getPlaceId(), mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mRestaurant.getOpenNow(), mRestaurant.getLocation(), mRestaurant.getRating(), mWorkmatesList);
+               // mRestaurantViewModel.createRestaurant(mRestaurant.getPlaceId(), mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mRestaurant.getOpenNow(), mRestaurant.getLocation(), mRestaurant.getRating(), mWorkmatesList);
             }
             getCurrentWorkmate();
 
@@ -293,12 +293,9 @@ public class DetailsRestaurantActivity extends BaseActivity {
     // Configuring ChoiceButton FAB
     // ----------------------------
     private void actionOnFab() {
-
         Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
-
         if (currentWorkmate.getRestaurantChosen() == null) {
             this.mfab.setImageResource(R.drawable.ic_check_circle_black_24dp);
-            this.mRestaurantViewModel.createRestaurant(placeId, mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mRestaurant.getOpenNow(), mRestaurant.getLocation(), mRestaurant.getRating(), mWorkmatesList);
             this.mWorkmatesList.add(workmatesChoice);
             this.currentWorkmate.setRestaurantChosen(mRestaurant);
             this.mWorkmateViewModel.updateRestaurantChosen(workmateUid, currentWorkmate.getRestaurantChosen());
@@ -315,9 +312,7 @@ public class DetailsRestaurantActivity extends BaseActivity {
             this.mRestaurantDetailAdapter.notifyDataSetChanged();
             Toast.makeText(this, R.string.you_changed_your_choice, Toast.LENGTH_SHORT).show();
 
-
         }
-
 
     }
 
@@ -363,8 +358,8 @@ public class DetailsRestaurantActivity extends BaseActivity {
     // Update View with data from FireBase
     // -----------------------------------
     private void updateRestaurant(Restaurant restaurant) {
-        String name = String.valueOf(restaurant.getName());
-        String address = String.valueOf(restaurant.getAddress());
+        String name = restaurant.getName();
+        String address = restaurant.getAddress();
         String photo = String.valueOf(restaurant.getUrlPhoto());
         this.mTvNameRestaurant.setText(name);
         this.mTvAddressRestaurant.setText(address);

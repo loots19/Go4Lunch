@@ -8,12 +8,10 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -26,8 +24,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -35,6 +32,7 @@ import com.e.go4lunch.R;
 import com.e.go4lunch.auth.AuthActivity;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
+import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
@@ -53,6 +51,7 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -62,6 +61,7 @@ import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -82,8 +82,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     DrawerLayout mDrawerLayout;
     @BindView(R.id.nav_view)
     NavigationView mNavigationView;
-    @BindView(R.id.toolbar_editText)
-    EditText mEditText;
+
 
     // ----------------- FOR DATA -----------------
     private ImageView mImageViewProfile;
@@ -94,13 +93,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Workmates currentWorkmate;
     private Workmates currentWorkmateName;
     private Restaurant mRestaurant;
-    private Restaurant mRestaurantA;
     private String placeId;
     private ActionBarDrawerToggle mDrawerToggle;
     private static final int SIGN_OUT_TASK = 10;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 11;
     private static final String TAG = "Test PlaceId";
     private Place mPlace;
+    private List<Workmates> mWorkmatesList = new ArrayList<>();
+    private Location mLocation;
+    private PlacesClient mPlacesClient;
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -125,7 +127,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupOpenDetailRestaurant();
         updateUIWhenCreating();
 
-
         // --------------------------------------------------------------------
         // set time for notification and clear everyday the selected restaurant
         // --------------------------------------------------------------------
@@ -141,6 +142,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), Constants.API_KEY);
         }
+
     }
 
 
@@ -170,9 +172,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 return true;
         }
 
-
     }
-
 
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
             item -> {
@@ -182,24 +182,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     case R.id.action_map:
                         selectedFragment = new MapsFragment();
                         this.mToolbar.getMenu().findItem(R.id.search).setVisible(true);
-                        this.mEditText.setVisibility(View.VISIBLE);
                         break;
 
                     case R.id.action_list:
                         selectedFragment = new RestaurantsFragment();
                         this.mToolbar.getMenu().findItem(R.id.search).setVisible(true);
-                        this.mEditText.setVisibility(View.VISIBLE);
                         break;
 
                     case R.id.action_workmates:
                         selectedFragment = new ListFragment();
                         this.mToolbar.getMenu().findItem(R.id.search).setVisible(false);
-                        this.mEditText.setVisibility(View.INVISIBLE);
                         break;
                 }
 
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        selectedFragment).commit();
+                        Objects.requireNonNull(selectedFragment)).commit();
 
                 return true;
             };
@@ -216,6 +213,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onConfigurationChanged(@NotNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+        setContentView(R.layout.fragment_maps);
     }
 
 
@@ -322,7 +320,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public void onSearchCalled() {
         // Set the fields to specify which types of place data to return.
-        List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.ID);
+        List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.ID, Place.Field.RATING, Place.Field.ADDRESS, Place.Field.OPENING_HOURS, Place.Field.PHOTO_METADATAS);
         // Create a RectangularBounds object.
         double lat = Double.parseDouble(App.getInstance().getLat());
         double lng = Double.parseDouble(App.getInstance().getLng());
@@ -347,14 +345,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                mPlace = Autocomplete.getPlaceFromIntent(data);
+                mPlace = Autocomplete.getPlaceFromIntent(Objects.requireNonNull(data));
                 placeId = mPlace.getId();
-                Log.e("testPlace", placeId + " " + mPlace.getName());
-                getRestaurantFromAutocomplete();
+               //String name = mPlace.getName();
+               //double rating = mPlace.getRating();
+               //String address = mPlace.getAddress();
+               //boolean openingHours = Boolean.parseBoolean(String.valueOf(mPlace.getOpeningHours()));
+                //String photo = String.valueOf(mPlace.getPhotoMetadatas());
+               // mRestaurantViewModel.createRestaurant(placeId, name, address, photo, openingHours, mLocation, rating, mWorkmatesList);
+               getRestaurantFromAutocomplete();
+
             }
         }
     }
@@ -393,13 +396,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     // ---------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
-        this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
+        this.mWorkmateViewModel = new ViewModelProvider(this, mViewModelFactory).get(WorkmateViewModel.class);
 
     }
 
     private void configureRestaurantViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
-        this.mRestaurantViewModel = ViewModelProviders.of(this, viewModelFactory).get(RestaurantViewModel.class);
+        this.mRestaurantViewModel = new ViewModelProvider(this, viewModelFactory).get(RestaurantViewModel.class);
 
     }
 
@@ -462,28 +465,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     public void getRestaurantFromAutocomplete() {
-
-        mRestaurantViewModel.getRestaurantAutocomplete(placeId).observe(this, restaurant -> {
+        mRestaurantViewModel.getRestaurant(placeId).observe(this, event -> {
+            Restaurant restaurant = event.getContentIfNotHandled();
             mRestaurant = restaurant;
-            if (mRestaurant != null) {
-                placeId = mPlace.getId();
-                Log.e("testPlace", placeId);
-                mRestaurant.setPlaceId(placeId);
-                Intent intent = new Intent(getApplication(), DetailsRestaurantActivity.class);
-                Gson gson = new Gson();
-                String jsonSelectedRestaurant = gson.toJson(mRestaurant);
-                intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
-
-                startActivity(intent);
-            }
+            showRestaurant();
         });
-
     }
 
+
+
+
     private void showRestaurant() {
-        getRestaurantFromAutocomplete();
-
-
+        if(mRestaurant!= null) {
+            Intent intent = new Intent(this, DetailsRestaurantActivity.class);
+            Gson gson = new Gson();
+            String jsonSelectedRestaurant = gson.toJson(mRestaurant);
+            intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
+            startActivity(intent);
+        }else{
+            alertAutocompleteResult();
+        }
     }
 
 
@@ -514,7 +515,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         builder.show();
     }
 
+    public void alertAutocompleteResult() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.tittle_autocomplete_result);
+        builder.setPositiveButton(R.string.app_name, (dialog, which) -> {
+
+        });
+
+        builder.show();
+    }
 }
+
+
 
 
 

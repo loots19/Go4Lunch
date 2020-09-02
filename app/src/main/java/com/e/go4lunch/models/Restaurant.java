@@ -53,8 +53,6 @@ public class Restaurant {
 
     }
 
-
-
     // ----------------- Getters -----------------
 
     public String getPlaceId() {
@@ -144,11 +142,11 @@ public class Restaurant {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Restaurant restaurant = (Restaurant) o;
-        return Objects.equals(placeId, restaurant.getPlaceId());
+        return Objects.equals(name, restaurant.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getPlaceId());
+        return Objects.hash(this.getName());
     }
 }

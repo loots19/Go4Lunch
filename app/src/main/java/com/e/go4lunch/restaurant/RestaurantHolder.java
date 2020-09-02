@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.e.go4lunch.R;
+import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.util.Constants;
@@ -48,7 +49,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     private RestaurantAdapter.OnNoteListener OnNoteListener;
 
 
-    RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
+    public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnNoteListener onNoteListener) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         this.OnNoteListener = onNoteListener;
@@ -104,7 +105,6 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     // -------------------------
     // set distance of the place
     // -------------------------
-    @SuppressLint("SetTextI18n")
     private void displayDistance(Restaurant restaurant) {
         App globals = (App) getApplicationContext();
         String lat = globals.getLat();
@@ -117,7 +117,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         destination.setLongitude(restaurant.getLocation().getLng());
         double distance = currentLocation.distanceTo(destination);
         double distanceF = distance / 1000;
-        @SuppressLint("DefaultLocale") String rounded = String.format("%.0f", distanceF);
+        String rounded = String.format("%.0f", distanceF);
         mTvMeters.setText(rounded + " KMS");
 
     }

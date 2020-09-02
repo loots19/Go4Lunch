@@ -1,5 +1,7 @@
 package com.e.go4lunch.restaurant;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
@@ -25,11 +27,9 @@ public class RestaurantViewModel extends ViewModel {
     private MutableLiveData<GetPlace> getPlace = new MutableLiveData<>();
     private LiveData<MyPlace> myPlace;
     private MutableLiveData<List<Restaurant>> mRestaurantList = new MutableLiveData<>();
+    MutableLiveData<ArrayList<Restaurant>> mRestaurants;
     private MutableLiveData<Event<Restaurant>> mRestaurantMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Event<Object>> openDetailRestaurant = new MutableLiveData<>();
-    private MutableLiveData<Restaurant> mRestaurantAutoMutableLiveData = new MutableLiveData<>();
-
-
 
 
     public RestaurantViewModel(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
@@ -49,6 +49,7 @@ public class RestaurantViewModel extends ViewModel {
     }
 
     public void setPlace(String type, String location, int radius) {
+        Log.e("testLocation", location + radius);
         GetPlace update = new GetPlace(type, location, radius);
         if (Objects.equals(getPlace.getValue(), update)) {
             return;
@@ -100,54 +101,38 @@ public class RestaurantViewModel extends ViewModel {
             }
         });
     }
-    public MutableLiveData<Restaurant> getRestaurantAutocomplete(String placeId) {
-        if (this.mRestaurantAutoMutableLiveData != null) {
-            this.setRestaurantAutoMutableLiveData(placeId);
-        }
-        return this.mRestaurantAutoMutableLiveData;
-    }
-
-    private void setRestaurantAutoMutableLiveData(String placeId) {
-        this.mRestaurantRepository.getRestaurant(placeId).addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
-                mRestaurantAutoMutableLiveData.setValue(restaurant);
-            }
-        });
-    }
 
 
-    public MutableLiveData<List<Restaurant>> getRestaurantList() {
+  public MutableLiveData<List<Restaurant>> getRestaurantList() {
 
-        if (mRestaurantList != null) {
+      if (mRestaurantList != null) {
 
-            loadRestaurantList();
-        }
-        return mRestaurantList;
-    }
+          loadRestaurantList();
+      }
+      return mRestaurantList;
+  }
 
-    private void loadRestaurantList() {
-        mRestaurantRepository.getRestaurantList().addSnapshotListener((queryDocumentSnapshots, e) -> {
-            if (queryDocumentSnapshots != null) {
-                List<DocumentSnapshot> restaurantList = queryDocumentSnapshots.getDocuments();
-                List<Restaurant> restaurants = new ArrayList<>();
-                int size = restaurantList.size();
-                for (int i = 0; i < size; i++) {
-                    Restaurant restaurant = restaurantList.get(i).toObject(Restaurant.class);
-                    restaurants.add(restaurant);
-                }
-                mRestaurantList.setValue(restaurants);
-            }
-        });
+  private void loadRestaurantList() {
+      mRestaurantRepository.getRestaurantList().addSnapshotListener((queryDocumentSnapshots, e) -> {
+          if (queryDocumentSnapshots != null) {
+              List<DocumentSnapshot> restaurantList = queryDocumentSnapshots.getDocuments();
+              List<Restaurant> restaurants = new ArrayList<>();
+              int size = restaurantList.size();
+              for (int i = 0; i < size; i++) {
+                  Restaurant restaurant = restaurantList.get(i).toObject(Restaurant.class);
+                  restaurants.add(restaurant);
+              }
+              mRestaurantList.setValue(restaurants);
+          }
+      });
 
 
-    }
+  }
 
 
     public void updateRestaurantWorkmateList(String uid, List<Workmates> workmatesList) {
         this.mRestaurantRepository.updateRestaurantWorkmateList(uid, workmatesList);
     }
-
 
 
 }

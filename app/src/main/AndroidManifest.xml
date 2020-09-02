@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
+
         android:name=".repositories.injection.App"
         android:allowBackup="true"
         android:icon="@drawable/lunch"
@@ -21,7 +22,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        android:configChanges="orientation|screenSize|keyboardHidden">
         <activity android:name=".auth.RegisterActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">
 
@@ -34,7 +36,7 @@
 
 
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
+            android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
         <meta-data
             android:name="preloaded_fonts"
@@ -43,6 +45,7 @@
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/title_activity_maps">
+
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -61,6 +64,7 @@
             </intent-filter>
 
         </activity>
+
         <!-- NOTIFICATION SERVICE -->
 
     </application>

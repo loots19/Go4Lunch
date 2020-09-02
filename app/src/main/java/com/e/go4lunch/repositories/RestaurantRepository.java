@@ -1,5 +1,7 @@
 package com.e.go4lunch.repositories;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.e.go4lunch.Retrofit.ApiRequest;
@@ -8,6 +10,7 @@ import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
+import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -17,6 +20,7 @@ import com.google.firebase.firestore.Query;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -27,7 +31,11 @@ public class RestaurantRepository {
 
 
     private static RestaurantRepository instance;
+    private ArrayList<Restaurant> mRestaurants = new ArrayList<>();
     private String restaurantSelected;
+    private List<Workmates> mWorkmatesList = new ArrayList<>();
+    private Location mLocation;
+
 
     // ----------------------------
     // --- COLLECTION REFERENCE ---
@@ -58,8 +66,26 @@ public class RestaurantRepository {
             public void onResponse(@NotNull Call<MyPlace> call, Response<MyPlace> response) {
                 if (response.isSuccessful()) {
                     newData.setValue(response.body());
+                    List<Result> results = response.body().getResults();
+                    int size = results.size();
+                    for (int i = 0; i < size; i++) {
+                        String placeId = response.body().getResults().get(i).getPlaceId();
+                        String name = response.body().getResults().get(i).getName();
+                        String address = response.body().getResults().get(i).getVicinity();
+                        String urlPhoto = String.valueOf(response.body().getResults().get(i).getPhotos());
+                        Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
+                        double rating = response.body().getResults().get(i).getRating();
+                        getRestaurantList();
+
+                        //createRestaurant(placeId, name, address, urlPhoto, openNow, mLocation, rating, mWorkmatesList);
+
+                    }
+
+
                 }
+
             }
+
 
             @Override
             public void onFailure(@NotNull Call<MyPlace> call, Throwable t) {
@@ -78,7 +104,6 @@ public class RestaurantRepository {
             public void onResponse(@NotNull Call<PlaceDetail> call, Response<PlaceDetail> response) {
                 if (response.isSuccessful()) {
                     newData.setValue(response.body());
-
                 }
             }
 
@@ -91,14 +116,17 @@ public class RestaurantRepository {
         });
         return newData;
     }
+
     // --------------
     // --- CREATE ---
     // --------------
 
-    public Task<Void> createRestaurant(String placeId, String name, String address, String urlPhoto, Boolean openNow, Location location, double rating, List<Workmates> workmatesList) {
+    public void createRestaurant(String placeId, String name, String address, String urlPhoto, Boolean openNow, Location location, double rating, List<Workmates> workmatesList) {
         Restaurant restaurantToCreate = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating, workmatesList);
-        return getRestaurantCollection().document(placeId).set(restaurantToCreate);
+        getRestaurantCollection().document(placeId).set(restaurantToCreate);
     }
+
+
     // -----------
     // --- GET ---
     // -----------
@@ -107,16 +135,19 @@ public class RestaurantRepository {
         return getRestaurantCollection().document(placeId).get();
     }
 
+
     public Query getRestaurantList() {
+        Log.e("testsize", String.valueOf(mRestaurants.size()));
         return getRestaurantCollection().orderBy("name");
     }
+
 
     // --------------
     // --- UPDATE ---
     // --------------
 
-    public Task<Void> updateRestaurantWorkmateList(String placeId, List<Workmates> workmatesList) {
-        return getRestaurantCollection().document(placeId).update("workmatesList", workmatesList);
+    public void updateRestaurantWorkmateList(String placeId, List<Workmates> workmatesList) {
+        getRestaurantCollection().document(placeId).update("workmatesList", workmatesList);
     }
 
     public void setRestaurantSelected(String restaurantUid) {
@@ -125,6 +156,11 @@ public class RestaurantRepository {
 
 
 }
+
+
+
+
+
 
 
 

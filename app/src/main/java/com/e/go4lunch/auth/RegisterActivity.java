@@ -10,13 +10,14 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.ui.MainActivity;
 import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,7 +28,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RegisterActivity extends BaseActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     // ----------------- FOR DESIGN -----------------
     @BindView(R.id.et_name_register)
@@ -111,7 +112,7 @@ public class RegisterActivity extends BaseActivity {
     // ----------------- Configuring ViewModel -----------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
-        this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
+        this.mWorkmateViewModel = new ViewModelProvider(this, mViewModelFactory).get(WorkmateViewModel.class);
 
     }
 

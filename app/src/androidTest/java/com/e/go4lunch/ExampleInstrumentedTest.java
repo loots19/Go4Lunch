@@ -46,7 +46,6 @@ import static org.junit.Assert.*;
 public class ExampleInstrumentedTest {
 
 
-
     @Rule
     public ActivityTestRule activityTestRule = new ActivityTestRule<>(MainActivity.class);
 

@@ -23,13 +23,14 @@ public class WorkmateViewModel extends ViewModel {
 
     //---- LIVE DATA ---
     private MutableLiveData<List<Workmates>> mWorkmatesList = new MutableLiveData<>();
-    private MutableLiveData<Event<Workmates>>mWorkmatesMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<Event<Workmates>> mWorkmatesMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<Workmates> mWorkmatesNameMutableLiveData = new MutableLiveData<>();
 
     public WorkmateViewModel(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
         this.mRestaurantRepository = restaurantRepository;
         this.mWorkmatesRepository = workmatesRepository;
     }
+
     // ---------------------------
     // Get workmates from fireBase
     // ---------------------------
@@ -48,8 +49,9 @@ public class WorkmateViewModel extends ViewModel {
             }
         });
     }
+
     // ---------------------------
-    // Get workmates from fireBase
+    // Get workmatesNames from fireBase
     // ---------------------------
     public MutableLiveData<Workmates> getWorkmateNames(String uid) {
         if (this.mWorkmatesNameMutableLiveData != null) {
@@ -66,11 +68,11 @@ public class WorkmateViewModel extends ViewModel {
             }
         });
     }
+
     // -------------------------------------
     // Get a list of Workmates from fireBase
     // -------------------------------------
     public MutableLiveData<List<Workmates>> getWorkmatesList() {
-
         if (mWorkmatesList != null) {
 
             loadWorkmatesList();
@@ -94,18 +96,21 @@ public class WorkmateViewModel extends ViewModel {
 
 
     }
+
     // -----------------------------
     // Create a workmate in fireBase
     // -----------------------------
     public void createWorkmate(String uid, String email, String name, String urlPicture) {
         mWorkmatesRepository.createWorkmates(uid, email, name, urlPicture);
     }
+
     // ---------------------------------------------------------
     // Update in fireBase if workmate have a favorite restaurant
     // ---------------------------------------------------------
     public void updateIsRestaurantFavorite(String uid, List<Restaurant> listRestaurantFavorite) {
         mWorkmatesRepository.updateRestaurantFavorite(uid, listRestaurantFavorite);
     }
+
     // ------------------------------------------------------------
     // Update in fireBase if workmate choose a restaurant for lunch
     // ------------------------------------------------------------
@@ -113,11 +118,10 @@ public class WorkmateViewModel extends ViewModel {
         mWorkmatesRepository.updateRestaurantChosen(uid, restaurantChoosen);
     }
 
-     public void CreateWorkmateFireBase(int requestCode, int resultCode, @Nullable Intent data) {
+    public void CreateWorkmateFireBase(int requestCode, int resultCode, @Nullable Intent data) {
         mWorkmatesRepository.handleResponseAfterSignIn(requestCode, resultCode, data);
 
     }
-
 
 
 }

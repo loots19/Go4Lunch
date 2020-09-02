@@ -6,12 +6,12 @@ import android.util.Log;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.e.go4lunch.R;
+import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
-import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.ui.BaseActivity;
 import com.e.go4lunch.ui.MainActivity;
 import com.e.go4lunch.util.Constants;
@@ -183,7 +183,7 @@ public class AuthActivity extends BaseActivity {
     // ---------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
-        this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
+        this.mWorkmateViewModel = new ViewModelProvider(this, mViewModelFactory).get(WorkmateViewModel.class);
 
     }
     // ---------------------

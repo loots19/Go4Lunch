@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,11 +17,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.myPlace.Location;
+import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.util.Constants;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -40,8 +43,9 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     private RestaurantViewModel mRestaurantViewModel;
     private RestaurantAdapter mAdapter;
     private List<Restaurant> mRestaurants = new ArrayList<>();
-    private RestaurantDetailViewModel mRestaurantDetailViewModel;
-    private String placeId;
+    private String placeId, urlPhoto;
+    private Double rating;
+
 
 
 
@@ -55,6 +59,8 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         configureViewModel();
         getListFromPlace();
 
+
+
         return view;
 
     }
@@ -63,60 +69,70 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     // Configuring Observers
     // ---------------------
     private void getListFromPlace() {
-        mRestaurantViewModel.getMyPlace().observe(this, myPlace -> {
-            List<Result> results = myPlace.getResults();
-            int size = results.size();
-            for (int i = 0; i < size; i++) {
-
-                placeId = results.get(i).getPlaceId();
-                String name = results.get(i).getName();
-                String address = results.get(i).getVicinity();
-                String urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
-                double rating = results.get(i).getRating();
-                Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
-                if (results.get(i).getGeometry().getLocation() != null) {
-                    Location location = results.get(i).getGeometry().getLocation();
-
-                    Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
-                    mRestaurants.add(restaurant);
-                    mAdapter.setRestaurants(mRestaurants);
-                    mAdapter.notifyDataSetChanged();
-
-                }
-
-            }
-            getListFromFireBase();
-
-        });
-
-    }
-
-
-    private void getListFromFireBase() {
-        mRestaurantViewModel.getRestaurantList().observe(this, restaurants -> {
-            int size = restaurants.size();
-            for (int i = 0; i < size; i++) {
-                Restaurant restaurant = restaurants.get(i);
-                if (mRestaurants.contains(restaurant)) {
-                    int in = mRestaurants.indexOf(restaurant);
-                    mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
-                    mAdapter.setRestaurants(mRestaurants);
-                    mAdapter.notifyDataSetChanged();
-                } else {
-                    if (restaurant.getWorkmatesList().size() > 0 && restaurant.getWorkmatesList() != null) {
+        mRestaurantViewModel.getMyPlace().observe(getViewLifecycleOwner(), new Observer<MyPlace>() {
+            @Override
+            public void onChanged(MyPlace myPlace) {
+                List<Result> results = myPlace.getResults();
+                int size = results.size();
+                for (int i = 0; i < size; i++) {
+                    placeId = results.get(i).getPlaceId();
+                    String name = results.get(i).getName();
+                    String address = results.get(i).getVicinity();
+                    if (results.get(i).getPhotos() != null) {
+                        urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
+                    }
+                    if (results.get(i).getRating() != null) {
+                        rating = results.get(i).getRating();
+                    }
+                    Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
+                    if (results.get(i).getGeometry().getLocation() != null) {
+                        Location location = results.get(i).getGeometry().getLocation();
+                        Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
+                        mRestaurants.add(restaurant);
                         mAdapter.setRestaurants(mRestaurants);
                         mAdapter.notifyDataSetChanged();
+
                     }
 
-
                 }
+                getListFromFireBase();
+
 
             }
         });
+
     }
 
+  private void getListFromFireBase() {
+      mRestaurantViewModel.getRestaurantList().observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
+          @Override
+          public void onChanged(List<Restaurant> restaurants) {
+              int size = restaurants.size();
+           for (int i = 0; i < size; i++) {
+               Restaurant restaurant = restaurants.get(i);
+               if (mRestaurants.contains(restaurant)) {
+                   int in = mRestaurants.indexOf(restaurant);
+                   mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
+                   mAdapter.setRestaurants(mRestaurants);
+                   mAdapter.notifyDataSetChanged();
+               } else {
+                   if (restaurant.getWorkmatesList().size() > 0 && restaurant.getWorkmatesList() != null) {
+                       mAdapter.setRestaurants(mRestaurants);
+                       mAdapter.notifyDataSetChanged();
+                   }
 
+
+               }
+
+           }
+          }
+      });
+  }
+
+    // ------------------------------------------------------------
     // ----------------- Configuring RecyclerView -----------------
+    // ------------------------------------------------------------
+
     private void initialization() {
         mRecyclerViewRestaurant.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
@@ -126,7 +142,6 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         mAdapter = new RestaurantAdapter(this.getActivity(), this);
         mRecyclerViewRestaurant.setAdapter(mAdapter);
 
-
     }
 
     // ---------------------
@@ -134,10 +149,11 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     // ---------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
-        this.mRestaurantViewModel = ViewModelProviders.of(this, mViewModelFactory).get(RestaurantViewModel.class);
+        this.mRestaurantViewModel = new ViewModelProvider(this, mViewModelFactory).get(RestaurantViewModel.class);
         String lat = App.getInstance().getLat();
         String lng = App.getInstance().getLng();
         mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
+
 
     }
 
@@ -155,5 +171,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
 
     }
+
+
 
 }

@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,7 +56,7 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
     // ---------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
-        this.mWorkmateViewModel = ViewModelProviders.of(this, mViewModelFactory).get(WorkmateViewModel.class);
+        this.mWorkmateViewModel = new ViewModelProvider(this, mViewModelFactory).get(WorkmateViewModel.class);
 
     }
 
@@ -65,7 +65,7 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
     // Configuring Observers
     // ---------------------
     private void getWorkmateList() {
-        mWorkmateViewModel.getWorkmatesList().observe(this, workmates -> {
+        mWorkmateViewModel.getWorkmatesList().observe(getViewLifecycleOwner(), workmates -> {
             mWorkmatesList = workmates;
             mWorkmatesAdapter.setWorkmates(workmates);
         });

@@ -66,11 +66,13 @@
 
     <!-- HOLDER WORKMATESDETAIL -->
     <string name="is_joining">se joint</string>
+    <string name="no_choice">n\'as pas encore fait son choix</string>
 
     <!-- ALERT DIALOG -->
     <string name="no">Non</string>
     <string name="titlle_alert">Etes vous sur de vouloir vous déconnecter</string>
     <string name="yes">Oui</string>
     <string name="tittle_alert_Lunch">Vous n\'avez pas encore fait votre choix</string>
+    <string name="tittle_autocomplete_result">ce restaurant est en dehors de la zone de recherche</string>
 
 </resources>

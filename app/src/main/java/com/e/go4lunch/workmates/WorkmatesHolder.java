@@ -1,5 +1,6 @@
 package com.e.go4lunch.workmates;
 
+import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,10 +57,11 @@ public class WorkmatesHolder extends RecyclerView.ViewHolder implements View.OnC
             String name = workmates.getRestaurantChosen().getName();
             String text = (workmates.getWorkmateName() + " " + itemView.getContext().getResources().getString(R.string.is_eating) + " " + name);
             mTextView.setText(text);
+            mTextView.setTextColor(Color.parseColor("#0A0A0A"));
         } else {
-            mTextView.setText(workmates.getWorkmateName());
+            String text1 = (workmates.getWorkmateName() + " " + itemView.getContext().getResources().getString(R.string.no_choice));
+            mTextView.setText(text1);
         }
-
 
     }
 

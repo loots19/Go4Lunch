@@ -71,6 +71,7 @@
 
     <!-- HOLDER WORKMATES -->
     <string name="is_eating">is eating at:</string>
+    <string name="no_choice">hasn\'t decided yet</string>
 
     <!-- AUTOCOMPLETE -->
     <string name="autocomplete_hint">"Restaurant"</string>
@@ -83,6 +84,7 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="tittle_alert_Lunch">You haven\'t made your choice yet</string>
+    <string name="tittle_autocomplete_result">this restaurant is outside the search area</string>
 
 
 

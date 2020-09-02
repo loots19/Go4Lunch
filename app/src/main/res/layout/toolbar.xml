@@ -9,16 +9,6 @@
     app:title="I'm hungry!"
     app:titleTextColor="@android:color/white"
    >
-    <EditText
-        android:id="@+id/toolbar_editText"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="48dp"
-        android:autofillHints="TXT"
-        android:hint="@string/autocomplete_hint"
-        android:labelFor="@id/toolbar"
-        android:inputType="textNoSuggestions"
-        tools:ignore="UnusedAttribute" />
 
 
 </androidx.appcompat.widget.Toolbar>
