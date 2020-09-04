@@ -21,14 +21,16 @@
             android:src="@drawable/lunch"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             tools:ignore="ContentDescription" />
 
         <ImageView
             android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/auth_iv_layout_width"
+            android:layout_height="@dimen/auth_iv_layout_height"
             android:layout_marginTop="@dimen/image_view_3_auth_margin_top"
             android:background="@drawable/ic_hot_food_in_a_bowl"
             app:layout_constraintEnd_toEndOf="parent"

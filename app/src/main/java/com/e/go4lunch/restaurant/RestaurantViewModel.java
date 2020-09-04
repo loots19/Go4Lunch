@@ -1,5 +1,6 @@
 package com.e.go4lunch.restaurant;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -20,6 +21,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class RestaurantViewModel extends ViewModel {
     private RestaurantRepository mRestaurantRepository;
@@ -133,6 +135,7 @@ public class RestaurantViewModel extends ViewModel {
     public void updateRestaurantWorkmateList(String uid, List<Workmates> workmatesList) {
         this.mRestaurantRepository.updateRestaurantWorkmateList(uid, workmatesList);
     }
+
 
 
 }

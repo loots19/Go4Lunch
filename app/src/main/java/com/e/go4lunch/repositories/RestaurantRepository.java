@@ -2,6 +2,8 @@ package com.e.go4lunch.repositories;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.e.go4lunch.Retrofit.ApiRequest;
@@ -12,11 +14,13 @@ import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -46,6 +50,7 @@ public class RestaurantRepository {
     }
 
 
+
     public static RestaurantRepository getInstance() {
         if (instance == null) {
             instance = new RestaurantRepository();
@@ -66,6 +71,7 @@ public class RestaurantRepository {
             public void onResponse(@NotNull Call<MyPlace> call, Response<MyPlace> response) {
                 if (response.isSuccessful()) {
                     newData.setValue(response.body());
+                    assert response.body() != null;
                     List<Result> results = response.body().getResults();
                     int size = results.size();
                     for (int i = 0; i < size; i++) {
@@ -75,12 +81,9 @@ public class RestaurantRepository {
                         String urlPhoto = String.valueOf(response.body().getResults().get(i).getPhotos());
                         Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
                         double rating = response.body().getResults().get(i).getRating();
-                        getRestaurantList();
-
                         //createRestaurant(placeId, name, address, urlPhoto, openNow, mLocation, rating, mWorkmatesList);
 
                     }
-
 
                 }
 
@@ -137,7 +140,6 @@ public class RestaurantRepository {
 
 
     public Query getRestaurantList() {
-        Log.e("testsize", String.valueOf(mRestaurants.size()));
         return getRestaurantCollection().orderBy("name");
     }
 
@@ -153,6 +155,7 @@ public class RestaurantRepository {
     public void setRestaurantSelected(String restaurantUid) {
         this.restaurantSelected = restaurantUid;
     }
+
 
 
 }

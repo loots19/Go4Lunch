@@ -3,6 +3,7 @@ package com.e.go4lunch.restaurant;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
+import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.myPlace.Result;
@@ -43,6 +45,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     private RestaurantViewModel mRestaurantViewModel;
     private RestaurantAdapter mAdapter;
     private List<Restaurant> mRestaurants = new ArrayList<>();
+    private List<Workmates> mWorkmatesList = new ArrayList<>();
     private String placeId, urlPhoto;
     private Double rating;
 
@@ -58,6 +61,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         initialization();
         configureViewModel();
         getListFromPlace();
+
 
 
 
@@ -91,6 +95,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
                         mRestaurants.add(restaurant);
                         mAdapter.setRestaurants(mRestaurants);
                         mAdapter.notifyDataSetChanged();
+                       // mRestaurantViewModel.createRestaurant(placeId, name, address, urlPhoto, openNow, location, rating,mWorkmatesList);
 
                     }
 
@@ -128,6 +133,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
           }
       });
   }
+
 
     // ------------------------------------------------------------
     // ----------------- Configuring RecyclerView -----------------

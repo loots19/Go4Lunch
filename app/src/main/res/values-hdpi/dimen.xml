@@ -5,14 +5,14 @@
     <dimen name="default_tittle_sentence_first_screen">12sp</dimen>
 
     <!-- DETAILS ACTIVITY -->
-    <dimen name="detail_activity_height_image_view">270dp</dimen>
-    <dimen name="detail_activity_margin_top_fab">130dp</dimen>
+    <dimen name="detail_activity_height_image_view">200dp</dimen>
+    <dimen name="detail_activity_margin_top_fab">60dp</dimen>
     <dimen name="detail_activity_margin_end_fab">16dp</dimen>
     <dimen name="detail_activity_height_linearLayout">80dp</dimen>
     <dimen name="detail_activity_margin_start">10dp</dimen>
     <dimen name="detail_activity_margin_bottom">40dp</dimen>
     <dimen name="detail_activity_margin_top_linearLayout">20dp</dimen>
-    <dimen name="detail_activity_margin_end_button">50dp</dimen>
+    <dimen name="detail_activity_margin_end_button">30dp</dimen>
     <dimen name="detail_activity_height_frameLayout">250dp</dimen>
     <dimen name="detail_activity_height_RecyclerView">250dp</dimen>
     <dimen name="detail_activity_height_view">1dp</dimen>
@@ -22,48 +22,46 @@
 
     <!-- REGISTER ACTIVITY -->
     <dimen name="TV_tittle_text_size">50sp</dimen>
-    <dimen name="margin_top">50dp</dimen>
+    <dimen name="margin_top">30dp</dimen>
     <dimen name="padding">10dp</dimen>
     <dimen name="TV_sentence_margin_top_">10dp</dimen>
     <dimen name="TV_sentence_text_size">15sp</dimen>
-    <dimen name="ET_text_size">20sp</dimen>
+    <dimen name="ET_text_size">18sp</dimen>
     <dimen name="ET_margin_top">20dp</dimen>
-    <dimen name="layout_width">395dp</dimen>
-    <dimen name="button_margin_top">130dp</dimen>
-    <dimen name="button_margin_bottom">50dp</dimen>
+    <dimen name="layout_width">295dp</dimen>
+    <dimen name="button_margin_top">110dp</dimen>
+    <dimen name="button_margin_bottom">60dp</dimen>
 
     <!-- AUTH ACTIVITY -->
     <dimen name="image_view_auth_layout_height">0dp</dimen>
-    <dimen name="image_view_3_auth_margin_top">10dp</dimen>
-    <dimen name="text_view_auth_layout_height">85dp</dimen>
+    <dimen name="image_view_3_auth_margin_top">0dp</dimen>
+    <dimen name="text_view_auth_layout_height">65dp</dimen>
     <dimen name="auth_button_margin_start">32dp</dimen>
     <dimen name="auth_button_margin_end">32dp</dimen>
-    <dimen name="auth_button_margin_top">22dp</dimen>
+    <dimen name="auth_button_margin_top">12dp</dimen>
     <dimen name="auth_button_icon_size">30dp</dimen>
     <dimen name="auth_button_corner_radius">10dp</dimen>
-    <dimen name="auth_iv_layout_width">210dp</dimen>
-    <dimen name="auth_iv_layout_height">180dp</dimen>
 
     <!-- ITEM RESTAURANT -->
     <dimen name="item_constraint_layout_margin">5dp</dimen>
-    <dimen name="text_view_layout_width">240dp</dimen>
-    <dimen name="text_view_name_margin_bottom">80dp</dimen>
-    <dimen name="text_view_name_text_size">16sp</dimen>
-    <dimen name="image_view_photo">100dp</dimen>
-    <dimen name="text_view_meter_margin_bottom">80dp</dimen>
+    <dimen name="text_view_layout_width">180dp</dimen>
+    <dimen name="text_view_name_margin_bottom">70dp</dimen>
+    <dimen name="text_view_name_text_size">14sp</dimen>
+    <dimen name="image_view_photo">80dp</dimen>
+    <dimen name="text_view_meter_margin_bottom">70dp</dimen>
     <dimen name="text_view_meter_margin_end">10dp</dimen>
-    <dimen name="text_view_meter_text_size">16sp</dimen>
-    <dimen name="text_view_margin_bottom">10dp</dimen>
-    <dimen name="text_view_time_margin_top">75dp</dimen>
+    <dimen name="text_view_meter_text_size">12sp</dimen>
+    <dimen name="text_view_margin_bottom">7dp</dimen>
+    <dimen name="text_view_time_margin_top">65dp</dimen>
     <dimen name="text_view_numbers_margin">10dp</dimen>
     <dimen name="text_view_numbers_layout_width">24dp</dimen>
     <dimen name="text_view_numbers_layout_height">24dp</dimen>
-    <dimen name="rating_bar_margin_top">70dp</dimen>
-    <dimen name="rating_bar_margin_end">80dp</dimen>
+    <dimen name="rating_bar_margin_top">60dp</dimen>
+    <dimen name="rating_bar_margin_end">60dp</dimen>
 
     <!-- FRAGMENT MAP -->
     <dimen name="fab_margin_end">10dp</dimen>
-    <dimen name="fab_margin_bottom">70dp</dimen>
+    <dimen name="fab_margin_bottom">30dp</dimen>
 
     <!-- HEADER LAYOUT -->
     <dimen name="header_constraint_layout_layout_height">210dp</dimen>
@@ -76,21 +74,7 @@
     <dimen name="item_constraint_layout_image">50dp</dimen>
     <dimen name="item_margin_start_image">16dp</dimen>
     <dimen name="item_margin_image">10dp</dimen>
-    <dimen name="item_constraint_layout_text_view">300dp</dimen>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <dimen name="item_constraint_layout_text_view">200dp</dimen>
 
 
 
