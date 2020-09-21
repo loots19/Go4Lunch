@@ -3,7 +3,6 @@ package com.e.go4lunch.restaurant;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
-import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
-import com.e.go4lunch.models.myPlace.Result;
 import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.util.Constants;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -35,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class RestaurantsFragment extends Fragment implements RestaurantAdapter.OnNoteListener {
+public class RestaurantsFragment extends Fragment implements RestaurantAdapter.OnItemListener {
 
     // ----------------- FOR DESIGN -----------------
     @BindView(R.id.recycler_view_restaurant)
@@ -44,11 +40,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     // ----------------- FOR DATA -----------------
     private RestaurantViewModel mRestaurantViewModel;
     private RestaurantAdapter mAdapter;
-    private List<Restaurant> mRestaurants = new ArrayList<>();
-    private List<Workmates> mWorkmatesList = new ArrayList<>();
-    private String placeId, urlPhoto;
-    private Double rating;
-
+    private List<Restaurant> mRestaurantList = new ArrayList<>();
 
 
 
@@ -59,11 +51,9 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         ButterKnife.bind(this, view);
 
         initialization();
-        configureViewModel();
+        configureViewModel() ;
         getListFromPlace();
-
-
-
+        getRestaurantList();
 
         return view;
 
@@ -76,63 +66,23 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         mRestaurantViewModel.getMyPlace().observe(getViewLifecycleOwner(), new Observer<MyPlace>() {
             @Override
             public void onChanged(MyPlace myPlace) {
-                List<Result> results = myPlace.getResults();
-                int size = results.size();
-                for (int i = 0; i < size; i++) {
-                    placeId = results.get(i).getPlaceId();
-                    String name = results.get(i).getName();
-                    String address = results.get(i).getVicinity();
-                    if (results.get(i).getPhotos() != null) {
-                        urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
-                    }
-                    if (results.get(i).getRating() != null) {
-                        rating = results.get(i).getRating();
-                    }
-                    Boolean openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
-                    if (results.get(i).getGeometry().getLocation() != null) {
-                        Location location = results.get(i).getGeometry().getLocation();
-                        Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
-                        mRestaurants.add(restaurant);
-                        mAdapter.setRestaurants(mRestaurants);
-                        mAdapter.notifyDataSetChanged();
-                       // mRestaurantViewModel.createRestaurant(placeId, name, address, urlPhoto, openNow, location, rating,mWorkmatesList);
-
-                    }
-
-                }
-                getListFromFireBase();
-
 
             }
         });
 
     }
 
-  private void getListFromFireBase() {
-      mRestaurantViewModel.getRestaurantList().observe(getViewLifecycleOwner(), new Observer<List<Restaurant>>() {
-          @Override
-          public void onChanged(List<Restaurant> restaurants) {
-              int size = restaurants.size();
-           for (int i = 0; i < size; i++) {
-               Restaurant restaurant = restaurants.get(i);
-               if (mRestaurants.contains(restaurant)) {
-                   int in = mRestaurants.indexOf(restaurant);
-                   mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
-                   mAdapter.setRestaurants(mRestaurants);
-                   mAdapter.notifyDataSetChanged();
-               } else {
-                   if (restaurant.getWorkmatesList().size() > 0 && restaurant.getWorkmatesList() != null) {
-                       mAdapter.setRestaurants(mRestaurants);
-                       mAdapter.notifyDataSetChanged();
-                   }
+    private void getRestaurantList() {
+        mRestaurantViewModel.getRestaurantList().observe(getViewLifecycleOwner(), restaurants -> {
+            if (restaurants != null) {
+                mRestaurantList = restaurants;
+                mAdapter.setRestaurants(mRestaurantList);
+                mAdapter.notifyDataSetChanged();
 
+            }
 
-               }
-
-           }
-          }
-      });
-  }
+        });
+    }
 
 
     // ------------------------------------------------------------
@@ -156,18 +106,16 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
         this.mRestaurantViewModel = new ViewModelProvider(this, mViewModelFactory).get(RestaurantViewModel.class);
-        String lat = App.getInstance().getLat();
-        String lng = App.getInstance().getLng();
-        mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
-
-
+       String lat = App.getInstance().getLat();
+       String lng = App.getInstance().getLng();
+       mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
     }
 
     // ---------------------------------------------------
     // display detail activity when the user click on item
     // ---------------------------------------------------
     @Override
-    public void onNoteClick(int position) {
+    public void onItemClick(int position) {
         Context context = getActivity();
         Intent intent = new Intent(context, DetailsRestaurantActivity.class);
         Gson gson = new Gson();
@@ -177,7 +125,6 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
 
     }
-
 
 
 }

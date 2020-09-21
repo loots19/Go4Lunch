@@ -37,9 +37,10 @@
 
     <!--FRAGMENT HOLDER-->
     <string name="Close">fermé</string>
-    <string name="Open">ouvert</string>
+    <string name="Open">Ouvert</string>
     <string name="opening_hour_not_available">Horaire indisponible</string>
     <string name="list_unit_distance">%1$sm</string>
+    <string name="OpenNow">Ouvert</string>
 
     <!-- NOTIFICATION WORKMANAGER -->
     <string name="notification_message">Vous avez un déjeuné plannifié à:</string>

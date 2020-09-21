@@ -18,13 +18,13 @@ import java.util.List;
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
     private Context mContext;
-    private OnNoteListener mOnNoteListener;
+    private OnItemListener mOnItemListener;
     private List<Restaurant> mRestaurants = new ArrayList<>();
 
 
-    RestaurantAdapter(Context context, OnNoteListener onNoteListener) {
+    RestaurantAdapter(Context context, OnItemListener onItemListener) {
         this.mContext = context;
-        this.mOnNoteListener = onNoteListener;
+        this.mOnItemListener = onItemListener;
 
     }
 
@@ -32,7 +32,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     @Override
     public RestaurantHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item_restaurant, parent, false);
-        return new RestaurantHolder(view, mOnNoteListener);
+        return new RestaurantHolder(view, mOnItemListener);
     }
 
     @Override
@@ -49,8 +49,8 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
         return 0;
     }
 
-    public interface OnNoteListener {
-        void onNoteClick(int position);
+    public interface OnItemListener {
+        void onItemClick(int position);
     }
 
     void setRestaurants(List<Restaurant> restaurant) {

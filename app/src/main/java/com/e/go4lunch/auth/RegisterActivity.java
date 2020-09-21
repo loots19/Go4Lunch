@@ -118,7 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     // ----------------- Configuring Observers -----------------
     private void subscribeObservers() {
-        mWorkmateViewModel.getWorkmatesList().observe(this, workmates -> {
+        mWorkmateViewModel.getAllWorkmates().observe(this, workmates -> {
             mWorkmatesList = workmates;
             checkWorkmateExist();
         });

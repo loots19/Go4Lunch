@@ -19,7 +19,9 @@ public class RestaurantDetailViewModel extends ViewModel {
     private MutableLiveData<String> place_id = new MutableLiveData<>();
     private LiveData<PlaceDetail> placeDetail;
 
-
+    // -----------------------------
+    // --- GET PLACE DETAIL ---
+    // -----------------------------
     public RestaurantDetailViewModel(RestaurantRepository repository) {
         this.mRestaurantRepository = repository;
         placeDetail = Transformations.switchMap(place_id, input -> {

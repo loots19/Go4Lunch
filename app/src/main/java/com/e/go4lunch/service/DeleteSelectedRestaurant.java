@@ -10,6 +10,7 @@ import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
+import com.e.go4lunch.util.Event;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class DeleteSelectedRestaurant extends Worker {
 
     private void getCurrentWorkmate() {
         workmateUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        this.mWorkmatesRepository.getWorkmate(workmateUid).addOnSuccessListener(documentSnapshot -> {
+        this.mWorkmatesRepository.getWorkmate1(workmateUid).addOnSuccessListener(documentSnapshot -> {
             currentWorkmate = documentSnapshot.toObject(Workmates.class);
             if (Objects.requireNonNull(currentWorkmate).getRestaurantChosen() != null) {
                 getRestaurant(currentWorkmate.getRestaurantChosen().getPlaceId());
@@ -45,13 +46,13 @@ public class DeleteSelectedRestaurant extends Worker {
     }
 
     private void getRestaurant(String placeId) {
-        this.mRestaurantRepository.getRestaurant(placeId).addOnSuccessListener(documentSnapshot -> {
+        this.mRestaurantRepository.getRestaurant1(placeId).addOnSuccessListener(documentSnapshot -> {
             mRestaurant = documentSnapshot.toObject(Restaurant.class);
             deleteTask();
 
-
         });
     }
+
 
     @NonNull
     @Override
@@ -65,9 +66,12 @@ public class DeleteSelectedRestaurant extends Worker {
         if (this.currentWorkmate.getRestaurantChosen() != null) {
             if (currentWorkmate.getRestaurantChosen().equals(mRestaurant))
                 this.mWorkmatesList.remove(workmatesChoice);
+
             this.mRestaurantRepository.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
             this.currentWorkmate.setRestaurantChosen(null);
             this.mWorkmatesRepository.updateRestaurantChosen(workmateUid, currentWorkmate.getRestaurantChosen());
+
+
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.e.go4lunch.restaurant;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -10,30 +9,28 @@ import androidx.lifecycle.ViewModel;
 
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.models.myPlace.MyPlace;
+import com.e.go4lunch.models.placeDetail.Location;
+import com.e.go4lunch.models.placeDetail.OpeningHours;
+import com.e.go4lunch.models.placeDetail.Period;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.util.AbsentLiveData;
 import com.e.go4lunch.util.Event;
-import com.google.firebase.firestore.DocumentSnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 public class RestaurantViewModel extends ViewModel {
     private RestaurantRepository mRestaurantRepository;
     private WorkmatesRepository mWorkmatesRepository;
     private MutableLiveData<GetPlace> getPlace = new MutableLiveData<>();
     private LiveData<MyPlace> myPlace;
-    private MutableLiveData<List<Restaurant>> mRestaurantList = new MutableLiveData<>();
-    MutableLiveData<ArrayList<Restaurant>> mRestaurants;
-    private MutableLiveData<Event<Restaurant>> mRestaurantMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Event<Object>> openDetailRestaurant = new MutableLiveData<>();
 
-
+    // -----------------------------
+    // --- GET PLACE FROM NEARBY ---
+    // -----------------------------
     public RestaurantViewModel(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
         this.mRestaurantRepository = restaurantRepository;
         this.mWorkmatesRepository = workmatesRepository;
@@ -78,64 +75,35 @@ public class RestaurantViewModel extends ViewModel {
 
     }
 
-    public LiveData<com.e.go4lunch.util.Event<Object>> getOpenDetailRestaurant() {
+    public LiveData<Event<Object>> getOpenDetailRestaurant() {
         return openDetailRestaurant;
     }
 
 
-    public void createRestaurant(String placeId, String name, String address, String urlPhoto, Boolean openNow, Location location, double rating, List<Workmates> workmatesList) {
-        this.mRestaurantRepository.createRestaurant(placeId, name, address, urlPhoto, openNow, location, rating, workmatesList);
+    public void createRestaurant(String placeId, String name, String address, String urlPhoto, List<String> openHours,boolean openNow, Location location, double rating, String webSite, String phoneNumbers, List<Workmates> workmatesList) {
+        this.mRestaurantRepository.createRestaurant(placeId, name, address, urlPhoto, openHours,openNow, location, rating,webSite,phoneNumbers, workmatesList);
     }
 
 
-    public MutableLiveData<Event<Restaurant>> getRestaurant(String placeId) {
-        if (this.mRestaurantMutableLiveData != null) {
-            this.setRestaurantMutableLiveData(placeId);
-        }
-        return this.mRestaurantMutableLiveData;
+
+    // -----------
+    // --- GET ---
+    // -----------
+    public LiveData<Event<Restaurant>> getRestaurant(String placeId) {
+        return mRestaurantRepository.getRestaurant(placeId);
     }
 
-    private void setRestaurantMutableLiveData(String placeId) {
-        this.mRestaurantRepository.getRestaurant(placeId).addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
-                mRestaurantMutableLiveData.setValue(new Event<>(restaurant));
-            }
-        });
+    public LiveData<List<Restaurant>> getRestaurantList() {
+        return mRestaurantRepository.getRestaurantList();
+
     }
 
-
-  public MutableLiveData<List<Restaurant>> getRestaurantList() {
-
-      if (mRestaurantList != null) {
-
-          loadRestaurantList();
-      }
-      return mRestaurantList;
-  }
-
-  private void loadRestaurantList() {
-      mRestaurantRepository.getRestaurantList().addSnapshotListener((queryDocumentSnapshots, e) -> {
-          if (queryDocumentSnapshots != null) {
-              List<DocumentSnapshot> restaurantList = queryDocumentSnapshots.getDocuments();
-              List<Restaurant> restaurants = new ArrayList<>();
-              int size = restaurantList.size();
-              for (int i = 0; i < size; i++) {
-                  Restaurant restaurant = restaurantList.get(i).toObject(Restaurant.class);
-                  restaurants.add(restaurant);
-              }
-              mRestaurantList.setValue(restaurants);
-          }
-      });
-
-
-  }
-
-
+    // --------------
+    // --- UPDATE ---
+    // --------------
     public void updateRestaurantWorkmateList(String uid, List<Workmates> workmatesList) {
         this.mRestaurantRepository.updateRestaurantWorkmateList(uid, workmatesList);
     }
-
 
 
 }

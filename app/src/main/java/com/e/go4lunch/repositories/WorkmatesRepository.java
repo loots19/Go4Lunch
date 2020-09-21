@@ -4,22 +4,26 @@ import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.MutableLiveData;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.auth.AuthActivity;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
+import com.e.go4lunch.util.Event;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,8 +33,8 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class WorkmatesRepository {
 
     private static final String COLLECTION_NAME = "workmates";
-    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private Workmates mWorkmates;
+
 
     // ----------------------------
     // --- COLLECTION REFERENCE ---
@@ -48,40 +52,11 @@ public class WorkmatesRepository {
         return getWorkmatesCollection().document(uid).set(workmatesToCreate);
 
     }
-    // --------------
-    // --- GET ---
-    // --------------
-
-    public Task<DocumentSnapshot> getWorkmate(String uid) {
-        return getWorkmatesCollection().document(uid).get();
-    }
-
-    public Query getAllWorkmates() {
-        return getWorkmatesCollection().orderBy("workmateName");
-    }
-    // --------------
-    // --- UPDATE ---
-    // --------------
-
-    public Task<Void> updateRestaurantFavorite(String uid, List<Restaurant> listRestaurantFavorite) {
-        return getWorkmatesCollection().document(uid).update("listRestaurantFavorite", listRestaurantFavorite);
-    }
-
-    public Task<Void> updateRestaurantChosen(String uid, Restaurant restaurantChoosen) {
-        return getWorkmatesCollection().document(uid).update("restaurantChosen", restaurantChoosen);
-    }
-
-    private void updateUserRepository(Workmates workmates) {
-        this.mWorkmates = workmates;
-    }
-
-
 
     // -----------------------------
     // Create a workmate in fireBase
     // -----------------------------
     public void handleResponseAfterSignIn(int requestCode, int resultCode, @Nullable Intent data) {
-
         if (requestCode == AuthActivity.RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK) {
@@ -99,7 +74,6 @@ public class WorkmatesRepository {
                 } else if (response.getError().getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
                     Toast.makeText(getApplicationContext(), R.string.unknown_error, Toast.LENGTH_SHORT).show();
 
-
                 }
             }
         }
@@ -107,18 +81,13 @@ public class WorkmatesRepository {
 
     private void fetchCurrentUserFromFiresTore() {
         if (isCurrentUserLogged()) {
-            this.getWorkmate(Objects.requireNonNull(getCurrentUser()).getUid())
-                    .addOnFailureListener(this.onFailureListener())
-                    .addOnSuccessListener(documentSnapshot -> {
-                        Workmates workmates = documentSnapshot.toObject(Workmates.class);
-                        if (workmates == null) {
-                            createUserInFiresTore();
-                        } else {
-                            this.updateUserRepository(workmates);
+            this.getWorkmate(Objects.requireNonNull(getCurrentUser()).getUid());
+            if (mWorkmates == null) {
+                createUserInFiresTore();
+            } else {
+                this.updateUserRepository(mWorkmates);
 
-                        }
-                    });
-
+            }
 
         }
     }
@@ -129,12 +98,77 @@ public class WorkmatesRepository {
         String email = getCurrentUser().getEmail();
         String username = getCurrentUser().getDisplayName();
         String uid = getCurrentUser().getUid();
-        this.createWorkmates(uid,email,username, urlPicture)
+        this.createWorkmates(uid, email, username, urlPicture)
                 .addOnFailureListener(this.onFailureListener())
                 .addOnSuccessListener(aVoid -> fetchCurrentUserFromFiresTore());
 
+    }
+    // --------------
+    // --- GET ---
+    // --------------
+
+    public Task<DocumentSnapshot> getWorkmate1(String uid) {
+        return getWorkmatesCollection().document(uid).get();
+    }
+
+    public MutableLiveData<Workmates> getWorkmateName(String uid) {
+        MutableLiveData<Workmates> mutableLiveData = new MutableLiveData<>();
+        getWorkmatesCollection().document(uid).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Workmates workmates = documentSnapshot.toObject(Workmates.class);
+                mutableLiveData.setValue(workmates);
+            }
+        });
+        return mutableLiveData;
+    }
+
+    public MutableLiveData<Event<Workmates>> getWorkmate(String uid) {
+        MutableLiveData<Event<Workmates>> mutableLiveData = new MutableLiveData<>();
+        getWorkmatesCollection().document(uid).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Workmates workmates = documentSnapshot.toObject(Workmates.class);
+                mutableLiveData.setValue(new Event<>(workmates));
+            }
+        });
+        return mutableLiveData;
+    }
+
+
+    public MutableLiveData<List<Workmates>> getWorkmateList() {
+        MutableLiveData<List<Workmates>> mWorkmateList = new MutableLiveData<>();
+        getWorkmatesCollection().addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (queryDocumentSnapshots != null) {
+                List<DocumentSnapshot> workmateList = queryDocumentSnapshots.getDocuments();
+                List<Workmates> workmate = new ArrayList<>();
+                int size = workmateList.size();
+                for (int i = 0; i < size; i++) {
+                    Workmates workmates = workmateList.get(i).toObject(Workmates.class);
+                    workmate.add(workmates);
+                }
+                mWorkmateList.setValue(workmate);
+            }
+        });
+
+        return mWorkmateList;
 
     }
+    // --------------
+    // --- UPDATE ---
+    // --------------
+
+    public void updateRestaurantFavorite(String uid, List<Restaurant> listRestaurantFavorite) {
+        getWorkmatesCollection().document(uid).update("listRestaurantFavorite", listRestaurantFavorite);
+    }
+
+    public void updateRestaurantChosen(String uid, Restaurant restaurantChoosen) {
+        getWorkmatesCollection().document(uid).update("restaurantChosen", restaurantChoosen);
+    }
+
+    private void updateUserRepository(Workmates workmates) {
+        this.mWorkmates = workmates;
+    }
+
+
     // --------------------
     // UTILS
     // --------------------
@@ -153,7 +187,6 @@ public class WorkmatesRepository {
 
 
     }
-
 
 
 }

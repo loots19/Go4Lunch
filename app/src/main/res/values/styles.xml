@@ -14,8 +14,8 @@
    <style name="MyTheme" parent="FirebaseUI">
        <item name="android:scaleType">centerCrop</item>
        <item name="android:windowBackground">@drawable/lunch</item>
+   </style>
 
 
 
-    </style>
 </resources>

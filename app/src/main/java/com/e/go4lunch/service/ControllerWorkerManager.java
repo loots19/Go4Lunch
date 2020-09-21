@@ -28,7 +28,7 @@ public abstract class ControllerWorkerManager {
 
         if (calendar.get(Calendar.HOUR_OF_DAY) > hour ||
                 (calendar.get(Calendar.HOUR_OF_DAY) == hour && calendar.get(Calendar.MINUTE) + 1 >= minute)) {
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            calendar.add(Calendar.DAY_OF_MONTH, 0);
         }
 
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -61,7 +61,7 @@ public abstract class ControllerWorkerManager {
 
         if (calendar.get(Calendar.HOUR_OF_DAY) > hour ||
                 (calendar.get(Calendar.HOUR_OF_DAY) == hour && calendar.get(Calendar.MINUTE) + 1 >= minute)) {
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            calendar.add(Calendar.DAY_OF_MONTH, 0);
         }
 
         calendar.set(Calendar.HOUR_OF_DAY, hour);

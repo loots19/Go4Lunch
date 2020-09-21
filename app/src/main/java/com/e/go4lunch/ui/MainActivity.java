@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +25,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -42,7 +44,8 @@ import com.e.go4lunch.restaurant.RestaurantViewModel;
 import com.e.go4lunch.restaurant.RestaurantsFragment;
 import com.e.go4lunch.service.ControllerWorkerManager;
 import com.e.go4lunch.util.Constants;
-import com.e.go4lunch.workmates.ListFragment;
+import com.e.go4lunch.util.Event;
+import com.e.go4lunch.workmates.WorkmateFragment;
 import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.maps.model.LatLng;
@@ -93,7 +96,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Workmates currentWorkmate;
     private Workmates currentWorkmateName;
     private Restaurant mRestaurant;
-    private String placeId;
+    private String placeId, name;
     private ActionBarDrawerToggle mDrawerToggle;
     private static final int SIGN_OUT_TASK = 10;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 11;
@@ -102,7 +105,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private List<Workmates> mWorkmatesList = new ArrayList<>();
     private Location mLocation;
     private PlacesClient mPlacesClient;
-
+    private List<Restaurant> mRestaurantList = new ArrayList<>();
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -111,7 +114,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         mTextViewName = navigationView.getHeaderView(0).findViewById(R.id.tv_name_header);
@@ -130,8 +132,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // --------------------------------------------------------------------
         // set time for notification and clear everyday the selected restaurant
         // --------------------------------------------------------------------
-        ControllerWorkerManager.scheduleWork(13, 29);
-        ControllerWorkerManager.deleteWork(0, 0);
+        //ControllerWorkerManager.scheduleWork(14, 57);
+        //ControllerWorkerManager.deleteWork(14, 52);
 
 
         //I added this if statement to keep the selected fragment when rotating the device
@@ -151,7 +153,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setQueryHint("Search restaurants");
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView.setSearchableInfo(Objects.requireNonNull(searchManager).getSearchableInfo(getComponentName()));
         return true;
@@ -190,7 +191,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         break;
 
                     case R.id.action_workmates:
-                        selectedFragment = new ListFragment();
+                        selectedFragment = new WorkmateFragment();
                         this.mToolbar.getMenu().findItem(R.id.search).setVisible(false);
                         break;
                 }
@@ -350,13 +351,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             if (resultCode == RESULT_OK) {
                 mPlace = Autocomplete.getPlaceFromIntent(Objects.requireNonNull(data));
                 placeId = mPlace.getId();
-               //String name = mPlace.getName();
-               //double rating = mPlace.getRating();
-               //String address = mPlace.getAddress();
-               //boolean openingHours = Boolean.parseBoolean(String.valueOf(mPlace.getOpeningHours()));
-                //String photo = String.valueOf(mPlace.getPhotoMetadatas());
-               // mRestaurantViewModel.createRestaurant(placeId, name, address, photo, openingHours, mLocation, rating, mWorkmatesList);
-               getRestaurantFromAutocomplete();
+                Log.e("testId", placeId);
+                getRestaurantFromAutocomplete();
 
             }
         }
@@ -379,12 +375,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         .apply(RequestOptions.circleCropTransform())
                         .into(mImageViewProfile);
             }
-
         }
         if (Objects.requireNonNull(this.getCurrentUser()).getDisplayName() != null) {
             String name = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(Integer.parseInt("info_no_email_found")) : this.getCurrentUser().getDisplayName();
             this.mTextViewName.setText(name);
-
         }
         String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(Integer.parseInt("info_no_email_found")) : this.getCurrentUser().getEmail();
         this.mTextViewEmail.setText(email);
@@ -411,19 +405,22 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     // ---------------------
     private void getCurrentWorkmate(boolean showLunch) {
         String workmateUid = FirebaseAuth.getInstance().getUid();
-        mWorkmateViewModel.getWorkmate(workmateUid).observe(this, event -> {
-            Workmates workmates = event.getContentIfNotHandled();
-            if (workmates != null) {
-                currentWorkmate = workmates;
-                if (currentWorkmate.getRestaurantChosen() != null) {
-                    placeId = currentWorkmate.getRestaurantChosen().getPlaceId();
-                    getRestaurant(showLunch);
-                } else if (showLunch) {
-                    showLunch();
+        mWorkmateViewModel.getWorkmate(workmateUid).observe(this, new Observer<Event<Workmates>>() {
+            @Override
+            public void onChanged(Event<Workmates> event) {
+                Workmates workmates = event.getContentIfNotHandled();
+                if (workmates != null) {
+                    currentWorkmate = workmates;
+                    if (currentWorkmate.getRestaurantChosen() != null) {
+                        placeId = currentWorkmate.getRestaurantChosen().getPlaceId();
+                        MainActivity.this.getRestaurant(showLunch);
+                    } else if (showLunch) {
+                        MainActivity.this.showLunch();
 
+                    }
                 }
-            }
 
+            }
         });
 
     }
@@ -441,14 +438,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void getRestaurant(boolean showLunch) {
-        mRestaurantViewModel.getRestaurant(placeId).observe(this, event -> {
-            Restaurant restaurant = event.getContentIfNotHandled();
-            if (restaurant != null) {
-                mRestaurant = restaurant;
-                if (showLunch) {
-                    showLunch();
-                }
+        mRestaurantViewModel.getRestaurant(placeId).observe(this, new Observer<Event<Restaurant>>() {
+            @Override
+            public void onChanged(Event<Restaurant> event) {
+                Restaurant restaurant = event.getContentIfNotHandled();
+                if (restaurant != null) {
+                    mRestaurant = restaurant;
+                    if (showLunch) {
+                        MainActivity.this.showLunch();
+                    }
 
+                }
             }
         });
 
@@ -467,26 +467,29 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void getRestaurantFromAutocomplete() {
         mRestaurantViewModel.getRestaurant(placeId).observe(this, event -> {
             Restaurant restaurant = event.getContentIfNotHandled();
-            mRestaurant = restaurant;
-            showRestaurant();
+            if (restaurant != null) {
+                mRestaurant = restaurant;
+                showRestaurant();
+
+            }
         });
+
     }
 
-
-
-
     private void showRestaurant() {
-        if(mRestaurant!= null) {
+        if ( !mRestaurant.getPlaceId().contains(placeId)) {
+            Log.e("testId2", mRestaurant.getPlaceId());
+            alertAutocompleteResult();
+            Log.e("testAuto", "true");
+        } else {
             Intent intent = new Intent(this, DetailsRestaurantActivity.class);
             Gson gson = new Gson();
             String jsonSelectedRestaurant = gson.toJson(mRestaurant);
             intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
             startActivity(intent);
-        }else{
-            alertAutocompleteResult();
         }
-    }
 
+    }
 
     // -------------------------------------------------------------
     // open detail activity when user click on menuDrawer "My lunch"

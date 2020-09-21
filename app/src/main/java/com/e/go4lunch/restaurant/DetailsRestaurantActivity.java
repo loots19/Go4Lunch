@@ -68,12 +68,10 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     private RestaurantViewModel mRestaurantViewModel;
     private WorkmateViewModel mWorkmateViewModel;
     private ResultDetail mResultDetail;
-    private String placeId;
-    private String workmateUid;
+    private String placeId, workmateUid;
     private Restaurant mRestaurant;
     private Workmates currentWorkmate;
-    private List<Restaurant> mRestaurantListFavFromFirebase;
-    private List<Restaurant> mRestaurantListFromFirebase;
+    private List<Restaurant> mRestaurantListFav, mRestaurantList;
     private List<Workmates> mWorkmatesList = new ArrayList<>();
     private RestaurantDetailAdapter mRestaurantDetailAdapter;
 
@@ -84,24 +82,21 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
 
-
         getIncomingIntent();
         configureRecyclerView();
         configureViewModelRestaurant();
         configureViewModelWorkmate();
-        configureViewModelDetail();
+        getRestaurantList();
         getCurrentWorkmate();
-        getDetailOfPlace();
         userActionClick();
         getRestaurant();
-        getRestaurantList();
 
 
     }
 
-    // -----------------------------------------------------
-    // get intent from recyclerView and map and show details
-    // -----------------------------------------------------
+    // ----------------------------------------------------------------
+    // get intent from recyclerView, map, mainActivity and show details
+    // ----------------------------------------------------------------
     private void getIncomingIntent() {
         if (getIntent().hasExtra(EXTRA_RESTAURANT)) {
             String jsonResult = getIntent().getStringExtra(EXTRA_RESTAURANT);
@@ -113,7 +108,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             Glide.with(this)
                     .load(Constants.BASE_URL_PHOTO
                             + restaurant.getUrlPhoto()
-                            + "&key=" + getString(R.string.google_api_key))
+                            + "&key=" + Constants.API_KEY)
                     .centerCrop()
                     .into(mIvPhotoRestaurant);
             placeId = restaurant.getPlaceId();
@@ -128,33 +123,39 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     // call phone number of the place
     // ------------------------------
     public void callRestaurant() {
-        if (mResultDetail.getInternationalPhoneNumber() != null) {
-            String phone = mResultDetail.getInternationalPhoneNumber();
-            Uri uri = Uri.parse("tel:" + phone);
-            Intent callIntent = new Intent(Intent.ACTION_CALL, uri);
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CODE_CALL);
+        int size = mRestaurantList.size();
+        for (int i = 0; i < size; i++) {
+            if (mRestaurantList.get(i).getPhoneNumber() != null) {
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse(String.format("tel:%s", mRestaurantList.get(i).getPhoneNumber())));
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CODE_CALL);
+                } else {
+                    startActivity(callIntent);
+                }
             } else {
-                startActivity(callIntent);
+                Toast.makeText(this, getResources().getString(R.string.no_phone), Toast.LENGTH_LONG).show();
             }
-        } else {
-            Toast.makeText(this, getResources().getString(R.string.no_phone), Toast.LENGTH_LONG).show();
-        }
 
+        }
     }
 
     // -------------------------
     // show webSite of the place
     // -------------------------
-    public void openWebsitePage() {
-        if (mResultDetail.getWebsite() != null) {
-            Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(mResultDetail.getWebsite()));
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, getResources().getString(R.string.no_web_site), Toast.LENGTH_LONG).show();
+    public void openWebsite() {
+        int size = mRestaurantList.size();
+        for (int i = 0; i < size; i++) {
+            if (mRestaurantList.get(i).getWebSite() != null) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mRestaurantList.get(i).getWebSite()));
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.no_web_site), Toast.LENGTH_SHORT).show();
+
+            }
         }
     }
+
 
     // --------------
     // Action of user
@@ -162,12 +163,11 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     public void userActionClick() {
         mButtonCall.setOnClickListener(v -> callRestaurant());
 
-        mButtonWeb.setOnClickListener(v -> openWebsitePage());
+        mButtonWeb.setOnClickListener(v -> openWebsite());
 
         mfab.setOnClickListener(v -> DetailsRestaurantActivity.this.actionOnFab());
 
         mButtonLike.setOnClickListener(v -> actionOnLikeButton());
-
 
     }
 
@@ -199,8 +199,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     // Configuring Observers
     // ---------------------
     private void getDetailOfPlace() {
-        mRestaurantDetailViewModel.getPlaceDetail().observe(this, placeDetail -> mResultDetail = placeDetail.getResult());
-
+        // mRestaurantDetailViewModel.getPlaceDetail().observe(this, placeDetail -> mResultDetail = placeDetail.getResult());
 
     }
 
@@ -210,7 +209,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             Workmates workmates = event.getContentIfNotHandled();
             if (workmates != null) {
                 currentWorkmate = workmates;
-                mRestaurantListFavFromFirebase = workmates.getListRestaurantFavorite();
+                mRestaurantListFav = workmates.getListRestaurantFavorite();
                 updateRestaurant(mRestaurant);
             }
 
@@ -220,14 +219,14 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     private void getRestaurantList() {
         mRestaurantViewModel.getRestaurantList().observe(this, restaurants -> {
-            mRestaurantListFromFirebase = restaurants;
-            if (!mRestaurantListFromFirebase.contains(mRestaurant)) {
-                mWorkmatesList = new ArrayList<>();
-               // mRestaurantViewModel.createRestaurant(mRestaurant.getPlaceId(), mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mRestaurant.getOpenNow(), mRestaurant.getLocation(), mRestaurant.getRating(), mWorkmatesList);
+            if (restaurants != null) {
+                mRestaurantList = restaurants;
+                if (!mRestaurantList.contains(mRestaurant)) {
+                    mWorkmatesList = new ArrayList<>();
+                    // mRestaurantViewModel.createRestaurant(mRestaurant.getPlaceId(), mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mRestaurant.getOpenNow(), mRestaurant.getLocation(), mRestaurant.getRating(), mWorkmatesList);
+                }
+                getCurrentWorkmate();
             }
-            getCurrentWorkmate();
-
-
         });
     }
 
@@ -248,22 +247,17 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     // Configuring LikeButton
     // ----------------------
     private void actionOnLikeButton() {
-
         if (currentWorkmate.getListRestaurantFavorite() == null) {
-
-            mRestaurantListFavFromFirebase = new ArrayList<>();
-
+            mRestaurantListFav = new ArrayList<>();
         } else {
-            mRestaurantListFavFromFirebase = currentWorkmate.getListRestaurantFavorite();
+            mRestaurantListFav = currentWorkmate.getListRestaurantFavorite();
         }
         if (!currentWorkmate.getListRestaurantFavorite().contains(mRestaurant)) {
-            mRestaurantListFavFromFirebase.add(mRestaurant);
-
-
+            mRestaurantListFav.add(mRestaurant);
         } else {
-            mRestaurantListFavFromFirebase.remove(mRestaurant);
+            mRestaurantListFav.remove(mRestaurant);
         }
-        this.mWorkmateViewModel.updateIsRestaurantFavorite(workmateUid, mRestaurantListFavFromFirebase);
+        this.mWorkmateViewModel.updateIsRestaurantFavorite(workmateUid, mRestaurantListFav);
         this.updateIVLike();
 
 
@@ -273,15 +267,12 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     // updating like Star
     // ------------------
     private void updateIVLike() {
-
         boolean fav = false;
         if (currentWorkmate.getListRestaurantFavorite() != null) {
             if (currentWorkmate.getListRestaurantFavorite().contains(mRestaurant)) {
                 fav = true;
-
             }
         }
-
         if (fav) {
             this.mImageViewStar.setImageResource(R.drawable.ic_star_black1_24dp);
         } else {
@@ -321,20 +312,17 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         if (this.currentWorkmate.getRestaurantChosen() != null) {
             if (currentWorkmate.getRestaurantChosen().equals(mRestaurant))
                 this.mfab.setImageResource(R.drawable.ic_check_circle_black_24dp);
-
         } else {
             this.mfab.setImageResource(R.drawable.ic_check_black_24dp);
-
-
         }
 
     }
 
     private void updateSelectedRestaurant(Restaurant restaurant) {
-        if (mRestaurantListFromFirebase.contains(restaurant)) {
+        if (mRestaurantList.contains(restaurant)) {
             Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
-            int in = mRestaurantListFromFirebase.indexOf(restaurant);
-            List<Workmates> workmatesList = mRestaurantListFromFirebase.get(in).getWorkmatesList();
+            int in = mRestaurantList.indexOf(restaurant);
+            List<Workmates> workmatesList = mRestaurantList.get(in).getWorkmatesList();
             workmatesList.remove(workmatesChoice);
             mRestaurantViewModel.updateRestaurantWorkmateList(restaurant.getPlaceId(), workmatesList);
         }
@@ -366,7 +354,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         Glide.with(this)
                 .load(Constants.BASE_URL_PHOTO
                         + photo
-                        + "&key=" + getString(R.string.google_api_key))
+                        + "&key=" + Constants.API_KEY)
                 .centerCrop()
                 .into(mIvPhotoRestaurant);
         updateIVLike();

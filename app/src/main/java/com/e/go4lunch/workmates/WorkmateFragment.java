@@ -25,7 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteListener {
+public class WorkmateFragment extends Fragment implements WorkmatesAdapter.OnNoteListener {
 
 
     // ----------------- FOR DESIGN -----------------
@@ -65,7 +65,7 @@ public class ListFragment extends Fragment implements WorkmatesAdapter.OnNoteLis
     // Configuring Observers
     // ---------------------
     private void getWorkmateList() {
-        mWorkmateViewModel.getWorkmatesList().observe(getViewLifecycleOwner(), workmates -> {
+        mWorkmateViewModel.getAllWorkmates().observe(getViewLifecycleOwner(), workmates -> {
             mWorkmatesList = workmates;
             mWorkmatesAdapter.setWorkmates(workmates);
         });

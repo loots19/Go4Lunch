@@ -1,14 +1,6 @@
 package com.e.go4lunch.models;
 
-import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.e.go4lunch.models.myPlace.Geometry;
-import com.e.go4lunch.models.myPlace.Location;
-import com.e.go4lunch.models.myPlace.MyPlace;
-import com.e.go4lunch.models.myPlace.Result;
-import com.google.android.gms.maps.model.LatLng;
+import com.e.go4lunch.models.placeDetail.Location;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,35 +12,42 @@ public class Restaurant {
     private String address;
     private String urlPhoto;
     private String phoneNumber;
-    private String WebSite;
+    private String webSite;
     private Boolean openNow;
-    private Location mLocation;
+    private com.e.go4lunch.models.placeDetail.Location mLocation;
     private double rating;
     private List<Workmates> mWorkmatesList;
+    private List<String> openHours;
 
 
-     public Restaurant(){
+    public Restaurant() {
 
-     }
+    }
+
     // Constructor for my place
-    public Restaurant(String placeId, String name, String address, String urlPhoto, Boolean openNow, Location location, double rating) {
+    public Restaurant(String placeId, String name, String address, String urlPhoto, List<String> openHours, boolean openNow, com.e.go4lunch.models.placeDetail.Location location, double rating) {
         this.placeId = placeId;
         this.name = name;
         this.address = address;
         this.urlPhoto = urlPhoto;
+        this.openHours = openHours;
         this.openNow = openNow;
         mLocation = location;
         this.rating = rating;
     }
+
     // Constructor for FireBase
-    public Restaurant(String placeId, String name, String address, String urlPhoto,Boolean openNow,Location location, double rating, List<Workmates> workmatesList) {
+    public Restaurant(String placeId, String name, String address, String urlPhoto, List<String> openHours, boolean openNow, com.e.go4lunch.models.placeDetail.Location location, double rating, String webSite, String phoneNumber, List<Workmates> workmatesList) {
         this.placeId = placeId;
         this.name = name;
         this.address = address;
         this.urlPhoto = urlPhoto;
+        this.openHours = openHours;
         this.openNow = openNow;
         mLocation = location;
         this.rating = rating;
+        this.webSite = webSite;
+        this.phoneNumber = phoneNumber;
         this.mWorkmatesList = workmatesList;
 
     }
@@ -76,14 +75,18 @@ public class Restaurant {
     }
 
     public String getWebSite() {
-        return WebSite;
+        return webSite;
     }
 
     public Boolean getOpenNow() {
         return openNow;
     }
 
-    public Location getLocation() {
+    public List<String> getOpenHours() {
+        return openHours;
+    }
+
+    public com.e.go4lunch.models.placeDetail.Location getLocation() {
         return mLocation;
     }
 
@@ -118,11 +121,15 @@ public class Restaurant {
     }
 
     public void setWebSite(String webSite) {
-        WebSite = webSite;
+        webSite = webSite;
     }
 
     public void setOpenNow(Boolean openNow) {
         this.openNow = openNow;
+    }
+
+    public void setOpenSchedule(List<String> openHours) {
+        this.openHours = openHours;
     }
 
     public void setLocation(Location location) {
@@ -142,11 +149,11 @@ public class Restaurant {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Restaurant restaurant = (Restaurant) o;
-        return Objects.equals(name, restaurant.getName());
+        return Objects.equals(placeId, restaurant.getPlaceId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getName());
+        return Objects.hash(this.getPlaceId());
     }
 }

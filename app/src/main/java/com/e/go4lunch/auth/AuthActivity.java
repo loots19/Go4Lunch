@@ -57,14 +57,11 @@ public class AuthActivity extends BaseActivity {
         setContentView(R.layout.auth_main);
         ButterKnife.bind(this);
 
-
         configureViewModel();
         subscribeObservers();
         initTwitter();
 
-
     }
-
 
     // --------------------
     // ACTIONS
@@ -190,7 +187,7 @@ public class AuthActivity extends BaseActivity {
     // Configuring Observers
     // ---------------------
     private void subscribeObservers() {
-        mWorkmateViewModel.getWorkmatesList().observe(this, workmates -> {
+        mWorkmateViewModel.getAllWorkmates().observe(this, workmates -> {
             mWorkmatesList = workmates;
             checkWorkmateExists();
         });
@@ -221,7 +218,7 @@ public class AuthActivity extends BaseActivity {
     // -----------------------------------------
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mWorkmateViewModel.CreateWorkmateFireBase(requestCode, resultCode, data);
+        mWorkmateViewModel.CreateWorkmate(requestCode, resultCode, data);
         startMapsActivity();
     }
 

@@ -12,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,12 +23,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.models.myPlace.Result;
+import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
@@ -51,8 +51,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
-
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,14 +84,11 @@ public class MapsFragment extends Fragment implements
     private FusedLocationProviderClient fusedLocationClient;
     private GoogleApiClient mGoogleApiClient;
     private RestaurantViewModel mRestaurantViewModel;
-    private List<Restaurant> mRestaurants = new ArrayList<>();
-    private List<Restaurant> mRestaurantListFromFirebase;
+    private List<Restaurant> mRestaurantList = new ArrayList<>();
     private Double lat, lng, rating;
     private List<Workmates> mWorkmatesList = new ArrayList<>();
-    private Boolean restaurantExists = true, openNow;
-    private Restaurant mRestaurant;
     private String placeId, name, address, urlPhoto;
-    private com.e.go4lunch.models.myPlace.Location location;
+    private com.e.go4lunch.models.placeDetail.Location location;
 
 
     // ----------------- Required empty public constructor // -----------------
@@ -128,6 +123,7 @@ public class MapsFragment extends Fragment implements
         mapFragment.getMapAsync(this);
         return v;
 
+
     }
 
 
@@ -154,7 +150,6 @@ public class MapsFragment extends Fragment implements
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
-
         mGoogleApiClient.connect();
 
     }
@@ -193,27 +188,25 @@ public class MapsFragment extends Fragment implements
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         LatLng latLng = new LatLng(latitude, longitude);
-
         // move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-
-
-
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
         // get lat and lng and put in sharedPreferences
-        saveLatLng(latitude, longitude);
-        String lat = App.getInstance().getLat();
-        String lng = App.getInstance().getLng();
-        mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
-        getListOfRestaurantFromPlace();
-
-
+        if (isAdded()) {
+            saveLatLng(latitude, longitude);
+            String lat = App.getInstance().getLat();
+            String lng = App.getInstance().getLng();
+            mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
+            getListFromPlace();
+            getRestaurantList();
+        }
     }
 
     private void saveLatLng(double lat, double lng) {
+
         SharedPreferences prefs = requireActivity().getSharedPreferences("MY_PREF", Activity.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = prefs.edit();
         mEditor.putString(LAT, String.valueOf(lat));
@@ -223,6 +216,7 @@ public class MapsFragment extends Fragment implements
         App mApp = (App) getApplicationContext();
         mApp.setLat(String.valueOf(lat));
         mApp.setLng(String.valueOf(lng));
+
     }
 
 
@@ -232,7 +226,7 @@ public class MapsFragment extends Fragment implements
         buildGoogleApiClient();
         mMap.setMyLocationEnabled(false);
 
-        mFab.setOnClickListener(v -> getListOfRestaurantFromPlace());
+        mFab.setOnClickListener(v -> getRestaurantList());
 
         // make event click on marker
         mMap.setOnMarkerClickListener(marker -> {
@@ -244,15 +238,7 @@ public class MapsFragment extends Fragment implements
 
     private void checkUserLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
-            } else {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
-                getListOfRestaurantFromPlace();
-            }
-        } else {
-            getListOfRestaurantFromPlace();
-
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_USER_LOCATION_CODE);
         }
 
     }
@@ -266,78 +252,36 @@ public class MapsFragment extends Fragment implements
         String lat = App.getInstance().getLat();
         String lng = App.getInstance().getLng();
         mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
-
     }
 
     // ---------------------
     // Configuring Observers
     // ---------------------
-    private void getListOfRestaurantFromPlace() {
-        mRestaurantViewModel.getMyPlace().observe(getViewLifecycleOwner(), myPlace -> {
-            List<Result> results = myPlace.getResults();
-            if (mMap != null) {
-                mMap.clear();
-                // This loop will go through all the results and add marker on each location.
-                for (int i = 0; i < results.size(); i++) {
-                    lat = results.get(i).getGeometry().getLocation().getLat();
-                    lng = results.get(i).getGeometry().getLocation().getLng();
-                    LatLng latLng = new LatLng(lat, lng);
-                    //Position of Marker on Map
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position(latLng);
-                    markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext()));
-                    // move map camera
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    //mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+    private void getListFromPlace() {
+        mRestaurantViewModel.getMyPlace().observe(getViewLifecycleOwner(), new Observer<MyPlace>() {
+            @Override
+            public void onChanged(MyPlace myPlace) {
 
-                    placeId = results.get(i).getPlaceId();
-                    name = results.get(i).getName();
-                    address = results.get(i).getVicinity();
-                    if (results.get(i).getPhotos() != null) {
-                        urlPhoto = results.get(i).getPhotos().get(0).getPhotoReference();
-                    }
-                    if (results.get(i).getRating() != null) {
-                        rating = results.get(i).getRating();
-
-                    }
-                    openNow = (results.get(i).getOpeningHours() != null ? results.get(i).getOpeningHours().getOpenNow() : false);
-
-                    if (results.get(i).getGeometry().getLocation() != null) {
-                        location = results.get(i).getGeometry().getLocation();
-                        Restaurant restaurant = new Restaurant(placeId, name, address, urlPhoto, openNow, location, rating);
-                        mRestaurants.add(restaurant);
-
-                    }
-
-                    Marker marker = mMap.addMarker(markerOptions);
-                    Gson gson = new Gson();
-                    String jsonSelectedRestaurant = gson.toJson(mRestaurants.get(i));
-                    marker.setTag(jsonSelectedRestaurant);
-
-                }
             }
-            getListWithWorkmate();
         });
-
     }
 
-
-    private void getListWithWorkmate() {
+    private void getRestaurantList() {
         mRestaurantViewModel.getRestaurantList().observe(getViewLifecycleOwner(), restaurants -> {
-            mRestaurantListFromFirebase = restaurants;
-            Log.e("testrest", String.valueOf(mRestaurantListFromFirebase.size()));
+            mRestaurantList = restaurants;
             int size = restaurants.size();
             for (int i = 0; i < size; i++) {
                 Restaurant restaurant = restaurants.get(i);
-                int in = mRestaurants.indexOf(restaurant);
-                mRestaurants.get(in).setWorkmatesList(restaurant.getWorkmatesList());
-                MarkerOptions markerOptions = new MarkerOptions();
-                lat = mRestaurants.get(in).getLocation().getLat();
-                lng = mRestaurants.get(in).getLocation().getLng();
+                int in = mRestaurantList.indexOf(restaurant);
+                mRestaurantList.get(in).setWorkmatesList(restaurant.getWorkmatesList());
+                lat = mRestaurantList.get(in).getLocation().getLat();
+                lng = mRestaurantList.get(in).getLocation().getLng();
                 LatLng latLng = new LatLng(lat, lng);
+                MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 if (restaurant.getWorkmatesList().size() > 0 && restaurant.getWorkmatesList() != null) {
-                    if (mRestaurants.contains(restaurant)) {
+                    if (mRestaurantList.contains(restaurant)) {
                         markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector1(MapsFragment.this.getContext()));
                     } else {
                         markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext()));
@@ -346,11 +290,13 @@ public class MapsFragment extends Fragment implements
                 } else {
                     markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector(MapsFragment.this.getContext()));
                 }
-                mMap.addMarker(markerOptions);
+
+                Marker marker = mMap.addMarker(markerOptions);
+                Gson gson = new Gson();
+                String jsonSelectedRestaurant = gson.toJson(mRestaurantList.get(i));
+                marker.setTag(jsonSelectedRestaurant);
 
             }
-
-
         });
     }
 

@@ -53,7 +53,7 @@
 
     <TextView
         android:id="@+id/tv_time_restaurant_item"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/text_view_layout_width"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/text_view_time_margin_top"
         android:textSize="@dimen/text_view_meter_text_size"
@@ -90,6 +90,7 @@
         android:layout_marginEnd="@dimen/rating_bar_margin_end"
         android:numStars="3"
         android:progressTint="@color/quantum_yellow"
+        android:isIndicator="true"
         android:scaleX="0.5"
         android:scaleY="0.5"
         app:layout_constraintBottom_toBottomOf="parent"
