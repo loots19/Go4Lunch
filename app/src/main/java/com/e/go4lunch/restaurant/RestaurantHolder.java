@@ -3,14 +3,12 @@ package com.e.go4lunch.restaurant;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
-import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,11 +17,11 @@ import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.util.Constants;
+import com.e.go4lunch.util.OpeningHoursUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.e.go4lunch.util.OpeningHoursUtil.getTodayWeekDay;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 
@@ -53,10 +51,11 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     private RestaurantAdapter.OnItemListener OnItemListener;
 
 
-    public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnItemListener onItemListener) {
+    public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnItemListener onItemListener,Context context) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         this.OnItemListener = onItemListener;
+        this.mContext = context;
         itemView.setOnClickListener(this);
 
 
@@ -71,7 +70,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
 
     public void update(Restaurant restaurant) {
         //---------- Opening ----------
-        this.displayOpeningHours(restaurant);
+        this.displayOpeningHours(restaurant,mTvTime,mContext);
 
         //---------- Name ----------
         this.mTvName.setText(restaurant.getName());
@@ -131,24 +130,12 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     // set opening hours of the place
     // ------------------------------
 
-    private void displayOpeningHours(Restaurant restaurant) {
-        String hoursText ;
-
-        if (restaurant.getOpenNow() != null) {
-            if (restaurant.getOpenNow()) {
-                hoursText = itemView.getContext().getString(R.string.Open);
-                mTvTime.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.quantum_lightblue));
-            } else {
-                hoursText = itemView.getContext().getString(R.string.Close);
-                mTvTime.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorAccent));
-            }
-            if (restaurant.getOpenHours() != null) {
-                int weekDay = getTodayWeekDay();
-                hoursText = String.format("%s: %s", hoursText,
-                        restaurant.getOpenHours().get(weekDay));
-                mTvTime.setText(hoursText);
-            }
+    private void displayOpeningHours(Restaurant restaurant,TextView textView,Context context) {
+        if (restaurant.getOpenHours() != null) {
+            OpeningHoursUtil openingHoursUtil = new OpeningHoursUtil(restaurant,textView,context);
+            openingHoursUtil.checkOpening();
         }
+
 
     }
 

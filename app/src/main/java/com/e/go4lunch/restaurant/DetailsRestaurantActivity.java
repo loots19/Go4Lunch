@@ -23,6 +23,7 @@ import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.placeDetail.ResultDetail;
+import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.util.Constants;
@@ -64,11 +65,10 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     // ----------------- FOR DATA -----------------
     private final static int REQUEST_CODE_CALL = 3;
     public static final String EXTRA_RESTAURANT = "restaurant";
-    private RestaurantDetailViewModel mRestaurantDetailViewModel;
     private RestaurantViewModel mRestaurantViewModel;
     private WorkmateViewModel mWorkmateViewModel;
     private ResultDetail mResultDetail;
-    private String placeId, workmateUid;
+    private String placeId, workmateUid, phone, webSite;
     private Restaurant mRestaurant;
     private Workmates currentWorkmate;
     private List<Restaurant> mRestaurantListFav, mRestaurantList;
@@ -85,12 +85,12 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         getIncomingIntent();
         configureRecyclerView();
         configureViewModelRestaurant();
-        configureViewModelWorkmate();
         getRestaurantList();
+        configureViewModelWorkmate();
         getCurrentWorkmate();
+
         userActionClick();
         getRestaurant();
-
 
     }
 
@@ -112,7 +112,10 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                     .centerCrop()
                     .into(mIvPhotoRestaurant);
             placeId = restaurant.getPlaceId();
+            phone = restaurant.getPhoneNumber();
+            webSite = restaurant.getWebSite();
             mRestaurant = restaurant;
+
             configureRecyclerView();
 
 
@@ -123,20 +126,16 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     // call phone number of the place
     // ------------------------------
     public void callRestaurant() {
-        int size = mRestaurantList.size();
-        for (int i = 0; i < size; i++) {
-            if (mRestaurantList.get(i).getPhoneNumber() != null) {
-                Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                callIntent.setData(Uri.parse(String.format("tel:%s", mRestaurantList.get(i).getPhoneNumber())));
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CODE_CALL);
-                } else {
-                    startActivity(callIntent);
-                }
+        if (phone != null) {
+            Intent callIntent = new Intent(Intent.ACTION_DIAL);
+            callIntent.setData(Uri.parse(String.format("tel:%s", phone)));
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CODE_CALL);
             } else {
-                Toast.makeText(this, getResources().getString(R.string.no_phone), Toast.LENGTH_LONG).show();
+                startActivity(callIntent);
             }
-
+        } else {
+            Toast.makeText(this, getResources().getString(R.string.no_phone), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -144,15 +143,14 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     // show webSite of the place
     // -------------------------
     public void openWebsite() {
-        int size = mRestaurantList.size();
-        for (int i = 0; i < size; i++) {
-            if (mRestaurantList.get(i).getWebSite() != null) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mRestaurantList.get(i).getWebSite()));
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, getResources().getString(R.string.no_web_site), Toast.LENGTH_SHORT).show();
-
-            }
+        if (webSite != null) {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.setData(Uri.parse(String.valueOf(webSite)));
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, getResources().getString(R.string.no_web_site), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -174,35 +172,24 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     // ---------------------
     // Configuring ViewModel
     // ---------------------
-    private void configureViewModelDetail() {
-        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
-        this.mRestaurantDetailViewModel = new ViewModelProvider(this, mViewModelFactory).get(RestaurantDetailViewModel.class);
-        mRestaurantDetailViewModel.setInput(placeId);
-
-
-    }
-
     private void configureViewModelWorkmate() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         this.mWorkmateViewModel = new ViewModelProvider(this, viewModelFactory).get(WorkmateViewModel.class);
-
 
     }
 
     private void configureViewModelRestaurant() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         this.mRestaurantViewModel = new ViewModelProvider(this, viewModelFactory).get(RestaurantViewModel.class);
+        String lat = App.getInstance().getLat();
+        String lng = App.getInstance().getLng();
+        mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
 
     }
 
     // ---------------------
     // Configuring Observers
     // ---------------------
-    private void getDetailOfPlace() {
-        // mRestaurantDetailViewModel.getPlaceDetail().observe(this, placeDetail -> mResultDetail = placeDetail.getResult());
-
-    }
-
     private void getCurrentWorkmate() {
         workmateUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         mWorkmateViewModel.getWorkmate(workmateUid).observe(this, event -> {
@@ -217,19 +204,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     }
 
-    private void getRestaurantList() {
-        mRestaurantViewModel.getRestaurantList().observe(this, restaurants -> {
-            if (restaurants != null) {
-                mRestaurantList = restaurants;
-                if (!mRestaurantList.contains(mRestaurant)) {
-                    mWorkmatesList = new ArrayList<>();
-                    // mRestaurantViewModel.createRestaurant(mRestaurant.getPlaceId(), mRestaurant.getName(), mRestaurant.getAddress(), mRestaurant.getUrlPhoto(), mRestaurant.getOpenNow(), mRestaurant.getLocation(), mRestaurant.getRating(), mWorkmatesList);
-                }
-                getCurrentWorkmate();
-            }
-        });
-    }
-
     private void getRestaurant() {
         mRestaurantViewModel.getRestaurant(placeId).observe(this, event -> {
             Restaurant restaurant = event.getContentIfNotHandled();
@@ -239,9 +213,20 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                 mRestaurantDetailAdapter.setWorkmates(mWorkmatesList);
             }
 
-
         });
     }
+
+    private void getRestaurantList() {
+        mRestaurantViewModel.getRestaurantList().observe(this, restaurants -> {
+            if (restaurants != null) {
+                mRestaurantList = restaurants;
+                if (!mRestaurantList.contains(mRestaurant)) {
+                    getCurrentWorkmate();
+                }
+            }
+        });
+    }
+
 
     // ----------------------
     // Configuring LikeButton
@@ -259,7 +244,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
         this.mWorkmateViewModel.updateIsRestaurantFavorite(workmateUid, mRestaurantListFav);
         this.updateIVLike();
-
 
     }
 
@@ -307,7 +291,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     }
 
-
     private void updateFab() {
         if (this.currentWorkmate.getRestaurantChosen() != null) {
             if (currentWorkmate.getRestaurantChosen().equals(mRestaurant))
@@ -322,7 +305,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         if (mRestaurantList.contains(restaurant)) {
             Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
             int in = mRestaurantList.indexOf(restaurant);
-            List<Workmates> workmatesList = mRestaurantList.get(in).getWorkmatesList();
+            List<Workmates> workmatesList = mRestaurant.getWorkmatesList();
             workmatesList.remove(workmatesChoice);
             mRestaurantViewModel.updateRestaurantWorkmateList(restaurant.getPlaceId(), workmatesList);
         }
@@ -338,7 +321,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         mRestaurantDetailAdapter = new RestaurantDetailAdapter(this);
         mRecyclerViewDetail.setAdapter(mRestaurantDetailAdapter);
         mRestaurantDetailAdapter.notifyDataSetChanged();
-
 
     }
 
@@ -359,7 +341,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                 .into(mIvPhotoRestaurant);
         updateIVLike();
         updateFab();
-
 
     }
 

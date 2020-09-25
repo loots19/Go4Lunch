@@ -3,6 +3,7 @@ package com.e.go4lunch.restaurant;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -52,34 +54,29 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
         initialization();
         configureViewModel() ;
-        getListFromPlace();
-        getRestaurantList();
+      //  getRestaurantList();
 
         return view;
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getRestaurantList();
+    }
     // ---------------------
     // Configuring Observers
     // ---------------------
-    private void getListFromPlace() {
-        mRestaurantViewModel.getMyPlace().observe(getViewLifecycleOwner(), new Observer<MyPlace>() {
-            @Override
-            public void onChanged(MyPlace myPlace) {
-
-            }
-        });
-
-    }
 
     private void getRestaurantList() {
         mRestaurantViewModel.getRestaurantList().observe(getViewLifecycleOwner(), restaurants -> {
-            if (restaurants != null) {
-                mRestaurantList = restaurants;
-                mAdapter.setRestaurants(mRestaurantList);
-                mAdapter.notifyDataSetChanged();
-
-            }
+           if (restaurants != null) {
+               mRestaurantList = restaurants;
+               Log.e("restoFrag", mRestaurantList.size() +",");
+               mAdapter.setRestaurants(mRestaurantList);
+               mAdapter.notifyDataSetChanged();
+           }
 
         });
     }
@@ -123,8 +120,6 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
         startActivity((intent));
 
-
     }
-
 
 }

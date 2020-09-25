@@ -41,11 +41,15 @@
 
 
     <!--FRAGMENT HOLDER-->
-    <string name="Open"><![CDATA[<b><font color=#0000FF>Hello world!</font></b>]]>Open</string>
+    <string name="Open">Open</string>
     <string name="Close">Close</string>
     <string name="opening_hour_not_available">opening hours not available</string>
     <string name="list_unit_distance">%1$sm</string>
     <string name="OpenNow">OpenNow</string>
+    <string name="OpenUntil">OpenUntil</string>
+    <string name="OpenAt">OpenAt</string>
+    <string name="closing_soon">closing soon</string>
+
 
     <!-- NOTIFICATION WORKMANAGER -->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>

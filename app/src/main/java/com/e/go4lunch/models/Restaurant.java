@@ -1,6 +1,7 @@
 package com.e.go4lunch.models;
 
 import com.e.go4lunch.models.placeDetail.Location;
+import com.e.go4lunch.models.placeDetail.Period;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,11 +14,10 @@ public class Restaurant {
     private String urlPhoto;
     private String phoneNumber;
     private String webSite;
-    private Boolean openNow;
     private com.e.go4lunch.models.placeDetail.Location mLocation;
     private double rating;
     private List<Workmates> mWorkmatesList;
-    private List<String> openHours;
+    private List<Period> openHours;
 
 
     public Restaurant() {
@@ -25,25 +25,23 @@ public class Restaurant {
     }
 
     // Constructor for my place
-    public Restaurant(String placeId, String name, String address, String urlPhoto, List<String> openHours, boolean openNow, com.e.go4lunch.models.placeDetail.Location location, double rating) {
+    public Restaurant(String placeId, String name, String address, String urlPhoto, List<Period> openHours, com.e.go4lunch.models.placeDetail.Location location, double rating) {
         this.placeId = placeId;
         this.name = name;
         this.address = address;
         this.urlPhoto = urlPhoto;
         this.openHours = openHours;
-        this.openNow = openNow;
         mLocation = location;
         this.rating = rating;
     }
 
     // Constructor for FireBase
-    public Restaurant(String placeId, String name, String address, String urlPhoto, List<String> openHours, boolean openNow, com.e.go4lunch.models.placeDetail.Location location, double rating, String webSite, String phoneNumber, List<Workmates> workmatesList) {
+    public Restaurant(String placeId, String name, String address, String urlPhoto, List<Period> openHours, com.e.go4lunch.models.placeDetail.Location location, double rating, String webSite, String phoneNumber, List<Workmates> workmatesList) {
         this.placeId = placeId;
         this.name = name;
         this.address = address;
         this.urlPhoto = urlPhoto;
         this.openHours = openHours;
-        this.openNow = openNow;
         mLocation = location;
         this.rating = rating;
         this.webSite = webSite;
@@ -78,11 +76,7 @@ public class Restaurant {
         return webSite;
     }
 
-    public Boolean getOpenNow() {
-        return openNow;
-    }
-
-    public List<String> getOpenHours() {
+    public List<Period> getOpenHours() {
         return openHours;
     }
 
@@ -124,11 +118,7 @@ public class Restaurant {
         webSite = webSite;
     }
 
-    public void setOpenNow(Boolean openNow) {
-        this.openNow = openNow;
-    }
-
-    public void setOpenSchedule(List<String> openHours) {
+    public void setOpenHours(List<Period> openHours) {
         this.openHours = openHours;
     }
 

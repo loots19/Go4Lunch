@@ -54,7 +54,7 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesHolder> {
     }
 
     public interface OnNoteListener {
-        void onNoteClick(int position);
+        void onItemClick(int position);
 
     }
 

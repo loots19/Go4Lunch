@@ -41,6 +41,10 @@
     <string name="opening_hour_not_available">Horaire indisponible</string>
     <string name="list_unit_distance">%1$sm</string>
     <string name="OpenNow">Ouvert</string>
+    <string name="OpenUntil">Ouvert jusqu\'a</string>
+    <string name="OpenAt">Ouvre à</string>
+    <string name="closing_soon">Ferme bientôt</string>
+
 
     <!-- NOTIFICATION WORKMANAGER -->
     <string name="notification_message">Vous avez un déjeuné plannifié à:</string>

@@ -160,8 +160,8 @@ public class WorkmatesRepository {
         getWorkmatesCollection().document(uid).update("listRestaurantFavorite", listRestaurantFavorite);
     }
 
-    public void updateRestaurantChosen(String uid, Restaurant restaurantChoosen) {
-        getWorkmatesCollection().document(uid).update("restaurantChosen", restaurantChoosen);
+    public void updateRestaurantChosen(String uid, Restaurant restaurantChosen) {
+        getWorkmatesCollection().document(uid).update("restaurantChosen", restaurantChosen);
     }
 
     private void updateUserRepository(Workmates workmates) {

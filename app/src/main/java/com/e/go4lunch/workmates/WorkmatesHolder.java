@@ -68,7 +68,7 @@ public class WorkmatesHolder extends RecyclerView.ViewHolder implements View.OnC
 
     @Override
     public void onClick(View v) {
-        OnNoteListener.onNoteClick(getAdapterPosition());
+        OnNoteListener.onItemClick(getAdapterPosition());
     }
 
 }

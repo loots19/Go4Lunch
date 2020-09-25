@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -200,7 +201,6 @@ public class MapsFragment extends Fragment implements
             String lat = App.getInstance().getLat();
             String lng = App.getInstance().getLng();
             mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
-            getListFromPlace();
             getRestaurantList();
         }
     }
@@ -216,6 +216,8 @@ public class MapsFragment extends Fragment implements
         App mApp = (App) getApplicationContext();
         mApp.setLat(String.valueOf(lat));
         mApp.setLng(String.valueOf(lng));
+        mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
+
 
     }
 
@@ -251,24 +253,16 @@ public class MapsFragment extends Fragment implements
         this.mRestaurantViewModel = new ViewModelProvider(this, mViewModelFactory).get(RestaurantViewModel.class);
         String lat = App.getInstance().getLat();
         String lng = App.getInstance().getLng();
-        mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
     }
 
     // ---------------------
     // Configuring Observers
     // ---------------------
-    private void getListFromPlace() {
-        mRestaurantViewModel.getMyPlace().observe(getViewLifecycleOwner(), new Observer<MyPlace>() {
-            @Override
-            public void onChanged(MyPlace myPlace) {
-
-            }
-        });
-    }
 
     private void getRestaurantList() {
         mRestaurantViewModel.getRestaurantList().observe(getViewLifecycleOwner(), restaurants -> {
             mRestaurantList = restaurants;
+            Log.e("map",mRestaurantList.size()+",");
             int size = restaurants.size();
             for (int i = 0; i < size; i++) {
                 Restaurant restaurant = restaurants.get(i);

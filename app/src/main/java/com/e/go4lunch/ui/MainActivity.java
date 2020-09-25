@@ -34,7 +34,6 @@ import com.e.go4lunch.R;
 import com.e.go4lunch.auth.AuthActivity;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.models.myPlace.Location;
 import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
@@ -54,7 +53,6 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -64,7 +62,6 @@ import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -96,16 +93,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Workmates currentWorkmate;
     private Workmates currentWorkmateName;
     private Restaurant mRestaurant;
-    private String placeId, name;
+    private String placeId, name, placeId1;
     private ActionBarDrawerToggle mDrawerToggle;
     private static final int SIGN_OUT_TASK = 10;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 11;
     private static final String TAG = "Test PlaceId";
     private Place mPlace;
-    private List<Workmates> mWorkmatesList = new ArrayList<>();
-    private Location mLocation;
-    private PlacesClient mPlacesClient;
-    private List<Restaurant> mRestaurantList = new ArrayList<>();
+    private List<Restaurant> mRestaurantList;
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -352,9 +346,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 mPlace = Autocomplete.getPlaceFromIntent(Objects.requireNonNull(data));
                 placeId = mPlace.getId();
                 Log.e("testId", placeId);
-                getRestaurantFromAutocomplete();
-
             }
+            getRestaurant(false);
         }
     }
 
@@ -405,22 +398,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     // ---------------------
     private void getCurrentWorkmate(boolean showLunch) {
         String workmateUid = FirebaseAuth.getInstance().getUid();
-        mWorkmateViewModel.getWorkmate(workmateUid).observe(this, new Observer<Event<Workmates>>() {
-            @Override
-            public void onChanged(Event<Workmates> event) {
-                Workmates workmates = event.getContentIfNotHandled();
-                if (workmates != null) {
-                    currentWorkmate = workmates;
-                    if (currentWorkmate.getRestaurantChosen() != null) {
-                        placeId = currentWorkmate.getRestaurantChosen().getPlaceId();
-                        MainActivity.this.getRestaurant(showLunch);
-                    } else if (showLunch) {
-                        MainActivity.this.showLunch();
+        mWorkmateViewModel.getWorkmate(workmateUid).observe(this, event -> {
+            Workmates workmates = event.getContentIfNotHandled();
+            if (workmates != null) {
+                currentWorkmate = workmates;
+                if (currentWorkmate.getRestaurantChosen() != null) {
+                    placeId = currentWorkmate.getRestaurantChosen().getPlaceId();
+                    getRestaurant(showLunch);
+                } else if (showLunch) {
+                    showLunch();
 
-                    }
                 }
 
             }
+
         });
 
     }
@@ -431,7 +422,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             currentWorkmateName = workmates;
             String name = currentWorkmateName.getWorkmateName();
             mTextViewName.setText(name);
-
 
         });
 
@@ -445,7 +435,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (restaurant != null) {
                     mRestaurant = restaurant;
                     if (showLunch) {
-                        MainActivity.this.showLunch();
+                        showLunch();
+                    } else {
+                        showRestaurant();
                     }
 
                 }
@@ -464,31 +456,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
-    public void getRestaurantFromAutocomplete() {
-        mRestaurantViewModel.getRestaurant(placeId).observe(this, event -> {
-            Restaurant restaurant = event.getContentIfNotHandled();
-            if (restaurant != null) {
-                mRestaurant = restaurant;
-                showRestaurant();
-
-            }
-        });
-
-    }
-
     private void showRestaurant() {
-        if ( !mRestaurant.getPlaceId().contains(placeId)) {
-            Log.e("testId2", mRestaurant.getPlaceId());
+        if (!mRestaurant.getPlaceId().contains(placeId)) {
             alertAutocompleteResult();
-            Log.e("testAuto", "true");
         } else {
             Intent intent = new Intent(this, DetailsRestaurantActivity.class);
             Gson gson = new Gson();
             String jsonSelectedRestaurant = gson.toJson(mRestaurant);
             intent.putExtra(DetailsRestaurantActivity.EXTRA_RESTAURANT, jsonSelectedRestaurant);
             startActivity(intent);
-        }
 
+
+        }
     }
 
     // -------------------------------------------------------------

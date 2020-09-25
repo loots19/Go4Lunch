@@ -32,7 +32,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
     @Override
     public RestaurantHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item_restaurant, parent, false);
-        return new RestaurantHolder(view, mOnItemListener);
+        return new RestaurantHolder(view, mOnItemListener,mContext);
     }
 
     @Override

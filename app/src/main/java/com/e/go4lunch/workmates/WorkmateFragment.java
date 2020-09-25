@@ -85,7 +85,7 @@ public class WorkmateFragment extends Fragment implements WorkmatesAdapter.OnNot
     // OpenDetail Activity when workmate click on item of RV
     // -----------------------------------------------------
     @Override
-    public void onNoteClick(int position) {
+    public void onItemClick(int position) {
         if (mWorkmatesList.get(position).getRestaurantChosen() != null) {
             Intent intent = new Intent(getContext(), DetailsRestaurantActivity.class);
             Gson gson = new Gson();

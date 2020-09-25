@@ -25,7 +25,7 @@ public class RestaurantViewModel extends ViewModel {
     private RestaurantRepository mRestaurantRepository;
     private WorkmatesRepository mWorkmatesRepository;
     private MutableLiveData<GetPlace> getPlace = new MutableLiveData<>();
-    private LiveData<MyPlace> myPlace;
+    private LiveData<List<Restaurant>> restaurant;
     private final MutableLiveData<Event<Object>> openDetailRestaurant = new MutableLiveData<>();
 
     // -----------------------------
@@ -34,18 +34,16 @@ public class RestaurantViewModel extends ViewModel {
     public RestaurantViewModel(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
         this.mRestaurantRepository = restaurantRepository;
         this.mWorkmatesRepository = workmatesRepository;
-        myPlace = Transformations.switchMap(getPlace, input -> {
+        restaurant = Transformations.switchMap(getPlace, input -> {
             if (input == null) {
                 return AbsentLiveData.create();
             }
-            return mRestaurantRepository.getNearbyPlace(input.type, input.location, input.radius);
+            return mRestaurantRepository.getRestaurantList(input.type, input.location, input.radius);
         });
 
     }
 
-    public LiveData<MyPlace> getMyPlace() {
-        return myPlace;
-    }
+
 
     public void setPlace(String type, String location, int radius) {
         Log.e("testLocation", location + radius);
@@ -80,12 +78,6 @@ public class RestaurantViewModel extends ViewModel {
     }
 
 
-    public void createRestaurant(String placeId, String name, String address, String urlPhoto, List<String> openHours,boolean openNow, Location location, double rating, String webSite, String phoneNumbers, List<Workmates> workmatesList) {
-        this.mRestaurantRepository.createRestaurant(placeId, name, address, urlPhoto, openHours,openNow, location, rating,webSite,phoneNumbers, workmatesList);
-    }
-
-
-
     // -----------
     // --- GET ---
     // -----------
@@ -94,7 +86,7 @@ public class RestaurantViewModel extends ViewModel {
     }
 
     public LiveData<List<Restaurant>> getRestaurantList() {
-        return mRestaurantRepository.getRestaurantList();
+        return restaurant;
 
     }
 

@@ -1,18 +1,30 @@
 package com.e.go4lunch;
 
+import android.app.Application;
+import android.content.Context;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.MutableLiveData;
+import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkerParameters;
 
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.restaurant.RestaurantViewModel;
+import com.e.go4lunch.service.MyNotificationWorker;
 import com.e.go4lunch.workmates.WorkmateViewModel;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestWatcher;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
@@ -20,10 +32,13 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class Go4LunchUnitTest {
@@ -49,7 +64,7 @@ public class Go4LunchUnitTest {
         MockitoAnnotations.initMocks(this);
         mWorkmates = new Workmates("ludotracks@hotmail.com", "reloots loots", "https://lh4.googleusercontent.com/-hzcZGYiTWAY/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucnP80n8qHJvJhVOfcB4xGdSrfsajw/s96-c/photo.jpg");
         mRestaurant = new Restaurant("ChIJJSKN0Ihe5kcRORctLjn_Npk", "Château de Méry - L'Hôtel", "9 Rue de l'Isle Adam, Méry-sur-Oise", "CmRaAAAAfJ9lwBAVN8Va0wPesjlfZL6o3ZQ0TY2PMeSBRujP2iR6d6mUXonK-3_U3vNBz1OxhhL_housk2BRuNl9P0wd8JsPOUONDpJm7g8Ut2m-3rFq2EJx3HIbA946B_KTRbQaEhDtw10IH4wySpy8th5d2iRrGhSkiM32Z2_lp1bbceHgdx2m8aN4qg",
-                false, null, 4.5, workmatesList);
+                null, null, 4.5,"http://www.chateaudemery.fr/","+33 1 30 36 00 82", workmatesList);
         mWorkmateViewModel = new WorkmateViewModel(mRestaurantRepository,mWorkmatesRepository);
 
     }
@@ -66,6 +81,15 @@ public class Go4LunchUnitTest {
         workmatesList.add(new Workmates("ludotracks@hotmail.com", "reloots loots", "https://lh4.googleusercontent.com/-hzcZGYiTWAY/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucnP80n8qHJvJhVOfcB4xGdSrfsajw/s96-c/photo.jpg"));
         assertEquals("reloots loots", workmatesList.get(0).getWorkmateName());
     }
+    @org.junit.Test
+    public void DeleteWorkmates(){
+        workmatesList.add(new Workmates("ludotracks@hotmail.com", "reloots loots", "https://lh4.googleusercontent.com/-hzcZGYiTWAY/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucnP80n8qHJvJhVOfcB4xGdSrfsajw/s96-c/photo.jpg"));
+        assertEquals("reloots loots", workmatesList.get(0).getWorkmateName());
+        Workmates workmatesTodelete = workmatesList.get(0);
+        workmatesList.remove(workmatesTodelete);
+        assertTrue(workmatesList.isEmpty());
+     }
+
     @Test
     public void getRestaurantInfo(){
         assertEquals("ChIJJSKN0Ihe5kcRORctLjn_Npk",mRestaurant.getPlaceId());
@@ -73,7 +97,7 @@ public class Go4LunchUnitTest {
         assertEquals("9 Rue de l'Isle Adam, Méry-sur-Oise",mRestaurant.getAddress());
         assertEquals("CmRaAAAAfJ9lwBAVN8Va0wPesjlfZL6o3ZQ0TY2PMeSBRujP2iR6d6mUXonK-3_U3vNBz1OxhhL_housk2BRuNl9P0wd8JsPOUONDpJm7g8Ut2m-3rFq2EJx3HIbA946B_KTRbQaEhDtw10IH4wySpy8th5d2iRrGhSkiM32Z2_lp1bbceHgdx2m8aN4qg",
                 mRestaurant.getUrlPhoto());
-        assertFalse(mRestaurant.getOpenNow());
+        assertNull (mRestaurant.getOpenHours());
         assertNull(mRestaurant.getLocation());
         assertEquals(4.5,mRestaurant.getRating());
         assertEquals(workmatesList,mRestaurant.getWorkmatesList());
@@ -81,9 +105,10 @@ public class Go4LunchUnitTest {
     @Test
     public void addRestaurantList(){
         restaurantList.add(new Restaurant("ChIJJSKN0Ihe5kcRORctLjn_Npk", "Château de Méry - L'Hôtel", "9 Rue de l'Isle Adam, Méry-sur-Oise", "CmRaAAAAfJ9lwBAVN8Va0wPesjlfZL6o3ZQ0TY2PMeSBRujP2iR6d6mUXonK-3_U3vNBz1OxhhL_housk2BRuNl9P0wd8JsPOUONDpJm7g8Ut2m-3rFq2EJx3HIbA946B_KTRbQaEhDtw10IH4wySpy8th5d2iRrGhSkiM32Z2_lp1bbceHgdx2m8aN4qg",
-                false, null, 4.5, workmatesList));
+                null, null, 4.5,"http://www.chateaudemery.fr/","+33 1 30 36 00 82", workmatesList));
        assertEquals("ChIJJSKN0Ihe5kcRORctLjn_Npk",restaurantList.get(0).getPlaceId());
        assertEquals(4.5,restaurantList.get(0).getRating());
+       assertEquals("Château de Méry - L'Hôtel",restaurantList.get(0).getName());
     }
 
     @org.junit.Test

@@ -122,8 +122,8 @@ public class WorkmateViewModel extends ViewModel {
     // ------------------------------------------------------------
     // Update in fireBase if workmate choose a restaurant for lunch
     // ------------------------------------------------------------
-    public void updateRestaurantChosen(String uid, Restaurant restaurantChoosen) {
-        mWorkmatesRepository.updateRestaurantChosen(uid, restaurantChoosen);
+    public void updateRestaurantChosen(String uid, Restaurant restaurantChosen) {
+        mWorkmatesRepository.updateRestaurantChosen(uid, restaurantChosen);
     }
 
 
