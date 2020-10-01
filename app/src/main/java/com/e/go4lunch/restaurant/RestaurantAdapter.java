@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
-import com.e.go4lunch.models.myPlace.Result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +27,13 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantHolder> {
 
     }
 
+
     @NonNull
     @Override
     public RestaurantHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item_restaurant, parent, false);
-        return new RestaurantHolder(view, mOnItemListener,mContext);
+
+        return new RestaurantHolder(view, mOnItemListener, mContext);
     }
 
     @Override

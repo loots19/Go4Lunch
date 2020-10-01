@@ -31,11 +31,9 @@ public class RestaurantRepository {
 
     private static RestaurantRepository instance;
     private List<Workmates> mWorkmatesList = new ArrayList<>();
-    private List<Restaurant> mRestaurants = new ArrayList<>();
     private CollectionReference mCollectionReference;
     private com.e.go4lunch.models.placeDetail.Location mLocation;
     private String address, placeId, webSite, phoneNumber, placeId1, urlPhoto, name;
-    private Boolean restaurantsExists = false;
     private double rating;
     private List<Period> openHours;
 
@@ -64,7 +62,7 @@ public class RestaurantRepository {
     // -----------------------------
     // --- GET PLACE FROM NEARBY ---
     // -----------------------------
-
+    // check if restaurant list is not empty, else get nearby result and combine this with place detail.
     public MutableLiveData<List<Restaurant>> getRestaurantList(String type, String location, int radius) {
         MutableLiveData<List<Restaurant>> newData = new MutableLiveData<>();
         mCollectionReference.addSnapshotListener((queryDocumentSnapshots, e) -> {
@@ -82,7 +80,7 @@ public class RestaurantRepository {
                 } else {
                     mApiRequest.getNearbyPlaces(type, location, radius).enqueue(new Callback<MyPlace>() {
                         @Override
-                        public void onResponse(@NotNull Call<MyPlace> call, Response<MyPlace> response) {
+                        public void onResponse(@NotNull Call<MyPlace> call, @NotNull Response<MyPlace> response) {
                             if (response.body() != null) {
                                 int size = response.body().getResults().size();
                                 List<Restaurant> restaurants = new ArrayList<>();
@@ -92,12 +90,13 @@ public class RestaurantRepository {
                                     getRestaurantDetail(placeId, newData, restaurants, size);
 
                                 }
+
                             }
 
                         }
 
                         @Override
-                        public void onFailure(@NotNull Call<MyPlace> call, Throwable t) {
+                        public void onFailure(@NotNull Call<MyPlace> call, @NotNull Throwable t) {
                             newData.setValue(null);
 
                         }
@@ -114,45 +113,38 @@ public class RestaurantRepository {
     // -----------------------------
     // --- GET PLACE DETAIL ---
     // -----------------------------
-
-    public void getRestaurantDetail(String placeId, MutableLiveData<List<Restaurant>> newData, List<Restaurant> restaurants, int size) {
+    private void getRestaurantDetail(String placeId, MutableLiveData<List<Restaurant>> newData, List<Restaurant> restaurants, int size) {
         mApiRequest.getDetailsRestaurant(placeId).enqueue(new Callback<PlaceDetail>() {
             @Override
-            public void onResponse(@NotNull Call<PlaceDetail> call, Response<PlaceDetail> response) {
+            public void onResponse(@NotNull Call<PlaceDetail> call, @NotNull Response<PlaceDetail> response) {
                 if (response.body() != null) {
+                    webSite = response.body().getResult().getWebsite();
                     placeId1 = response.body().getResult().getPlaceId();
                     phoneNumber = response.body().getResult().getInternationalPhoneNumber();
-                    webSite = response.body().getResult().getWebsite();
-                    Log.e("website", String.valueOf(webSite));
+                    mLocation = response.body().getResult().getGeometry().getLocation();
                     name = response.body().getResult().getName();
                     address = response.body().getResult().getVicinity();
+                    rating = response.body().getResult().getRating();
+
                     if (response.body().getResult().getPhotos() != null) {
                         urlPhoto = String.valueOf(response.body().getResult().getPhotos().get(0).getPhotoReference());
                     }
-                    rating = response.body().getResult().getRating();
                     if (response.body().getResult().getOpeningHours() != null) {
                         openHours = response.body().getResult().getOpeningHours().getPeriods();
                     }
-                    mLocation = response.body().getResult().getGeometry().getLocation();
-                    Log.e("location", String.valueOf(mLocation));
-
                     Restaurant restaurant = new Restaurant(placeId1, name, address, urlPhoto, openHours, mLocation, rating, webSite, phoneNumber, mWorkmatesList);
-                    mRestaurants.add(restaurant);
                     restaurants.add(restaurant);
+
                     Log.e("restaurants", restaurants.size() + "," + size);
                     if (restaurants.size() == size) {
                         newData.setValue(restaurants);
                     }
                     createRestaurant(placeId1, name, address, urlPhoto, openHours, mLocation, rating, webSite, phoneNumber, mWorkmatesList);
-
-
-
                 }
-
             }
 
             @Override
-            public void onFailure(@NotNull Call<PlaceDetail> call, Throwable t) {
+            public void onFailure(@NotNull Call<PlaceDetail> call, @NotNull Throwable t) {
                 newData.setValue(null);
 
             }
@@ -162,8 +154,7 @@ public class RestaurantRepository {
     // --------------
     // --- CREATE ---
     // --------------
-
-    public void createRestaurant(String placeId, String name, String address, String urlPhoto, List<Period> openHours, Location location, double rating, String webSite, String phoneNumber, List<Workmates> workmatesList) {
+    private void createRestaurant(String placeId, String name, String address, String urlPhoto, List<Period> openHours, Location location, double rating, String webSite, String phoneNumber, List<Workmates> workmatesList) {
         Restaurant restaurantToCreate = new Restaurant(placeId, name, address, urlPhoto, openHours, location, rating, webSite, phoneNumber, workmatesList);
         getRestaurantCollection().document(placeId).set(restaurantToCreate);
     }
@@ -174,6 +165,23 @@ public class RestaurantRepository {
 
     public Task<DocumentSnapshot> getRestaurant1(String placeId) {
         return getRestaurantCollection().document(placeId).get();
+    }
+
+    // this method cause event can not be null, so for result of autocomplete i need this one.
+    public MutableLiveData<Restaurant> getRestaurantAuto(String placeId) {
+        MutableLiveData<Restaurant> mutableLiveData = new MutableLiveData<>();
+        mCollectionReference.document(placeId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Restaurant restaurant = documentSnapshot.toObject(Restaurant.class);
+                mutableLiveData.postValue(restaurant);
+
+            } else {
+                mutableLiveData.postValue(null);
+
+
+            }
+        });
+        return mutableLiveData;
     }
 
     public MutableLiveData<Event<Restaurant>> getRestaurant(String placeId) {
@@ -187,25 +195,6 @@ public class RestaurantRepository {
         });
         return mutableLiveData;
     }
-
-
-    // ----------------- Check if restaurants exists -----------------
-    private void checkRestaurantExist() {
-        if (mRestaurants != null) {
-            int size = mRestaurants.size();
-            for (int i = 0; i < size; i++) {
-                if (mRestaurants.get(i).getPlaceId().equals(placeId)) {
-                    restaurantsExists = true;
-                    break;
-                }
-                if (!restaurantsExists) {
-                    createRestaurant(placeId1, name, address, urlPhoto, openHours, mLocation, rating, webSite, phoneNumber, mWorkmatesList);
-
-                }
-            }
-        }
-    }
-
 
     // --------------
     // --- UPDATE ---

@@ -25,15 +25,15 @@ public class Restaurant {
     }
 
     // Constructor for my place
-    public Restaurant(String placeId, String name, String address, String urlPhoto, List<Period> openHours, com.e.go4lunch.models.placeDetail.Location location, double rating) {
-        this.placeId = placeId;
-        this.name = name;
-        this.address = address;
-        this.urlPhoto = urlPhoto;
-        this.openHours = openHours;
-        mLocation = location;
-        this.rating = rating;
-    }
+ //  public Restaurant(String placeId, String name, String address, String urlPhoto, List<Period> openHours, com.e.go4lunch.models.placeDetail.Location location, double rating) {
+ //      this.placeId = placeId;
+ //      this.name = name;
+ //      this.address = address;
+ //      this.urlPhoto = urlPhoto;
+ //      this.openHours = openHours;
+ //      mLocation = location;
+ //      this.rating = rating;
+ //  }
 
     // Constructor for FireBase
     public Restaurant(String placeId, String name, String address, String urlPhoto, List<Period> openHours, com.e.go4lunch.models.placeDetail.Location location, double rating, String webSite, String phoneNumber, List<Workmates> workmatesList) {
@@ -115,7 +115,7 @@ public class Restaurant {
     }
 
     public void setWebSite(String webSite) {
-        webSite = webSite;
+        this.webSite = webSite;
     }
 
     public void setOpenHours(List<Period> openHours) {

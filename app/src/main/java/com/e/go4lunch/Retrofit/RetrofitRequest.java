@@ -11,13 +11,12 @@ public class RetrofitRequest {
 
 
     private static Retrofit retrofit = buildRetrofit().build();
-
     private static ApiRequest mApiRequest = retrofit.create(ApiRequest.class);
 
     public static ApiRequest getApiRequest() {
         return mApiRequest;
     }
-
+    // Setting Up the Retrofit Interface
     private static Retrofit.Builder buildRetrofit() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);

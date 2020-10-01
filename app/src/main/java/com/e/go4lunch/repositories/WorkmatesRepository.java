@@ -14,14 +14,12 @@ import com.e.go4lunch.util.Event;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,24 +30,23 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class WorkmatesRepository {
 
-    private static final String COLLECTION_NAME = "workmates";
     private Workmates mWorkmates;
 
 
     // ----------------------------
     // --- COLLECTION REFERENCE ---
     // ----------------------------
-
     private static CollectionReference getWorkmatesCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+        return FirebaseFirestore.getInstance().collection("workmates");
     }
+
     // --------------
     // --- CREATE ---
     // --------------
-
-    public Task<Void> createWorkmates(String uid, String workmateName, String workmateMail, String urlPicture) {
+    public Task<Void> createWorkmates(String workmateName, String workmateMail, String urlPicture) {
         Workmates workmatesToCreate = new Workmates(workmateName, workmateMail, urlPicture);
-        return getWorkmatesCollection().document(uid).set(workmatesToCreate);
+        String uid = FirebaseAuth.getInstance().getUid();
+        return getWorkmatesCollection().document(Objects.requireNonNull(uid)).set(workmatesToCreate);
 
     }
 
@@ -62,7 +59,6 @@ public class WorkmatesRepository {
             if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 this.fetchCurrentUserFromFiresTore();
-
                 if (user != null) {
                     Toast.makeText(getApplicationContext(), "" + user.getEmail(), Toast.LENGTH_SHORT).show();
                 }
@@ -81,7 +77,7 @@ public class WorkmatesRepository {
 
     private void fetchCurrentUserFromFiresTore() {
         if (isCurrentUserLogged()) {
-            this.getWorkmate(Objects.requireNonNull(getCurrentUser()).getUid());
+            this.getCurrentWorkmate();
             if (mWorkmates == null) {
                 createUserInFiresTore();
             } else {
@@ -97,23 +93,26 @@ public class WorkmatesRepository {
                 Objects.requireNonNull(this.getCurrentUser().getPhotoUrl()).toString() : null;
         String email = getCurrentUser().getEmail();
         String username = getCurrentUser().getDisplayName();
-        String uid = getCurrentUser().getUid();
-        this.createWorkmates(uid, email, username, urlPicture)
+        this.createWorkmates(email, username, urlPicture)
                 .addOnFailureListener(this.onFailureListener())
-                .addOnSuccessListener(aVoid -> fetchCurrentUserFromFiresTore());
+                .addOnSuccessListener(aVoid -> {
+                });
 
     }
+
+
     // --------------
     // --- GET ---
     // --------------
-
-    public Task<DocumentSnapshot> getWorkmate1(String uid) {
-        return getWorkmatesCollection().document(uid).get();
+    public Task<DocumentSnapshot> getWorkmate() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        return getWorkmatesCollection().document(Objects.requireNonNull(uid)).get();
     }
 
-    public MutableLiveData<Workmates> getWorkmateName(String uid) {
+    public MutableLiveData<Workmates> getWorkmateName() {
         MutableLiveData<Workmates> mutableLiveData = new MutableLiveData<>();
-        getWorkmatesCollection().document(uid).get().addOnSuccessListener(documentSnapshot -> {
+        String uid = FirebaseAuth.getInstance().getUid();
+        getWorkmatesCollection().document(Objects.requireNonNull(uid)).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 Workmates workmates = documentSnapshot.toObject(Workmates.class);
                 mutableLiveData.setValue(workmates);
@@ -122,12 +121,14 @@ public class WorkmatesRepository {
         return mutableLiveData;
     }
 
-    public MutableLiveData<Event<Workmates>> getWorkmate(String uid) {
+    public MutableLiveData<Event<Workmates>> getCurrentWorkmate() {
         MutableLiveData<Event<Workmates>> mutableLiveData = new MutableLiveData<>();
-        getWorkmatesCollection().document(uid).get().addOnSuccessListener(documentSnapshot -> {
+        String uid = FirebaseAuth.getInstance().getUid();
+        getWorkmatesCollection().document(Objects.requireNonNull(uid)).get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
+
                 Workmates workmates = documentSnapshot.toObject(Workmates.class);
-                mutableLiveData.setValue(new Event<>(workmates));
+                mutableLiveData.postValue(new Event<>(workmates));
             }
         });
         return mutableLiveData;
@@ -146,22 +147,28 @@ public class WorkmatesRepository {
                     workmate.add(workmates);
                 }
                 mWorkmateList.setValue(workmate);
+
             }
         });
 
         return mWorkmateList;
 
     }
+
+
     // --------------
     // --- UPDATE ---
     // --------------
 
-    public void updateRestaurantFavorite(String uid, List<Restaurant> listRestaurantFavorite) {
-        getWorkmatesCollection().document(uid).update("listRestaurantFavorite", listRestaurantFavorite);
+    public void updateRestaurantFavorite(List<Restaurant> listRestaurantFavorite) {
+        String uid = FirebaseAuth.getInstance().getUid();
+        getWorkmatesCollection().document(Objects.requireNonNull(uid)).update("listRestaurantFavorite", listRestaurantFavorite);
     }
 
-    public void updateRestaurantChosen(String uid, Restaurant restaurantChosen) {
-        getWorkmatesCollection().document(uid).update("restaurantChosen", restaurantChosen);
+    public void updateRestaurantChosen(Restaurant restaurantChosen) {
+        String uid = FirebaseAuth.getInstance().getUid();
+        getWorkmatesCollection().document(Objects.requireNonNull(uid)).update("restaurantChosen", restaurantChosen);
+
     }
 
     private void updateUserRepository(Workmates workmates) {
@@ -184,8 +191,6 @@ public class WorkmatesRepository {
 
     private OnFailureListener onFailureListener() {
         return e -> Toast.makeText(getApplicationContext(), "unknown_error", Toast.LENGTH_LONG).show();
-
-
     }
 
 

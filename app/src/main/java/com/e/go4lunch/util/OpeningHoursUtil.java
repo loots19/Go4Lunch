@@ -2,9 +2,9 @@ package com.e.go4lunch.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
+import android.text.Html;
 import android.widget.TextView;
-
-import androidx.core.content.ContextCompat;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
@@ -49,7 +49,7 @@ public class OpeningHoursUtil {
         day = cal.get(Calendar.DAY_OF_WEEK);
     }
 
-    @SuppressLint("ResourceAsColor")
+
     private void getOpeningHoursToday() {
         //Get list of opening hours for the restaurant
         List<Period> openHours = mRestaurant.getOpenHours();
@@ -66,7 +66,6 @@ public class OpeningHoursUtil {
                 break;
             case Calendar.TUESDAY:
                 dayOfWeek = 2;
-                // etc.
                 break;
             case Calendar.WEDNESDAY:
                 dayOfWeek = 3;
@@ -83,7 +82,9 @@ public class OpeningHoursUtil {
         }
 
         for (int i = 0; i < openHours.size(); i++) {
+
             //Find the corresponding open hours object in list depending on weekday
+
             if (openHours.get(i).getOpen().getDay() == dayOfWeek) {
 
                 //Opening and closing lunch
@@ -95,13 +96,11 @@ public class OpeningHoursUtil {
                 //check if restaurant is open and if is closing in 30 minutes;
                 if ((closingInt - localTime) < 30 && (localTime - closingInt) < 0) {
                     mTvTime.setText(R.string.closing_soon);
-
-
+                    mTvTime.setTextColor(Color.RED);
                 }
                 //check If restaurant is closed
                 else if (localTime > closingInt) {
                     mTvTime.setText(R.string.Close);
-                    mTvTime.setTextColor(R.color.quantum_yellowA100);
 
                 }
                 //check If restaurant is not yet open for lunch
@@ -113,15 +112,13 @@ public class OpeningHoursUtil {
                 }
                 // check if restaurant is open, show closing time
                 else if (localTime < closingInt) {
-
                     String str = Integer.toString(closingInt);
-                    str = new StringBuilder(str).insert(str.length() - 2, ".").toString();
+                    str = new StringBuilder(str).insert(str.length() -2, ".").toString();
                     String text = mContext.getResources().getString(R.string.OpenUntil) + " " + str + "pm";
                     mTvTime.setText(text);
 
                 }
             }
-
         }
     }
 }

@@ -1,15 +1,15 @@
 package com.e.go4lunch.restaurant;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
-import com.e.go4lunch.models.myPlace.Location;
-import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
@@ -44,8 +42,6 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     private List<Restaurant> mRestaurantList = new ArrayList<>();
 
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -53,8 +49,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         ButterKnife.bind(this, view);
 
         initialization();
-        configureViewModel() ;
-      //  getRestaurantList();
+        configureViewModel();
 
         return view;
 
@@ -68,15 +63,13 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     // ---------------------
     // Configuring Observers
     // ---------------------
-
     private void getRestaurantList() {
         mRestaurantViewModel.getRestaurantList().observe(getViewLifecycleOwner(), restaurants -> {
-           if (restaurants != null) {
-               mRestaurantList = restaurants;
-               Log.e("restoFrag", mRestaurantList.size() +",");
-               mAdapter.setRestaurants(mRestaurantList);
-               mAdapter.notifyDataSetChanged();
-           }
+            if (restaurants != null) {
+                mRestaurantList = restaurants;
+                mAdapter.setRestaurants(mRestaurantList);
+                mAdapter.notifyDataSetChanged();
+            }
 
         });
     }
@@ -97,15 +90,16 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
 
     }
 
+
     // ---------------------
     // Configuring ViewModel
     // ---------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
         this.mRestaurantViewModel = new ViewModelProvider(this, mViewModelFactory).get(RestaurantViewModel.class);
-       String lat = App.getInstance().getLat();
-       String lng = App.getInstance().getLng();
-       mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
+        String lat = App.getInstance().getLat();
+        String lng = App.getInstance().getLng();
+        mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
     }
 
     // ---------------------------------------------------
@@ -121,5 +115,6 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         startActivity((intent));
 
     }
+
 
 }

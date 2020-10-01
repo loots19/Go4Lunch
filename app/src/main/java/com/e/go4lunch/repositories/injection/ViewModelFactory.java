@@ -23,7 +23,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(RestaurantViewModel.class)) {
-            return (T) new RestaurantViewModel(mRestaurantRepository,mWorkmatesRepository);
+            return (T) new RestaurantViewModel(mRestaurantRepository);
         }
 
         if (modelClass.isAssignableFrom(WorkmateViewModel.class)) {

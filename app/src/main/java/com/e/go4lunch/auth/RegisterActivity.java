@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -126,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void createWorkmates() {
-        mWorkmateViewModel.createWorkmate(FirebaseAuth.getInstance().getCurrentUser().getUid(), mEmailRegister.getText().toString(), mNameRegister.getText().toString().trim(),
+        mWorkmateViewModel.createWorkmate(mEmailRegister.getText().toString(), mNameRegister.getText().toString().trim(),
                 null);
     }
 
@@ -151,6 +152,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
     }
+
 
 
 }

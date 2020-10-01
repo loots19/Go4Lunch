@@ -18,7 +18,6 @@ import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
-import com.e.go4lunch.util.Event;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
@@ -42,8 +41,7 @@ public class MyNotificationWorker extends Worker {
 
 
     private void getCurrentWorkmate() {
-        String workmateUid = FirebaseAuth.getInstance().getUid();
-        this.mWorkmatesRepository.getWorkmate1(workmateUid).addOnSuccessListener(documentSnapshot -> {
+        this.mWorkmatesRepository.getWorkmate().addOnSuccessListener(documentSnapshot -> {
             currentWorkmate = documentSnapshot.toObject(Workmates.class);
             if (Objects.requireNonNull(currentWorkmate).getRestaurantChosen() != null) {
                 getRestaurant(currentWorkmate.getRestaurantChosen().getPlaceId());

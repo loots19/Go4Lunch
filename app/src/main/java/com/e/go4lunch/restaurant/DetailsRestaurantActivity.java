@@ -22,19 +22,16 @@ import com.bumptech.glide.Glide;
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.models.placeDetail.ResultDetail;
 import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.util.Constants;
 import com.e.go4lunch.workmates.WorkmateViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,8 +64,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     public static final String EXTRA_RESTAURANT = "restaurant";
     private RestaurantViewModel mRestaurantViewModel;
     private WorkmateViewModel mWorkmateViewModel;
-    private ResultDetail mResultDetail;
-    private String placeId, workmateUid, phone, webSite;
+    private String placeId, phone, webSite;
     private Restaurant mRestaurant;
     private Workmates currentWorkmate;
     private List<Restaurant> mRestaurantListFav, mRestaurantList;
@@ -82,17 +78,19 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
 
+
+        configureViewModelRestaurant();
+        configureViewModelWorkmate();
         getIncomingIntent();
         configureRecyclerView();
-        configureViewModelRestaurant();
         getRestaurantList();
-        configureViewModelWorkmate();
-        getCurrentWorkmate();
-
-        userActionClick();
         getRestaurant();
+        getCurrentWorkmate();
+        userActionClick();
+
 
     }
+
 
     // ----------------------------------------------------------------
     // get intent from recyclerView, map, mainActivity and show details
@@ -146,7 +144,6 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         if (webSite != null) {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
-            intent.addCategory(Intent.CATEGORY_BROWSABLE);
             intent.setData(Uri.parse(String.valueOf(webSite)));
             startActivity(intent);
         } else {
@@ -163,7 +160,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
         mButtonWeb.setOnClickListener(v -> openWebsite());
 
-        mfab.setOnClickListener(v -> DetailsRestaurantActivity.this.actionOnFab());
+        mfab.setOnClickListener(v -> actionOnFab());
 
         mButtonLike.setOnClickListener(v -> actionOnLikeButton());
 
@@ -185,14 +182,14 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         String lng = App.getInstance().getLng();
         mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
 
+
     }
 
     // ---------------------
     // Configuring Observers
     // ---------------------
     private void getCurrentWorkmate() {
-        workmateUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        mWorkmateViewModel.getWorkmate(workmateUid).observe(this, event -> {
+        mWorkmateViewModel.getCurrentWorkmate().observe(this, event -> {
             Workmates workmates = event.getContentIfNotHandled();
             if (workmates != null) {
                 currentWorkmate = workmates;
@@ -204,6 +201,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     }
 
+
     private void getRestaurant() {
         mRestaurantViewModel.getRestaurant(placeId).observe(this, event -> {
             Restaurant restaurant = event.getContentIfNotHandled();
@@ -211,7 +209,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
                 mWorkmatesList = restaurant.getWorkmatesList();
                 mRestaurant.setWorkmatesList(mWorkmatesList);
                 mRestaurantDetailAdapter.setWorkmates(mWorkmatesList);
+
             }
+
 
         });
     }
@@ -220,10 +220,10 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         mRestaurantViewModel.getRestaurantList().observe(this, restaurants -> {
             if (restaurants != null) {
                 mRestaurantList = restaurants;
-                if (!mRestaurantList.contains(mRestaurant)) {
-                    getCurrentWorkmate();
-                }
+
+
             }
+
         });
     }
 
@@ -242,7 +242,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         } else {
             mRestaurantListFav.remove(mRestaurant);
         }
-        this.mWorkmateViewModel.updateIsRestaurantFavorite(workmateUid, mRestaurantListFav);
+        this.mWorkmateViewModel.updateIsRestaurantFavorite(mRestaurantListFav);
         this.updateIVLike();
 
     }
@@ -273,7 +273,7 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             this.mfab.setImageResource(R.drawable.ic_check_circle_black_24dp);
             this.mWorkmatesList.add(workmatesChoice);
             this.currentWorkmate.setRestaurantChosen(mRestaurant);
-            this.mWorkmateViewModel.updateRestaurantChosen(workmateUid, currentWorkmate.getRestaurantChosen());
+            this.mWorkmateViewModel.updateRestaurantChosen(currentWorkmate.getRestaurantChosen());
             this.mRestaurantViewModel.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
             this.mRestaurantDetailAdapter.notifyDataSetChanged();
 
@@ -281,16 +281,17 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
             updateSelectedRestaurant(currentWorkmate.getRestaurantChosen());
             this.mfab.setImageResource(R.drawable.ic_check_black_24dp);
             this.mWorkmatesList.remove(workmatesChoice);
-            this.mRestaurantViewModel.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
             this.currentWorkmate.setRestaurantChosen(null);
-            this.mWorkmateViewModel.updateRestaurantChosen(workmateUid, currentWorkmate.getRestaurantChosen());
+            this.mWorkmateViewModel.updateRestaurantChosen(currentWorkmate.getRestaurantChosen());
+            this.mRestaurantViewModel.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
             this.mRestaurantDetailAdapter.notifyDataSetChanged();
             Toast.makeText(this, R.string.you_changed_your_choice, Toast.LENGTH_SHORT).show();
 
         }
-
     }
-
+    // ------------
+    // updating Fab
+    // ------------
     private void updateFab() {
         if (this.currentWorkmate.getRestaurantChosen() != null) {
             if (currentWorkmate.getRestaurantChosen().equals(mRestaurant))
@@ -300,12 +301,14 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
 
     }
-
+    // ----------------------
+    // updating workmatesList
+    // ----------------------
     private void updateSelectedRestaurant(Restaurant restaurant) {
         if (mRestaurantList.contains(restaurant)) {
             Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
             int in = mRestaurantList.indexOf(restaurant);
-            List<Workmates> workmatesList = mRestaurant.getWorkmatesList();
+            List<Workmates> workmatesList = mRestaurantList.get(in).getWorkmatesList();
             workmatesList.remove(workmatesChoice);
             mRestaurantViewModel.updateRestaurantWorkmateList(restaurant.getPlaceId(), workmatesList);
         }

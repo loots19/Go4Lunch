@@ -51,7 +51,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     private RestaurantAdapter.OnItemListener OnItemListener;
 
 
-    public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnItemListener onItemListener,Context context) {
+    public RestaurantHolder(@NonNull View itemView, RestaurantAdapter.OnItemListener onItemListener, Context context) {
         super(itemView);
         ButterKnife.bind(this, itemView);
         this.OnItemListener = onItemListener;
@@ -70,7 +70,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
 
     public void update(Restaurant restaurant) {
         //---------- Opening ----------
-        this.displayOpeningHours(restaurant,mTvTime,mContext);
+        this.displayOpeningHours(restaurant, mTvTime, mContext);
 
         //---------- Name ----------
         this.mTvName.setText(restaurant.getName());
@@ -126,23 +126,20 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         mTvMeters.setText(rounded + " KMS");
 
     }
+
     // ------------------------------
     // set opening hours of the place
     // ------------------------------
-
-    private void displayOpeningHours(Restaurant restaurant,TextView textView,Context context) {
+    private void displayOpeningHours(Restaurant restaurant, TextView textView, Context context) {
         if (restaurant.getOpenHours() != null) {
-            OpeningHoursUtil openingHoursUtil = new OpeningHoursUtil(restaurant,textView,context);
+            OpeningHoursUtil openingHoursUtil = new OpeningHoursUtil(restaurant, textView, context);
             openingHoursUtil.checkOpening();
         }
-
-
     }
 
-
     // ----------------------
-// set photo of the place
-// ----------------------
+    // set photo of the place
+    // ----------------------
     private void displayPhotoOfRestaurant(Restaurant restaurant) {
         if (restaurant.getUrlPhoto() != null) {
             Glide.with(itemView)
@@ -155,8 +152,8 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     }
 
     // -----------------------
-// set number of workmates
-// -----------------------
+    // set number of workmates
+    // -----------------------
     @SuppressLint("SetTextI18n")
     private void displayWorkmatesNumbers(Restaurant restaurant) {
         if (restaurant.getWorkmatesList() != null && restaurant.getWorkmatesList().size() > 0) {
@@ -168,9 +165,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
             mImageViewWorkmates.setVisibility(View.INVISIBLE);
 
         }
-
     }
-
 }
 
 

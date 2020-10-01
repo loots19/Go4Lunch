@@ -23,7 +23,6 @@ import java.util.Objects;
 
 public class RestaurantViewModel extends ViewModel {
     private RestaurantRepository mRestaurantRepository;
-    private WorkmatesRepository mWorkmatesRepository;
     private MutableLiveData<GetPlace> getPlace = new MutableLiveData<>();
     private LiveData<List<Restaurant>> restaurant;
     private final MutableLiveData<Event<Object>> openDetailRestaurant = new MutableLiveData<>();
@@ -31,9 +30,8 @@ public class RestaurantViewModel extends ViewModel {
     // -----------------------------
     // --- GET PLACE FROM NEARBY ---
     // -----------------------------
-    public RestaurantViewModel(RestaurantRepository restaurantRepository, WorkmatesRepository workmatesRepository) {
+    public RestaurantViewModel(RestaurantRepository restaurantRepository) {
         this.mRestaurantRepository = restaurantRepository;
-        this.mWorkmatesRepository = workmatesRepository;
         restaurant = Transformations.switchMap(getPlace, input -> {
             if (input == null) {
                 return AbsentLiveData.create();
@@ -42,7 +40,6 @@ public class RestaurantViewModel extends ViewModel {
         });
 
     }
-
 
 
     public void setPlace(String type, String location, int radius) {
@@ -73,14 +70,13 @@ public class RestaurantViewModel extends ViewModel {
 
     }
 
-    public LiveData<Event<Object>> getOpenDetailRestaurant() {
-        return openDetailRestaurant;
-    }
-
-
     // -----------
     // --- GET ---
     // -----------
+    public LiveData<Restaurant> getRestaurantAuto(String placeId){
+        return mRestaurantRepository.getRestaurantAuto(placeId);
+    }
+
     public LiveData<Event<Restaurant>> getRestaurant(String placeId) {
         return mRestaurantRepository.getRestaurant(placeId);
     }
@@ -88,6 +84,9 @@ public class RestaurantViewModel extends ViewModel {
     public LiveData<List<Restaurant>> getRestaurantList() {
         return restaurant;
 
+    }
+    public LiveData<Event<Object>> getOpenDetailRestaurant() {
+        return openDetailRestaurant;
     }
 
     // --------------

@@ -1,7 +1,5 @@
 package com.e.go4lunch.models;
 
-import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,7 +15,6 @@ public class Workmates {
 
 
     public Workmates() {
-
     }
 
 
@@ -26,6 +23,7 @@ public class Workmates {
         this.workmateName = workmateName;
         this.urlPicture = urlPicture;
         this.listRestaurantFavorite = new ArrayList<>();
+
 
     }
 
@@ -70,9 +68,10 @@ public class Workmates {
         this.urlPicture = urlPicture;
     }
 
-    public void setRestaurantChosen(Restaurant restaurantChoosen) {
-        this.restaurantChosen = restaurantChoosen;
+    public void setRestaurantChosen(Restaurant restaurantChosen) {
+        this.restaurantChosen = restaurantChosen;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -53,7 +53,6 @@ public class AuthActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.auth_main);
         ButterKnife.bind(this);
 
@@ -119,7 +118,6 @@ public class AuthActivity extends BaseActivity {
     // ------------------
     // NAVIGATION
     // ------------------
-
     private void startSignInActivity() {
         startActivityForResult(
                 AuthUI.getInstance()
@@ -196,23 +194,23 @@ public class AuthActivity extends BaseActivity {
     // -------------------------
     // Check if workmates exists
     // -------------------------
-    private void checkWorkmateExists() {
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            if (mWorkmatesList != null) {
-                int size = mWorkmatesList.size();
-                for (int i = 0; i < size; i++) {
-                    if (mWorkmatesList.get(i).getWorkmateEmail().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
-                        workmatesExists = true;
-                        break;
-                    }
-                }
-                if (workmatesExists) {
-                    startMapsActivity();
-                }
-            }
-        }
+   private void checkWorkmateExists() {
+       if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+           if (mWorkmatesList != null) {
+               int size = mWorkmatesList.size();
+               for (int i = 0; i < size; i++) {
+                   if (mWorkmatesList.get(i).getWorkmateEmail().equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())) {
+                       workmatesExists = true;
+                       break;
+                   }
+               }
+               if (workmatesExists) {
+                   startMapsActivity();
+               }
+           }
+       }
 
-    }
+   }
     // -----------------------------------------
     // if workmates is new create it in fireBase
     // -----------------------------------------

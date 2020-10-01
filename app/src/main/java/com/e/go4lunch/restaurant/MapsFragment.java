@@ -24,19 +24,18 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.e.go4lunch.R;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.repositories.injection.App;
 import com.e.go4lunch.repositories.injection.Injection;
 import com.e.go4lunch.repositories.injection.ViewModelFactory;
 import com.e.go4lunch.util.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -50,6 +49,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
@@ -82,14 +88,10 @@ public class MapsFragment extends Fragment implements
     private static final String LAT = "LAT";
     private static final String LNG = "LNG";
     private GoogleMap mMap;
-    private FusedLocationProviderClient fusedLocationClient;
     private GoogleApiClient mGoogleApiClient;
     private RestaurantViewModel mRestaurantViewModel;
     private List<Restaurant> mRestaurantList = new ArrayList<>();
-    private Double lat, lng, rating;
-    private List<Workmates> mWorkmatesList = new ArrayList<>();
-    private String placeId, name, address, urlPhoto;
-    private com.e.go4lunch.models.placeDetail.Location location;
+    private Double lat, lng;
 
 
     // ----------------- Required empty public constructor // -----------------
@@ -206,7 +208,6 @@ public class MapsFragment extends Fragment implements
     }
 
     private void saveLatLng(double lat, double lng) {
-
         SharedPreferences prefs = requireActivity().getSharedPreferences("MY_PREF", Activity.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = prefs.edit();
         mEditor.putString(LAT, String.valueOf(lat));
@@ -251,8 +252,7 @@ public class MapsFragment extends Fragment implements
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
         this.mRestaurantViewModel = new ViewModelProvider(this, mViewModelFactory).get(RestaurantViewModel.class);
-        String lat = App.getInstance().getLat();
-        String lng = App.getInstance().getLng();
+
     }
 
     // ---------------------
@@ -262,7 +262,6 @@ public class MapsFragment extends Fragment implements
     private void getRestaurantList() {
         mRestaurantViewModel.getRestaurantList().observe(getViewLifecycleOwner(), restaurants -> {
             mRestaurantList = restaurants;
-            Log.e("map",mRestaurantList.size()+",");
             int size = restaurants.size();
             for (int i = 0; i < size; i++) {
                 Restaurant restaurant = restaurants.get(i);
@@ -273,7 +272,8 @@ public class MapsFragment extends Fragment implements
                 LatLng latLng = new LatLng(lat, lng);
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
+                // mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
                 if (restaurant.getWorkmatesList().size() > 0 && restaurant.getWorkmatesList() != null) {
                     if (mRestaurantList.contains(restaurant)) {
                         markerOptions.icon(MapsFragment.this.bitmapDescriptorFromVector1(MapsFragment.this.getContext()));
@@ -321,13 +321,15 @@ public class MapsFragment extends Fragment implements
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
-
+    //  Launch detail activity
     private void lunchDetailActivity(Marker marker) {
         String placeId = (String) marker.getTag();
         Intent intent = new Intent(getContext(), DetailsRestaurantActivity.class);
         intent.putExtra(EXTRA_RESTAURANT, placeId);
         startActivity(intent);
     }
+
+
 
 
 }

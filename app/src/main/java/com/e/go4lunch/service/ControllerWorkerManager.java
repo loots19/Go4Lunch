@@ -1,5 +1,6 @@
 package com.e.go4lunch.service;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,6 +12,10 @@ import androidx.work.Constraints;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
+
+import com.e.go4lunch.models.Restaurant;
+import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
+import com.google.gson.Gson;
 
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
@@ -121,5 +126,7 @@ public abstract class ControllerWorkerManager {
         }
         context.startActivity(intent);
     }
+
+
 
 }

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesHolder> {
 
-
+    // ----------------- FOR DATA -----------------
     private List<Workmates> mWorkmates;
     private OnNoteListener mOnNoteListener;
 

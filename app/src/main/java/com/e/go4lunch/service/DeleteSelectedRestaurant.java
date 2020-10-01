@@ -10,8 +10,6 @@ import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
-import com.e.go4lunch.util.Event;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,6 @@ public class DeleteSelectedRestaurant extends Worker {
     private Workmates currentWorkmate;
     private Restaurant mRestaurant;
     private List<Workmates> mWorkmatesList = new ArrayList<>();
-    private String workmateUid;
 
 
     public DeleteSelectedRestaurant(@NonNull Context context, @NonNull WorkerParameters workerParams) {
@@ -34,8 +31,7 @@ public class DeleteSelectedRestaurant extends Worker {
     }
 
     private void getCurrentWorkmate() {
-        workmateUid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-        this.mWorkmatesRepository.getWorkmate1(workmateUid).addOnSuccessListener(documentSnapshot -> {
+        this.mWorkmatesRepository.getWorkmate().addOnSuccessListener(documentSnapshot -> {
             currentWorkmate = documentSnapshot.toObject(Workmates.class);
             if (Objects.requireNonNull(currentWorkmate).getRestaurantChosen() != null) {
                 getRestaurant(currentWorkmate.getRestaurantChosen().getPlaceId());
@@ -69,7 +65,7 @@ public class DeleteSelectedRestaurant extends Worker {
 
             this.mRestaurantRepository.updateRestaurantWorkmateList(mRestaurant.getPlaceId(), mWorkmatesList);
             this.currentWorkmate.setRestaurantChosen(null);
-            this.mWorkmatesRepository.updateRestaurantChosen(workmateUid, currentWorkmate.getRestaurantChosen());
+            this.mWorkmatesRepository.updateRestaurantChosen(currentWorkmate.getRestaurantChosen());
 
 
         }
