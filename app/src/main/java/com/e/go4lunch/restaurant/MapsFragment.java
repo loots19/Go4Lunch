@@ -246,19 +246,18 @@ public class MapsFragment extends Fragment implements
 
     }
 
-    // ---------------------
-    // Configuring ViewModel
-    // ---------------------
+    // ---------------------------------
+    // ----- Configuring ViewModel -----
+    // ---------------------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
         this.mRestaurantViewModel = new ViewModelProvider(this, mViewModelFactory).get(RestaurantViewModel.class);
 
     }
 
-    // ---------------------
-    // Configuring Observers
-    // ---------------------
-
+    // ---------------------------------
+    // ----- Configuring Observers -----
+    // ---------------------------------
     private void getRestaurantList() {
         mRestaurantViewModel.getRestaurantList().observe(getViewLifecycleOwner(), restaurants -> {
             mRestaurantList = restaurants;
@@ -295,9 +294,9 @@ public class MapsFragment extends Fragment implements
     }
 
 
-    // -----------
-    // Draw marker
-    // -----------
+    // -----------------------
+    // ----- Draw marker -----
+    // -----------------------
     private BitmapDescriptor bitmapDescriptorFromVector(Context context) {
         Drawable background = ContextCompat.getDrawable(context, R.drawable.ic_location);
         Objects.requireNonNull(background).setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
@@ -321,7 +320,9 @@ public class MapsFragment extends Fragment implements
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
-    //  Launch detail activity
+    // ----------------------------------
+    // ----- Launch detail activity -----
+    // ----------------------------------
     private void lunchDetailActivity(Marker marker) {
         String placeId = (String) marker.getTag();
         Intent intent = new Intent(getContext(), DetailsRestaurantActivity.class);

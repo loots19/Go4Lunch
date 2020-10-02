@@ -27,9 +27,9 @@ public class RestaurantViewModel extends ViewModel {
     private LiveData<List<Restaurant>> restaurant;
     private final MutableLiveData<Event<Object>> openDetailRestaurant = new MutableLiveData<>();
 
-    // -----------------------------
-    // --- GET PLACE FROM NEARBY ---
-    // -----------------------------
+    // ---------------------------------
+    // ----- GET PLACE FROM NEARBY -----
+    // ---------------------------------
     public RestaurantViewModel(RestaurantRepository restaurantRepository) {
         this.mRestaurantRepository = restaurantRepository;
         restaurant = Transformations.switchMap(getPlace, input -> {
@@ -70,9 +70,9 @@ public class RestaurantViewModel extends ViewModel {
 
     }
 
-    // -----------
-    // --- GET ---
-    // -----------
+    // ---------------
+    // ----- GET -----
+    // ---------------
     public LiveData<Restaurant> getRestaurantAuto(String placeId){
         return mRestaurantRepository.getRestaurantAuto(placeId);
     }
@@ -89,9 +89,9 @@ public class RestaurantViewModel extends ViewModel {
         return openDetailRestaurant;
     }
 
-    // --------------
-    // --- UPDATE ---
-    // --------------
+    // ------------------
+    // ----- UPDATE -----
+    // ------------------
     public void updateRestaurantWorkmateList(String uid, List<Workmates> workmatesList) {
         this.mRestaurantRepository.updateRestaurantWorkmateList(uid, workmatesList);
     }

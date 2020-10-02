@@ -72,6 +72,7 @@
     <string name="error">error_authentication_canceled</string>
     <string name="no_network">no_network</string>
     <string name="unknown_error">unknown_error</string>
+    <string name="Already_Register">"Already Register ? Login Here"</string>
 
 
     <!-- HOLDER WORKMATES -->
@@ -90,10 +91,6 @@
     <string name="yes">Yes</string>
     <string name="tittle_alert_Lunch">You haven\'t made your choice yet</string>
     <string name="tittle_autocomplete_result">this restaurant is outside the search area</string>
-
-
-
-
 
 
 </resources>

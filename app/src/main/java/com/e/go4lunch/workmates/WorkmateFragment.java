@@ -51,9 +51,9 @@ public class WorkmateFragment extends Fragment implements WorkmatesAdapter.OnNot
 
     }
 
-    // ---------------------
-    // Configuring ViewModel
-    // ---------------------
+    // ---------------------------------
+    // ----- Configuring ViewModel -----
+    // ---------------------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
         this.mWorkmateViewModel = new ViewModelProvider(this, mViewModelFactory).get(WorkmateViewModel.class);
@@ -61,18 +61,18 @@ public class WorkmateFragment extends Fragment implements WorkmatesAdapter.OnNot
     }
 
 
-    // ---------------------
-    // Configuring Observers
-    // ---------------------
+    // ---------------------------------
+    // ----- Configuring Observers -----
+    // ---------------------------------
     private void getWorkmateList() {
         mWorkmateViewModel.getAllWorkmates().observe(getViewLifecycleOwner(), workmates -> {
             mWorkmatesList = workmates;
             mWorkmatesAdapter.setWorkmates(workmates);
         });
     }
-    // ------------------------
-    // Configuring RecyclerView
-    // ------------------------
+    // ------------------------------------
+    // ----- Configuring RecyclerView -----
+    // ------------------------------------
     private void configureRecyclerView() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
@@ -81,9 +81,9 @@ public class WorkmateFragment extends Fragment implements WorkmatesAdapter.OnNot
         mRecyclerView.setAdapter(mWorkmatesAdapter);
 
     }
-    // -----------------------------------------------------
-    // OpenDetail Activity when workmate click on item of RV
-    // -----------------------------------------------------
+    // -----------------------------------------------------------------
+    // ----- OpenDetail Activity when workmate click on item of RV -----
+    // -----------------------------------------------------------------
     @Override
     public void onItemClick(int position) {
         if (mWorkmatesList.get(position).getRestaurantChosen() != null) {

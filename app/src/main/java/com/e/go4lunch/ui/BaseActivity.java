@@ -9,9 +9,9 @@ import com.google.firebase.auth.FirebaseUser;
 public abstract class BaseActivity extends AppCompatActivity {
 
 
-    // --------------------
-    // UTILS
-    // --------------------
+    // -----------------
+    // ----- UTILS -----
+    // -----------------
 
     @Nullable
     protected FirebaseUser getCurrentUser() {

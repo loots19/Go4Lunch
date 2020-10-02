@@ -37,9 +37,9 @@ public class RestaurantRepository {
     private double rating;
     private List<Period> openHours;
 
-    // ----------------------------
-    // --- COLLECTION REFERENCE ---
-    // ----------------------------
+    // --------------------------------
+    // ----- COLLECTION REFERENCE -----
+    // --------------------------------
 
     private CollectionReference getRestaurantCollection() {
         return FirebaseFirestore.getInstance().collection("restaurant");
@@ -59,9 +59,9 @@ public class RestaurantRepository {
         mCollectionReference = FirebaseFirestore.getInstance().collection("restaurant");
 
     }
-    // -----------------------------
-    // --- GET PLACE FROM NEARBY ---
-    // -----------------------------
+    // ---------------------------------
+    // ----- GET PLACE FROM NEARBY -----
+    // ---------------------------------
     // check if restaurant list is not empty, else get nearby result and combine this with place detail.
     public MutableLiveData<List<Restaurant>> getRestaurantList(String type, String location, int radius) {
         MutableLiveData<List<Restaurant>> newData = new MutableLiveData<>();
@@ -110,9 +110,9 @@ public class RestaurantRepository {
 
         return newData;
     }
-    // -----------------------------
-    // --- GET PLACE DETAIL ---
-    // -----------------------------
+    // ----------------------------
+    // ----- GET PLACE DETAIL -----
+    // ----------------------------
     private void getRestaurantDetail(String placeId, MutableLiveData<List<Restaurant>> newData, List<Restaurant> restaurants, int size) {
         mApiRequest.getDetailsRestaurant(placeId).enqueue(new Callback<PlaceDetail>() {
             @Override
@@ -139,6 +139,7 @@ public class RestaurantRepository {
                     if (restaurants.size() == size) {
                         newData.setValue(restaurants);
                     }
+                    // create restaurant in firesTore
                     createRestaurant(placeId1, name, address, urlPhoto, openHours, mLocation, rating, webSite, phoneNumber, mWorkmatesList);
                 }
             }
@@ -151,17 +152,17 @@ public class RestaurantRepository {
         });
     }
 
-    // --------------
-    // --- CREATE ---
-    // --------------
+    // ------------------
+    // ----- CREATE -----
+    // ------------------
     private void createRestaurant(String placeId, String name, String address, String urlPhoto, List<Period> openHours, Location location, double rating, String webSite, String phoneNumber, List<Workmates> workmatesList) {
         Restaurant restaurantToCreate = new Restaurant(placeId, name, address, urlPhoto, openHours, location, rating, webSite, phoneNumber, workmatesList);
         getRestaurantCollection().document(placeId).set(restaurantToCreate);
     }
 
-    // -----------
-    // --- GET ---
-    // -----------
+    // ---------------
+    // ----- GET -----
+    // ---------------
 
     public Task<DocumentSnapshot> getRestaurant1(String placeId) {
         return getRestaurantCollection().document(placeId).get();
@@ -196,9 +197,9 @@ public class RestaurantRepository {
         return mutableLiveData;
     }
 
-    // --------------
-    // --- UPDATE ---
-    // --------------
+    // ------------------
+    // ----- UPDATE -----
+    // ------------------
 
     public void updateRestaurantWorkmateList(String placeId, List<Workmates> workmatesList) {
         getRestaurantCollection().document(placeId).update("workmatesList", workmatesList);

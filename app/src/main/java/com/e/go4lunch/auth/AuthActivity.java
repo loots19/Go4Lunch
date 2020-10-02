@@ -62,9 +62,9 @@ public class AuthActivity extends BaseActivity {
 
     }
 
-    // --------------------
-    // ACTIONS
-    // --------------------
+    // -------------------
+    // ----- ACTIONS -----
+    // -------------------
     @OnClick(R.id.btnGG)
     public void loginGg() {
         if (this.isCurrentUserLogged()) {
@@ -105,9 +105,9 @@ public class AuthActivity extends BaseActivity {
         }
 
     }
-    // --------------------
-    //  Launch map activity
-    // --------------------
+    // -------------------------------
+    // ----- Launch map activity -----
+    // -------------------------------
     private void startMapsActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -115,9 +115,9 @@ public class AuthActivity extends BaseActivity {
     }
 
 
-    // ------------------
-    // NAVIGATION
-    // ------------------
+    // ----------------------
+    // ----- NAVIGATION -----
+    // ----------------------
     private void startSignInActivity() {
         startActivityForResult(
                 AuthUI.getInstance()
@@ -159,9 +159,9 @@ public class AuthActivity extends BaseActivity {
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
     }
-    //------------
-    //init twitter
-    //------------
+    //------------------------
+    //----- init twitter -----
+    //------------------------
     public void initTwitter() {
         TwitterConfig config = new TwitterConfig.Builder(this)
                 .logger(new DefaultLogger(Log.DEBUG))
@@ -173,27 +173,28 @@ public class AuthActivity extends BaseActivity {
 
     }
 
-    // ---------------------
-    // Configuring ViewModel
-    // ---------------------
+    // ---------------------------------
+    // ----- Configuring ViewModel -----
+    // ---------------------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.mWorkmateViewModel = new ViewModelProvider(this, mViewModelFactory).get(WorkmateViewModel.class);
 
     }
-    // ---------------------
-    // Configuring Observers
-    // ---------------------
+    // --------------------------------
+    // -----Configuring Observers -----
+    // --------------------------------
     private void subscribeObservers() {
         mWorkmateViewModel.getAllWorkmates().observe(this, workmates -> {
             mWorkmatesList = workmates;
             checkWorkmateExists();
+
         });
 
     }
-    // -------------------------
-    // Check if workmates exists
-    // -------------------------
+    // -------------------------------------
+    // ----- Check if workmates exists -----
+    // -------------------------------------
    private void checkWorkmateExists() {
        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
            if (mWorkmatesList != null) {
@@ -211,14 +212,15 @@ public class AuthActivity extends BaseActivity {
        }
 
    }
-    // -----------------------------------------
-    // if workmates is new create it in fireBase
-    // -----------------------------------------
+    // -----------------------------------------------------
+    // ----- if workmates is new create it in fireBase -----
+    // -----------------------------------------------------
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mWorkmateViewModel.CreateWorkmate(requestCode, resultCode, data);
         startMapsActivity();
     }
+
 
 
 }

@@ -92,9 +92,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     }
 
 
-    // ----------------------------------------------------------------
-    // get intent from recyclerView, map, mainActivity and show details
-    // ----------------------------------------------------------------
+    // ----------------------------------------------------------------------------
+    // ----- get intent from recyclerView, map, mainActivity and show details -----
+    // ----------------------------------------------------------------------------
     private void getIncomingIntent() {
         if (getIntent().hasExtra(EXTRA_RESTAURANT)) {
             String jsonResult = getIntent().getStringExtra(EXTRA_RESTAURANT);
@@ -120,9 +120,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
-    // ------------------------------
-    // call phone number of the place
-    // ------------------------------
+    // ------------------------------------------
+    // ----- call phone number of the place -----
+    // ------------------------------------------
     public void callRestaurant() {
         if (phone != null) {
             Intent callIntent = new Intent(Intent.ACTION_DIAL);
@@ -137,9 +137,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
-    // -------------------------
-    // show webSite of the place
-    // -------------------------
+    // -------------------------------------
+    // ----- show webSite of the place -----
+    // -------------------------------------
     public void openWebsite() {
         if (webSite != null) {
             Intent intent = new Intent();
@@ -152,9 +152,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     }
 
 
-    // --------------
-    // Action of user
-    // --------------
+    // --------------------------
+    // ----- Action of user -----
+    // --------------------------
     public void userActionClick() {
         mButtonCall.setOnClickListener(v -> callRestaurant());
 
@@ -166,9 +166,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     }
 
-    // ---------------------
-    // Configuring ViewModel
-    // ---------------------
+    // ---------------------------------
+    // ----- Configuring ViewModel -----
+    // ---------------------------------
     private void configureViewModelWorkmate() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         this.mWorkmateViewModel = new ViewModelProvider(this, viewModelFactory).get(WorkmateViewModel.class);
@@ -185,9 +185,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     }
 
-    // ---------------------
-    // Configuring Observers
-    // ---------------------
+    // ---------------------------------
+    // ----- Configuring Observers -----
+    // ---------------------------------
     private void getCurrentWorkmate() {
         mWorkmateViewModel.getCurrentWorkmate().observe(this, event -> {
             Workmates workmates = event.getContentIfNotHandled();
@@ -228,9 +228,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
     }
 
 
-    // ----------------------
-    // Configuring LikeButton
-    // ----------------------
+    // ----------------------------------
+    // ----- Configuring LikeButton -----
+    // ----------------------------------
     private void actionOnLikeButton() {
         if (currentWorkmate.getListRestaurantFavorite() == null) {
             mRestaurantListFav = new ArrayList<>();
@@ -247,9 +247,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     }
 
-    // ------------------
-    // updating like Star
-    // ------------------
+    // ------------------------------
+    // ----- updating like Star -----
+    // ------------------------------
     private void updateIVLike() {
         boolean fav = false;
         if (currentWorkmate.getListRestaurantFavorite() != null) {
@@ -264,9 +264,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
-    // ----------------------------
-    // Configuring ChoiceButton FAB
-    // ----------------------------
+    // ----------------------------------------
+    // ----- Configuring ChoiceButton FAB -----
+    // ----------------------------------------
     private void actionOnFab() {
         Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
         if (currentWorkmate.getRestaurantChosen() == null) {
@@ -289,9 +289,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
         }
     }
-    // ------------
-    // updating Fab
-    // ------------
+    // ------------------------
+    // ----- updating Fab -----
+    // ------------------------
     private void updateFab() {
         if (this.currentWorkmate.getRestaurantChosen() != null) {
             if (currentWorkmate.getRestaurantChosen().equals(mRestaurant))
@@ -301,9 +301,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
 
     }
-    // ----------------------
-    // updating workmatesList
-    // ----------------------
+    // ----------------------------------
+    // ----- updating workmatesList -----
+    // ----------------------------------
     private void updateSelectedRestaurant(Restaurant restaurant) {
         if (mRestaurantList.contains(restaurant)) {
             Workmates workmatesChoice = new Workmates(currentWorkmate.getWorkmateEmail(), currentWorkmate.getWorkmateName(), currentWorkmate.getUrlPicture());
@@ -314,9 +314,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
         }
     }
 
-    // ------------------------
-    // Configuring RecyclerView
-    // ------------------------
+    // ------------------------------------
+    // ----- Configuring RecyclerView -----
+    // ------------------------------------
     private void configureRecyclerView() {
         mRecyclerViewDetail.setLayoutManager(new LinearLayoutManager(this));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mRecyclerViewDetail.getContext(), DividerItemDecoration.VERTICAL);
@@ -327,9 +327,9 @@ public class DetailsRestaurantActivity extends AppCompatActivity {
 
     }
 
-    // -----------------------------------
-    // Update View with data from FireBase
-    // -----------------------------------
+    // -----------------------------------------------
+    // ----- Update View with data from FireBase -----
+    // -----------------------------------------------
     private void updateRestaurant(Restaurant restaurant) {
         String name = restaurant.getName();
         String address = restaurant.getAddress();

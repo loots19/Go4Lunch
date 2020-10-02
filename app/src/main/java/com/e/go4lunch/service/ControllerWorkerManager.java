@@ -24,9 +24,9 @@ public abstract class ControllerWorkerManager {
     private static final String WORK_TAG = "WORK_REQUEST_TAG_Go4Lunch";
     private static final String WORK_TAG_DELETE = "WORK_REQUEST_TAG_DELETE_Go4Lunch";
 
-    // --------------------------------------
-    // display notification everyday at 12.00
-    // --------------------------------------
+    // --------------------------------------------------
+    // ----- display notification everyday at 12.00 -----
+    // --------------------------------------------------
     public static void scheduleWork(int hour, int minute) {
         Calendar calendar = Calendar.getInstance();
         long nowMillis = calendar.getTimeInMillis();
@@ -57,9 +57,9 @@ public abstract class ControllerWorkerManager {
 
     }
 
-    // --------------------------------------------
-    // delete selected restaurant everyday at 00.00
-    // --------------------------------------------
+    // --------------------------------------------------------
+    // ----- delete selected restaurant everyday at 00.00 -----
+    // --------------------------------------------------------
     public static void deleteWork(int hour, int minute) {
         Calendar calendar = Calendar.getInstance();
         long nowMillis = calendar.getTimeInMillis();
@@ -89,9 +89,9 @@ public abstract class ControllerWorkerManager {
         workManager.enqueue(mRequest);
     }
 
-    // -------------------------------
-    // open settings for notifications
-    // -------------------------------
+    // -------------------------------------------
+    // ----- open settings for notifications -----
+    // -------------------------------------------
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void goToNotificationSettings(String channel, Context context) {
         Intent intent = new Intent();

@@ -118,9 +118,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         updateUIWhenCreating();
 
 
-        // --------------------------------------------------------------------
-        // set time for notification and clear everyday the selected restaurant
-        // --------------------------------------------------------------------
+        // --------------------------------------------------------------------------------
+        // ----- set time for notification and clear everyday the selected restaurant -----
+        // --------------------------------------------------------------------------------
         // ControllerWorkerManager.scheduleWork(10, 38);
         // ControllerWorkerManager.deleteWork(10, 42);
 
@@ -231,9 +231,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return true;
     }
 
-    // -----------------------
-    // Configure Drawer Layout
-    // -----------------------
+    // -----------------------------------
+    // ----- Configure Drawer Layout -----
+    // -----------------------------------
     private void configureDrawerLayout() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
@@ -249,31 +249,31 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mDrawerLayout.addDrawerListener(mDrawerToggle);
     }
 
-    // -------------------------
-    // Configure NavigationView
-    // -------------------------
+    // ------------------------------------
+    // ----- Configure NavigationView -----
+    // ------------------------------------
     private void configureNavigationView() {
         mNavigationView.setNavigationItemSelectedListener(this);
     }
 
-    // ------------------
-    // Configure Toolbar
-    // ------------------
+    // -----------------------------
+    // ----- Configure Toolbar -----
+    // -----------------------------
     private void configureToolbar() {
         setSupportActionBar(mToolbar);
 
     }
 
-    // ------------------------------
-    // Configure BottomNavigationView
-    // ------------------------------
+    // ------------------------------------------
+    // ----- Configure BottomNavigationView -----
+    // ------------------------------------------
     private void configureBottomNavigationView() {
         mBottomNavigationView.setOnNavigationItemSelectedListener(navListener);
     }
 
-    // ---------------------------------------------------
-    // logout from FireBase in drawerMenu create a request
-    // ---------------------------------------------------
+    // ---------------------------------------------------------------
+    // ----- logout from FireBase in drawerMenu create a request -----
+    // ---------------------------------------------------------------
     private void logout() {
         AuthUI.getInstance()
                 .signOut(this)
@@ -292,9 +292,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
 
-    // ---------------------------------------------
-    // Alert Dialog when workmates want disconnected
-    // ---------------------------------------------
+    // ---------------------------------------------------------
+    // ----- Alert Dialog when workmates want disconnected -----
+    // ---------------------------------------------------------
     public void alertLogOut() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.titlle_alert);
@@ -343,9 +343,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    // -----------------------------------------------------
-    // Arranging method that updating UI with FireStore data
-    // -----------------------------------------------------
+    // -----------------------------------------------------------------
+    // ----- Arranging method that updating UI with FireStore data -----
+    // -----------------------------------------------------------------
     private void updateUIWhenCreating() {
         getWorkmateName();
         if (this.getCurrentUser() != null) {
@@ -370,9 +370,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-    // ---------------------
-    // Configuring ViewModel
-    // ---------------------
+    // ---------------------------------
+    // ----- Configuring ViewModel -----
+    // ---------------------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
         this.mWorkmateViewModel = new ViewModelProvider(this, mViewModelFactory).get(WorkmateViewModel.class);
@@ -385,9 +385,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-    // ---------------------
-    // Configuring Observers
-    // ---------------------
+    // ---------------------------------
+    // ----- Configuring Observers -----
+    // ---------------------------------
     private void getCurrentWorkmate(boolean showLunch) {
         mWorkmateViewModel.getCurrentWorkmate().observe(this, event -> {
             Workmates workmates = event.getContentIfNotHandled();
@@ -446,9 +446,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
     }
 
-    // -------------------------------------------------
-    // open detail activity after result of autocomplete
-    // -------------------------------------------------
+    // -------------------------------------------------------------
+    // ----- open detail activity after result of autocomplete -----
+    // -------------------------------------------------------------
     private void showRestaurant(Restaurant restaurant) {
         Intent intent = new Intent(this, DetailsRestaurantActivity.class);
         Gson gson = new Gson();
@@ -458,9 +458,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-    // -------------------------------------------------------------
-    // open detail activity when user click on menuDrawer "My lunch"
-    // -------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // ----- open detail activity when user click on menuDrawer "My lunch" -----
+    // -------------------------------------------------------------------------
     private void showLunch() {
         if (this.currentWorkmate.getRestaurantChosen() == null) {
             alertDisplayChoice();
@@ -474,9 +474,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-    // ------------
-    // Alert Dialog
-    // ------------
+    // ------------------------
+    // ----- Alert Dialog -----
+    // ------------------------
     public void alertDisplayChoice() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.tittle_alert_Lunch);

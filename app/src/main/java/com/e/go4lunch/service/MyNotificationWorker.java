@@ -18,7 +18,6 @@ import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.RestaurantRepository;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.restaurant.DetailsRestaurantActivity;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import java.util.Objects;

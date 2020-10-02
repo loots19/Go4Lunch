@@ -93,9 +93,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
 
     }
 
-    // -----------------------
-    // set rating of the place
-    // -----------------------
+    // -----------------------------------
+    // ----- set rating of the place -----
+    // -----------------------------------
     private void displayRating(Restaurant restaurant) {
         if (restaurant.getRating() != 0) {
             double googleRating = restaurant.getRating();
@@ -107,9 +107,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         }
     }
 
-    // -------------------------
-    // set distance of the place
-    // -------------------------
+    // -------------------------------------
+    // ----- set distance of the place -----
+    // -------------------------------------
     private void displayDistance(Restaurant restaurant) {
         App globals = (App) getApplicationContext();
         String lat = globals.getLat();
@@ -127,9 +127,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
 
     }
 
-    // ------------------------------
-    // set opening hours of the place
-    // ------------------------------
+    // ------------------------------------------
+    // ----- set opening hours of the place -----
+    // ------------------------------------------
     private void displayOpeningHours(Restaurant restaurant, TextView textView, Context context) {
         if (restaurant.getOpenHours() != null) {
             OpeningHoursUtil openingHoursUtil = new OpeningHoursUtil(restaurant, textView, context);
@@ -137,9 +137,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         }
     }
 
-    // ----------------------
-    // set photo of the place
-    // ----------------------
+    // ----------------------------------
+    // ----- set photo of the place -----
+    // ----------------------------------
     private void displayPhotoOfRestaurant(Restaurant restaurant) {
         if (restaurant.getUrlPhoto() != null) {
             Glide.with(itemView)
@@ -151,9 +151,9 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         }
     }
 
-    // -----------------------
-    // set number of workmates
-    // -----------------------
+    // -----------------------------------
+    // ----- set number of workmates -----
+    // -----------------------------------
     @SuppressLint("SetTextI18n")
     private void displayWorkmatesNumbers(Restaurant restaurant) {
         if (restaurant.getWorkmatesList() != null && restaurant.getWorkmatesList().size() > 0) {

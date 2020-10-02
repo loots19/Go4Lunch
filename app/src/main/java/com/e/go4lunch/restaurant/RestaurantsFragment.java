@@ -75,9 +75,9 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     }
 
 
-    // ------------------------------------------------------------
-    // ----------------- Configuring RecyclerView -----------------
-    // ------------------------------------------------------------
+    // ------------------------------------
+    // ----- Configuring RecyclerView -----
+    // ------------------------------------
 
     private void initialization() {
         mRecyclerViewRestaurant.setLayoutManager(new LinearLayoutManager(this.getActivity()));
@@ -91,9 +91,9 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
     }
 
 
-    // ---------------------
-    // Configuring ViewModel
-    // ---------------------
+    // ---------------------------------
+    // ----- Configuring ViewModel -----
+    // ---------------------------------
     private void configureViewModel() {
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(getContext());
         this.mRestaurantViewModel = new ViewModelProvider(this, mViewModelFactory).get(RestaurantViewModel.class);
@@ -102,9 +102,9 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         mRestaurantViewModel.setPlace(Constants.TYPE, lat + " " + lng, Constants.RADIUS);
     }
 
-    // ---------------------------------------------------
-    // display detail activity when the user click on item
-    // ---------------------------------------------------
+    // ---------------------------------------------------------------
+    // ----- display detail activity when the user click on item -----
+    // ---------------------------------------------------------------
     @Override
     public void onItemClick(int position) {
         Context context = getActivity();

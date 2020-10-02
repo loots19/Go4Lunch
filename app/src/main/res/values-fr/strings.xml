@@ -62,6 +62,8 @@
     <string name="error">érreur_autentification_annulée</string>
     <string name="no_network">pas de connexion</string>
     <string name="unknown_error">érreur_inconnu</string>
+    <string name="Already_Register">"déja enregistré ? connectez vous ici"</string>
+
 
     <!-- AUTOCOMPLETE -->
     <string name="autocomplete_hint">Restaurant</string>

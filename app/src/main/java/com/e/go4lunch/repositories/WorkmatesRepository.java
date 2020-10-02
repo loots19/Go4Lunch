@@ -31,18 +31,22 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class WorkmatesRepository {
 
     private Workmates mWorkmates;
+    private MutableLiveData<FirebaseUser> userLiveData;
 
+    public WorkmatesRepository() {
+        this.userLiveData = new MutableLiveData<>();
+    }
 
-    // ----------------------------
-    // --- COLLECTION REFERENCE ---
-    // ----------------------------
+    // --------------------------------
+    // ----- COLLECTION REFERENCE -----
+    // --------------------------------
     private static CollectionReference getWorkmatesCollection() {
         return FirebaseFirestore.getInstance().collection("workmates");
     }
 
-    // --------------
-    // --- CREATE ---
-    // --------------
+    // ------------------
+    // ----- CREATE -----
+    // ------------------
     public Task<Void> createWorkmates(String workmateName, String workmateMail, String urlPicture) {
         Workmates workmatesToCreate = new Workmates(workmateName, workmateMail, urlPicture);
         String uid = FirebaseAuth.getInstance().getUid();
@@ -50,9 +54,9 @@ public class WorkmatesRepository {
 
     }
 
-    // -----------------------------
-    // Create a workmate in fireBase
-    // -----------------------------
+    // -----------------------------------------
+    // ----- Create a workmate in fireBase -----
+    // -----------------------------------------
     public void handleResponseAfterSignIn(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == AuthActivity.RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
@@ -101,9 +105,9 @@ public class WorkmatesRepository {
     }
 
 
-    // --------------
-    // --- GET ---
-    // --------------
+    // ---------------
+    // ----- GET -----
+    // ---------------
     public Task<DocumentSnapshot> getWorkmate() {
         String uid = FirebaseAuth.getInstance().getUid();
         return getWorkmatesCollection().document(Objects.requireNonNull(uid)).get();
@@ -155,10 +159,38 @@ public class WorkmatesRepository {
 
     }
 
+    // ------------------------------------------------------------------
+    // ----- register Workmates with email and password in fireBase -----
+    // ------------------------------------------------------------------
+    public void register(String email, String password) {
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(getApplicationContext().getMainExecutor(), task -> {
+                    if (task.isSuccessful()) {
+                        userLiveData.postValue(FirebaseAuth.getInstance().getCurrentUser());
+                    } else {
+                        Toast.makeText(getApplicationContext().getApplicationContext(), "Registration Failure: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+    public void LogIn(String email, String password) {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(getApplicationContext().getMainExecutor(), task -> {
+                    if (task.isSuccessful()) {
+                        userLiveData.postValue(FirebaseAuth.getInstance().getCurrentUser());
+                    } else {
+                        Toast.makeText(getApplicationContext().getApplicationContext(), "Registration Failure: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
-    // --------------
-    // --- UPDATE ---
-    // --------------
+    public MutableLiveData<FirebaseUser> getUserLiveData() {
+        return userLiveData;
+    }
+
+
+    // ------------------
+    // ----- UPDATE -----
+    // ------------------
 
     public void updateRestaurantFavorite(List<Restaurant> listRestaurantFavorite) {
         String uid = FirebaseAuth.getInstance().getUid();
@@ -176,9 +208,9 @@ public class WorkmatesRepository {
     }
 
 
-    // --------------------
-    // UTILS
-    // --------------------
+    // -----------------
+    // ----- UTILS -----
+    // -----------------
 
     @Nullable
     private FirebaseUser getCurrentUser() {

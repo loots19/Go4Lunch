@@ -29,9 +29,8 @@
     <dimen name="ET_text_size">20sp</dimen>
     <dimen name="ET_margin_top">20dp</dimen>
     <dimen name="layout_width">395dp</dimen>
-    <dimen name="button_margin_top">130dp</dimen>
+    <dimen name="button_margin_top">110dp</dimen>
     <dimen name="button_margin_bottom">50dp</dimen>
-
     <!-- AUTH ACTIVITY -->
     <dimen name="image_view_auth_layout_height">0dp</dimen>
     <dimen name="image_view_3_auth_margin_top">10dp</dimen>

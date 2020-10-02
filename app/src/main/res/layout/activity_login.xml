@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".auth.RegisterActivity">
+        tools:context=".auth.LoginActivity">
 
         <ImageView
             android:id="@+id/imageView4"
@@ -26,20 +26,20 @@
 
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textViewLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_top"
             android:fontFamily="@font/aladin"
             android:text="@string/app_name"
             android:textColor="@android:color/white"
             android:textSize="@dimen/TV_tittle_text_size"
-            android:layout_marginTop="@dimen/margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textViewLogin2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/TV_sentence_margin_top_"
@@ -49,40 +49,27 @@
             android:textSize="@dimen/TV_sentence_text_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewLogin" />
+
 
         <EditText
-            android:id="@+id/et_name_register"
+            android:id="@+id/et_email_login"
             android:layout_width="@dimen/layout_width"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_top"
-            android:hint="@string/name"
-            android:padding="@dimen/padding"
-            android:textColor="@android:color/white"
-            android:textColorHint="@android:color/white"
-            android:textSize="@dimen/ET_text_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2"
-            tools:ignore="Autofill,TextFields" />
-
-        <EditText
-            android:id="@+id/et_email_register"
-            android:layout_width="@dimen/layout_width"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/ET_margin_top"
+            android:layout_marginBottom="250dp"
             android:hint="@string/email"
             android:padding="@dimen/padding"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white"
             android:textSize="@dimen/ET_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_name_register"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLogin2"
             tools:ignore="Autofill,TextFields" />
 
         <EditText
-            android:id="@+id/et_password_register"
+            android:id="@+id/et_password_login"
             android:layout_width="@dimen/layout_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/ET_margin_top"
@@ -93,11 +80,14 @@
             android:textSize="@dimen/ET_text_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_email_register"
+            app:layout_constraintTop_toBottomOf="@+id/et_email_login"
             tools:ignore="Autofill,TextFields" />
 
+
+
+
         <Button
-            android:id="@+id/button_register"
+            android:id="@+id/button_login"
             android:layout_width="@dimen/layout_width"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/button_margin_top"
@@ -110,29 +100,18 @@
             app:layout_constraintBottom_toBottomOf="@+id/imageView4"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_password_register" />
-
-        <TextView
-            android:id="@+id/textViewLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimary"
-            android:text="@string/Already_Register"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_register" />
+            app:layout_constraintTop_toBottomOf="@+id/et_password_login" />
 
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/progressBarLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_register" />
+            app:layout_constraintTop_toBottomOf="@+id/button_login" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
