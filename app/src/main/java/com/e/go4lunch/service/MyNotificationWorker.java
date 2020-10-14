@@ -51,7 +51,7 @@ public class MyNotificationWorker extends Worker {
     }
 
     private void getRestaurant(String placeId) {
-        this.mRestaurantRepository.getRestaurant1(placeId).addOnSuccessListener(documentSnapshot -> {
+        this.mRestaurantRepository.getRestaurantWork(placeId).addOnSuccessListener(documentSnapshot -> {
             mRestaurant = documentSnapshot.toObject(Restaurant.class);
             displayNotification();
 

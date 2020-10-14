@@ -10,6 +10,7 @@ import com.e.go4lunch.restaurant.RestaurantViewModel;
 import com.e.go4lunch.workmates.WorkmateViewModel;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
+    // this allows us to consolidate the process of creating our ViewModels
 
     private final RestaurantRepository mRestaurantRepository;
     private final WorkmatesRepository mWorkmatesRepository;
@@ -27,7 +28,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         }
 
         if (modelClass.isAssignableFrom(WorkmateViewModel.class)) {
-            return (T) new WorkmateViewModel(mRestaurantRepository, mWorkmatesRepository);
+            return (T) new WorkmateViewModel(mWorkmatesRepository);
         }
 
         throw new IllegalArgumentException("Unknown ViewModel class");

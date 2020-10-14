@@ -16,6 +16,7 @@ public class RetrofitRequest {
     public static ApiRequest getApiRequest() {
         return mApiRequest;
     }
+
     // Setting Up the Retrofit Interface
     private static Retrofit.Builder buildRetrofit() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();

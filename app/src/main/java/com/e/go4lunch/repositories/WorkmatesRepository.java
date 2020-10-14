@@ -14,12 +14,17 @@ import com.e.go4lunch.util.Event;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,15 +109,22 @@ public class WorkmatesRepository {
 
     }
 
-
     // ---------------
     // ----- GET -----
     // ---------------
+
+    // -------------------------------------------------------------------------------------------
+    // ----- Get currentWorkmate from firesTore and use it for notification and delete task  -----
+    // -------------------------------------------------------------------------------------------
     public Task<DocumentSnapshot> getWorkmate() {
         String uid = FirebaseAuth.getInstance().getUid();
         return getWorkmatesCollection().document(Objects.requireNonNull(uid)).get();
     }
 
+
+    // -------------------------------------------
+    // ----- Get WorkmateName from firesTore -----
+    // -------------------------------------------
     public MutableLiveData<Workmates> getWorkmateName() {
         MutableLiveData<Workmates> mutableLiveData = new MutableLiveData<>();
         String uid = FirebaseAuth.getInstance().getUid();
@@ -125,6 +137,10 @@ public class WorkmatesRepository {
         return mutableLiveData;
     }
 
+
+    // ----------------------------------------------
+    // ----- Get currentWorkmate from firesTore -----
+    // ----------------------------------------------
     public MutableLiveData<Event<Workmates>> getCurrentWorkmate() {
         MutableLiveData<Event<Workmates>> mutableLiveData = new MutableLiveData<>();
         String uid = FirebaseAuth.getInstance().getUid();
@@ -138,20 +154,25 @@ public class WorkmatesRepository {
         return mutableLiveData;
     }
 
-
+    // -------------------------------------------
+    // ----- Get workmateList from firesTore -----
+    // -------------------------------------------
     public MutableLiveData<List<Workmates>> getWorkmateList() {
         MutableLiveData<List<Workmates>> mWorkmateList = new MutableLiveData<>();
-        getWorkmatesCollection().addSnapshotListener((queryDocumentSnapshots, e) -> {
-            if (queryDocumentSnapshots != null) {
-                List<DocumentSnapshot> workmateList = queryDocumentSnapshots.getDocuments();
-                List<Workmates> workmate = new ArrayList<>();
-                int size = workmateList.size();
-                for (int i = 0; i < size; i++) {
-                    Workmates workmates = workmateList.get(i).toObject(Workmates.class);
-                    workmate.add(workmates);
-                }
-                mWorkmateList.setValue(workmate);
+        getWorkmatesCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (queryDocumentSnapshots != null) {
+                    List<DocumentSnapshot> workmateList = queryDocumentSnapshots.getDocuments();
+                    List<Workmates> workmate = new ArrayList<>();
+                    int size = workmateList.size();
+                    for (int i = 0; i < size; i++) {
+                        Workmates workmates = workmateList.get(i).toObject(Workmates.class);
+                        workmate.add(workmates);
+                    }
+                    mWorkmateList.setValue(workmate);
 
+                }
             }
         });
 
@@ -172,6 +193,10 @@ public class WorkmatesRepository {
                     }
                 });
     }
+
+    // ------------------------------------------------------------------
+    // ----- Login Workmates with email and password in fireBase -----
+    // ------------------------------------------------------------------
     public void LogIn(String email, String password) {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getApplicationContext().getMainExecutor(), task -> {

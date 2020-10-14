@@ -1,7 +1,5 @@
 package com.e.go4lunch.restaurant;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -60,6 +58,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
         super.onResume();
         getRestaurantList();
     }
+
     // ---------------------
     // Configuring Observers
     // ---------------------

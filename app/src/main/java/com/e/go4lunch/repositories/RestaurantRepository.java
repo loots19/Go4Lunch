@@ -135,7 +135,6 @@ public class RestaurantRepository {
                     Restaurant restaurant = new Restaurant(placeId1, name, address, urlPhoto, openHours, mLocation, rating, webSite, phoneNumber, mWorkmatesList);
                     restaurants.add(restaurant);
 
-                    Log.e("restaurants", restaurants.size() + "," + size);
                     if (restaurants.size() == size) {
                         newData.setValue(restaurants);
                     }
@@ -164,7 +163,7 @@ public class RestaurantRepository {
     // ----- GET -----
     // ---------------
 
-    public Task<DocumentSnapshot> getRestaurant1(String placeId) {
+    public Task<DocumentSnapshot> getRestaurantWork(String placeId) {
         return getRestaurantCollection().document(placeId).get();
     }
 

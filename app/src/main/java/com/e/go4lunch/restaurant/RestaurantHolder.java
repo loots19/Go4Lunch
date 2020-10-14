@@ -110,6 +110,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
     // -------------------------------------
     // ----- set distance of the place -----
     // -------------------------------------
+    @SuppressLint("SetTextI18n")
     private void displayDistance(Restaurant restaurant) {
         App globals = (App) getApplicationContext();
         String lat = globals.getLat();
@@ -122,7 +123,7 @@ public class RestaurantHolder extends RecyclerView.ViewHolder implements View.On
         destination.setLongitude(restaurant.getLocation().getLng());
         double distance = currentLocation.distanceTo(destination);
         double distanceF = distance / 1000;
-        String rounded = String.format("%.0f", distanceF);
+        @SuppressLint("DefaultLocale") String rounded = String.format("%.0f", distanceF);
         mTvMeters.setText(rounded + " KMS");
 
     }

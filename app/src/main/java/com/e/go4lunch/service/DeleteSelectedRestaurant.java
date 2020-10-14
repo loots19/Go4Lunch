@@ -36,13 +36,15 @@ public class DeleteSelectedRestaurant extends Worker {
             if (Objects.requireNonNull(currentWorkmate).getRestaurantChosen() != null) {
                 getRestaurant(currentWorkmate.getRestaurantChosen().getPlaceId());
 
-
             }
         });
     }
 
+
+
+
     private void getRestaurant(String placeId) {
-        this.mRestaurantRepository.getRestaurant1(placeId).addOnSuccessListener(documentSnapshot -> {
+        this.mRestaurantRepository.getRestaurantWork(placeId).addOnSuccessListener(documentSnapshot -> {
             mRestaurant = documentSnapshot.toObject(Restaurant.class);
             deleteTask();
 

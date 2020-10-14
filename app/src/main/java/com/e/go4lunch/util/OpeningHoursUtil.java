@@ -1,9 +1,7 @@
 package com.e.go4lunch.util;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.text.Html;
 import android.widget.TextView;
 
 import com.e.go4lunch.R;
@@ -38,7 +36,6 @@ public class OpeningHoursUtil {
         getOpeningHoursToday();
     }
 
-    // check which day it is
     private void getActualTimeAndDay() {
         Calendar cal = Calendar.getInstance();
         Date currentLocalTime = cal.getTime();
@@ -113,7 +110,7 @@ public class OpeningHoursUtil {
                 // check if restaurant is open, show closing time
                 else if (localTime < closingInt) {
                     String str = Integer.toString(closingInt);
-                    str = new StringBuilder(str).insert(str.length() -2, ".").toString();
+                    str = new StringBuilder(str).insert(str.length() - 2, ".").toString();
                     String text = mContext.getResources().getString(R.string.OpenUntil) + " " + str + "pm";
                     mTvTime.setText(text);
 

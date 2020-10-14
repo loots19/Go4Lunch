@@ -9,12 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
-import com.e.go4lunch.models.myPlace.MyPlace;
-import com.e.go4lunch.models.placeDetail.Location;
-import com.e.go4lunch.models.placeDetail.OpeningHours;
-import com.e.go4lunch.models.placeDetail.Period;
 import com.e.go4lunch.repositories.RestaurantRepository;
-import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.util.AbsentLiveData;
 import com.e.go4lunch.util.Event;
 
@@ -43,7 +38,6 @@ public class RestaurantViewModel extends ViewModel {
 
 
     public void setPlace(String type, String location, int radius) {
-        Log.e("testLocation", location + radius);
         GetPlace update = new GetPlace(type, location, radius);
         if (Objects.equals(getPlace.getValue(), update)) {
             return;
@@ -73,7 +67,7 @@ public class RestaurantViewModel extends ViewModel {
     // ---------------
     // ----- GET -----
     // ---------------
-    public LiveData<Restaurant> getRestaurantAuto(String placeId){
+    public LiveData<Restaurant> getRestaurantAuto(String placeId) {
         return mRestaurantRepository.getRestaurantAuto(placeId);
     }
 
@@ -85,6 +79,7 @@ public class RestaurantViewModel extends ViewModel {
         return restaurant;
 
     }
+
     public LiveData<Event<Object>> getOpenDetailRestaurant() {
         return openDetailRestaurant;
     }

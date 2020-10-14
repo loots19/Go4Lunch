@@ -7,11 +7,13 @@ import com.e.go4lunch.repositories.WorkmatesRepository;
 
 public class Injection {
 
+    //This class will be responsible for providing already built objects, centrally
+
     private static RestaurantRepository provideRestaurantRepository(Context context) {
         return RestaurantRepository.getInstance();
     }
 
-    private static WorkmatesRepository provideWorkmatesRepository(Context context) {
+    public static WorkmatesRepository provideWorkmatesRepository(Context context) {
         return new WorkmatesRepository();
     }
 

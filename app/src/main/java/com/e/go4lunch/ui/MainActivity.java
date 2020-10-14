@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private ActionBarDrawerToggle mDrawerToggle;
     private static final int SIGN_OUT_TASK = 10;
     private static final int AUTOCOMPLETE_REQUEST_CODE = 11;
-    private Context mContext;
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -121,8 +121,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // --------------------------------------------------------------------------------
         // ----- set time for notification and clear everyday the selected restaurant -----
         // --------------------------------------------------------------------------------
-        // ControllerWorkerManager.scheduleWork(10, 38);
-        // ControllerWorkerManager.deleteWork(10, 42);
+       //  ControllerWorkerManager.scheduleWork(11, 15);
+         ControllerWorkerManager.deleteWork(11,25 );
 
 
         //I added this if statement to keep the selected fragment when rotating the device
@@ -141,9 +141,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(Objects.requireNonNull(searchManager).getSearchableInfo(getComponentName()));
+
         return true;
 
 
