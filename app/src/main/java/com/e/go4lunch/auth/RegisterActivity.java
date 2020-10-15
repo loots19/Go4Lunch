@@ -2,7 +2,6 @@ package com.e.go4lunch.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.renderscript.ScriptGroup;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -48,7 +47,6 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
-
 
 
         configureViewModel();

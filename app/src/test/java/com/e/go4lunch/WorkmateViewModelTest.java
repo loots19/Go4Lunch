@@ -9,7 +9,6 @@ import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.util.Event;
 import com.e.go4lunch.workmates.WorkmateViewModel;
-import com.google.firebase.auth.FirebaseUser;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,9 +20,9 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,13 +42,13 @@ public class WorkmateViewModelTest {
     private WorkmatesRepository mWorkmatesRepository;
 
     @Mock
-    MutableLiveData<Workmates> mutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<Workmates> mutableLiveData = new MutableLiveData<>();
 
     @Mock
-    MutableLiveData<Event<Workmates>> event = new MutableLiveData<>();
+    private MutableLiveData<Event<Workmates>> event = new MutableLiveData<>();
 
     @Mock
-    MutableLiveData<List<Workmates>> mWorkmateList = new MutableLiveData<>();
+    private MutableLiveData<List<Workmates>> mWorkmateList = new MutableLiveData<>();
 
 
     @Before
@@ -81,7 +80,7 @@ public class WorkmateViewModelTest {
         when(mWorkmatesRepository.getWorkmateList()).thenReturn(mWorkmateList);
         mWorkmateViewModel.getAllWorkmates();
         assertNotNull(mWorkmateViewModel.getAllWorkmates());
-        verify(mWorkmatesRepository,atLeast(1)).getWorkmateList();
+        verify(mWorkmatesRepository, atLeast(1)).getWorkmateList();
     }
 
     @Test
@@ -89,14 +88,15 @@ public class WorkmateViewModelTest {
         when(mWorkmatesRepository.getCurrentWorkmate()).thenReturn(event);
         mWorkmateViewModel.getCurrentWorkmate();
         assertNotNull(mWorkmateViewModel.getCurrentWorkmate());
-        verify(mWorkmatesRepository,atLeast(1)).getCurrentWorkmate();
+        verify(mWorkmatesRepository, atLeast(1)).getCurrentWorkmate();
     }
+
     @Test
     public void getWorkmateName() {
         when(mWorkmatesRepository.getWorkmateName()).thenReturn(mutableLiveData);
         mWorkmateViewModel.getWorkmateNames();
         assertNotNull(mWorkmateViewModel.getWorkmateNames());
-        verify(mWorkmatesRepository,atLeast(1)).getWorkmateName();
+        verify(mWorkmatesRepository, atLeast(1)).getWorkmateName();
     }
 
 

@@ -85,7 +85,7 @@ public class RestaurantViewModelTest {
         when(mRestaurantRepository.getRestaurant(placeId)).thenReturn(mutableLiveData);
         mRestaurantViewModel.getRestaurant(placeId);
         assertNotNull(mRestaurantViewModel.getRestaurant(placeId));
-        Mockito.verify(mRestaurantRepository, atLeast(1)).getRestaurant(placeId);
+        Mockito.verify(mRestaurantRepository,atLeast(1)).getRestaurant(placeId);
     }
 
 

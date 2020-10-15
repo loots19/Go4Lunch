@@ -1,7 +1,5 @@
 package com.e.go4lunch.repositories;
 
-import android.util.Log;
-
 import androidx.lifecycle.MutableLiveData;
 
 import com.e.go4lunch.Retrofit.ApiRequest;
@@ -33,7 +31,7 @@ public class RestaurantRepository {
     private List<Workmates> mWorkmatesList = new ArrayList<>();
     private CollectionReference mCollectionReference;
     private com.e.go4lunch.models.placeDetail.Location mLocation;
-    private String address, placeId, webSite, phoneNumber, placeId1, urlPhoto, name;
+    private String address, placeId, webSite, phoneNumber, placeId1, urlPhoto, name, restaurantSelected;
     private double rating;
     private List<Period> openHours;
 
@@ -59,6 +57,7 @@ public class RestaurantRepository {
         mCollectionReference = FirebaseFirestore.getInstance().collection("restaurant");
 
     }
+
     // ---------------------------------
     // ----- GET PLACE FROM NEARBY -----
     // ---------------------------------
@@ -110,6 +109,7 @@ public class RestaurantRepository {
 
         return newData;
     }
+
     // ----------------------------
     // ----- GET PLACE DETAIL -----
     // ----------------------------
@@ -205,7 +205,9 @@ public class RestaurantRepository {
     }
 
     public void setRestaurantSelected(String restaurantUid) {
+        this.restaurantSelected = restaurantUid;
     }
+
 
 
 }

@@ -11,6 +11,7 @@ import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.util.Event;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
@@ -47,13 +48,6 @@ public class WorkmateViewModel extends ViewModel {
         return mWorkmatesRepository.getWorkmateList();
     }
 
-    // -----------------------------------------
-    // ----- Create a workmate in fireBase -----
-    // -----------------------------------------
-    public void CreateWorkmate(int requestCode, int resultCode, @Nullable Intent data) {
-        mWorkmatesRepository.handleResponseAfterSignIn(requestCode, resultCode, data);
-    }
-
     // -----------------------------------------------------------
     // ----- Create a workmate in fireBase register activity -----
     // -----------------------------------------------------------
@@ -82,6 +76,9 @@ public class WorkmateViewModel extends ViewModel {
     public void logIn(String email, String password) {
         mWorkmatesRepository.LogIn(email, password);
     }
+
+
+
 
     public MutableLiveData<FirebaseUser> getUserLiveData() {
         return userLiveData;
