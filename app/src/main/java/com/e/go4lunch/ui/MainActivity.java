@@ -122,7 +122,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // ----- set time for notification and clear everyday the selected restaurant -----
         // --------------------------------------------------------------------------------
          //ControllerWorkerManager.scheduleWork(10, 54);
-         ControllerWorkerManager.deleteWork(10,56);
+         ControllerWorkerManager.deleteWork(0,0);
 
 
         //I added this if statement to keep the selected fragment when rotating the device
