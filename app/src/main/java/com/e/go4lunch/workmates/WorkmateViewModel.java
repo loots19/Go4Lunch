@@ -1,8 +1,5 @@
 package com.e.go4lunch.workmates;
 
-import android.content.Intent;
-
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -11,7 +8,6 @@ import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.repositories.WorkmatesRepository;
 import com.e.go4lunch.util.Event;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
@@ -48,12 +44,32 @@ public class WorkmateViewModel extends ViewModel {
         return mWorkmatesRepository.getWorkmateList();
     }
 
-    // -----------------------------------------------------------
-    // ----- Create a workmate in fireBase register activity -----
-    // -----------------------------------------------------------
+    // -----------------------------------------
+    // ----- Create a workmate in fireBase -----
+    // -----------------------------------------
     public void createWorkmate(String email, String name, String urlPicture) {
         mWorkmatesRepository.createWorkmates(email, name, urlPicture);
     }
+    // ------------------------------------------------------------------
+    // ----- register Workmates with email and password in fireBase -----
+    // ------------------------------------------------------------------
+    public void register(String email, String password) {
+        mWorkmatesRepository.register(email, password);
+    }
+
+    // ------------------------------------------------------------------
+    // ----- Login Workmates with email and password in fireBase --------
+    // ------------------------------------------------------------------
+    public void logIn(String email, String password) {
+        mWorkmatesRepository.LogIn(email, password);
+    }
+
+
+    // ----- getter -----
+    public MutableLiveData<FirebaseUser> getUserLiveData() {
+        return userLiveData;
+    }
+
 
     // ---------------------------------------------------------------------
     // ----- Update in fireBase if workmate have a favorite restaurant -----
@@ -69,20 +85,6 @@ public class WorkmateViewModel extends ViewModel {
         mWorkmatesRepository.updateRestaurantChosen(restaurantChosen);
     }
 
-    public void register(String email, String password) {
-        mWorkmatesRepository.register(email, password);
-    }
-
-    public void logIn(String email, String password) {
-        mWorkmatesRepository.LogIn(email, password);
-    }
-
-
-
-
-    public MutableLiveData<FirebaseUser> getUserLiveData() {
-        return userLiveData;
-    }
 
 
 }

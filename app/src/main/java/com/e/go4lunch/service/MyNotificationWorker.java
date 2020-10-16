@@ -31,6 +31,7 @@ public class MyNotificationWorker extends Worker {
     private String nameRestaurant;
 
 
+
     public MyNotificationWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
         this.mRestaurantRepository = new RestaurantRepository();
@@ -53,6 +54,7 @@ public class MyNotificationWorker extends Worker {
     private void getRestaurant(String placeId) {
         this.mRestaurantRepository.getRestaurantWork(placeId).addOnSuccessListener(documentSnapshot -> {
             mRestaurant = documentSnapshot.toObject(Restaurant.class);
+
             displayNotification();
 
 

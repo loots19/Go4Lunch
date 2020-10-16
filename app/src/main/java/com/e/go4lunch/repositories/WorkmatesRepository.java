@@ -130,7 +130,7 @@ public class WorkmatesRepository {
     }
 
     // ------------------------------------------------------------------
-    // ----- Login Workmates with email and password in fireBase -----
+    // ----- Login Workmates with email and password in fireBase --------
     // ------------------------------------------------------------------
     public void LogIn(String email, String password) {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
@@ -143,7 +143,7 @@ public class WorkmatesRepository {
                 });
     }
 
-
+    // ----- getter -----
     public MutableLiveData<FirebaseUser> getUserLiveData() {
         return userLiveData;
     }

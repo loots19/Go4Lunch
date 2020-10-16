@@ -71,7 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.Please_enter_email), Toast.LENGTH_LONG).show();
             return;
         }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             mEmailRegister.setError(getString(R.string.input_error_email_invalid));
             mEmailRegister.requestFocus();
             return;

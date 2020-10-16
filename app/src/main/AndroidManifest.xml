@@ -23,11 +23,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".auth.LoginActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
+        <activity
+            android:name=".auth.LoginActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+
+        </activity>
         <activity
             android:name=".auth.RegisterActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+
+        </activity>
         <activity android:name=".restaurant.DetailsRestaurantActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
