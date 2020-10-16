@@ -1,4 +1,4 @@
-package com.e.go4lunch.Retrofit;
+package com.e.go4lunch.retrofit;
 
 import com.e.go4lunch.models.myPlace.MyPlace;
 import com.e.go4lunch.models.placeDetail.PlaceDetail;

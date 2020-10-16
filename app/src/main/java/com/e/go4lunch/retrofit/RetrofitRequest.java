@@ -1,4 +1,4 @@
-package com.e.go4lunch.Retrofit;
+package com.e.go4lunch.retrofit;
 
 import com.e.go4lunch.util.Constants;
 

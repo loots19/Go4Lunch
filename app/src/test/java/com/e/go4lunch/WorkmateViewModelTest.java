@@ -20,8 +20,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;

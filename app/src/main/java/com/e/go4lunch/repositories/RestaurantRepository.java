@@ -2,8 +2,8 @@ package com.e.go4lunch.repositories;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.e.go4lunch.Retrofit.ApiRequest;
-import com.e.go4lunch.Retrofit.RetrofitRequest;
+import com.e.go4lunch.retrofit.ApiRequest;
+import com.e.go4lunch.retrofit.RetrofitRequest;
 import com.e.go4lunch.models.Restaurant;
 import com.e.go4lunch.models.Workmates;
 import com.e.go4lunch.models.myPlace.MyPlace;
