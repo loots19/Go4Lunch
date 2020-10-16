@@ -3,6 +3,7 @@ package com.e.go4lunch.restaurant;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +69,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
                 mRestaurantList = restaurants;
                 mAdapter.setRestaurants(mRestaurantList);
                 mAdapter.notifyDataSetChanged();
+                Log.e("","");
             }
 
         });
