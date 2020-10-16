@@ -69,7 +69,7 @@ public class RestaurantsFragment extends Fragment implements RestaurantAdapter.O
                 mRestaurantList = restaurants;
                 mAdapter.setRestaurants(mRestaurantList);
                 mAdapter.notifyDataSetChanged();
-                Log.e("","");
+                
             }
 
         });
