@@ -116,7 +116,7 @@ public class OpeningHoursUtil {
                     mTvTime.setText(text);
 
                 }
-               
+
             }
         }
     }
