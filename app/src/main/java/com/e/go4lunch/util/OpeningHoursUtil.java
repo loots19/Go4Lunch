@@ -90,6 +90,7 @@ public class OpeningHoursUtil {
                 int closingInt = Integer.parseInt(closing);
                 int openingInt = Integer.parseInt(opening);
 
+
                 //check if restaurant is open and if is closing in 30 minutes;
                 if ((closingInt - localTime) < 30 && (localTime - closingInt) < 0) {
                     mTvTime.setText(R.string.closing_soon);
@@ -115,6 +116,7 @@ public class OpeningHoursUtil {
                     mTvTime.setText(text);
 
                 }
+               
             }
         }
     }
